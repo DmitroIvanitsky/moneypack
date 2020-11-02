@@ -1,13 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'file:///C:/Users/nic-pc/Desktop/projects/flutter_tutorial/lib/pages/AddIncome.dart';
-import 'file:///C:/Users/nic-pc/Desktop/projects/flutter_tutorial/lib/pages/Expenses.dart';
-import 'file:///C:/Users/nic-pc/Desktop/projects/flutter_tutorial/lib/setting/MyColors.dart';
-import 'file:///C:/Users/nic-pc/Desktop/projects/flutter_tutorial/lib/pages/ShowBalance.dart';
-import 'file:///C:/Users/nic-pc/Desktop/projects/flutter_tutorial/lib/pages/AddExpenses.dart';
-import 'file:///C:/Users/nic-pc/Desktop/projects/flutter_tutorial/lib/pages/Income.dart';
-import 'file:///C:/Users/nic-pc/Desktop/projects/flutter_tutorial/lib/setting/in__out_icons.dart';
-import 'file:///C:/Users/nic-pc/Desktop/projects/flutter_tutorial/lib/setting/MyText.dart';
+import 'package:flutter_tutorial/pages/AddIncome.dart';
+import 'package:flutter_tutorial/pages/Expenses.dart';
+import 'package:flutter_tutorial/setting/MyColors.dart';
+import 'package:flutter_tutorial/pages/ShowBalance.dart';
+import 'package:flutter_tutorial/pages/AddExpenses.dart';
+import 'package:flutter_tutorial/pages/Income.dart';
+import 'package:flutter_tutorial/setting/in__out_icons.dart';
+import 'package:flutter_tutorial/setting/MyText.dart';
 
 void main() => runApp(
     MaterialApp(

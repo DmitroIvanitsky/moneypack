@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tutorial/Objects/ExpenseNote.dart';
 import 'package:flutter_tutorial/Objects/ListOfExpenses.dart';
-import 'file:///C:/Users/nic-pc/Desktop/projects/flutter_tutorial/lib/setting/MyColors.dart';
+import 'package:flutter_tutorial/setting/MyColors.dart';
 import 'package:flutter_tutorial/setting/MyText.dart';
 
 class Expenses extends StatefulWidget{
@@ -34,7 +34,6 @@ class _ExpensesState extends State<Expenses> {
       body: ListView.builder(
         itemCount: ListOfExpenses.list.length,
         itemBuilder: (context, index){
-          if(index.isOdd) return Divider();
           return _buildListItem(ListOfExpenses.list[index]);
         },
       ),

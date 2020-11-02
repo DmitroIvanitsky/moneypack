@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'file:///C:/Users/nic-pc/Desktop/projects/flutter_tutorial/lib/setting/MyText.dart';
-import 'file:///C:/Users/nic-pc/Desktop/projects/flutter_tutorial/lib/setting/MyColors.dart';
+import 'package:flutter_tutorial/setting/MyText.dart';
+import 'package:flutter_tutorial/setting/MyColors.dart';
 
 class AddIncome extends StatelessWidget{
 
