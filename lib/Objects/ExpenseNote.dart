@@ -3,4 +3,8 @@ class ExpenseNote{
   final double sum;
 
   ExpenseNote(this.category, this.sum);
+
+  // showNote(){
+  //   return category.toString();
+  // }
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tutorial/MyColors.dart';
-import 'ExpenseNote.dart';
+import 'package:flutter_tutorial/Objects/ExpenseNote.dart';
+import 'package:flutter_tutorial/Objects/ListOfExpenses.dart';
+import 'file:///C:/Users/nic-pc/Desktop/projects/flutter_tutorial/lib/setting/MyColors.dart';
+import 'package:flutter_tutorial/setting/MyText.dart';
 
 class Expenses extends StatefulWidget{
   @override
@@ -9,6 +11,10 @@ class Expenses extends StatefulWidget{
 
 class _ExpensesState extends State<Expenses> {
 
+  void r(){
+    setState(() {
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,27 +31,25 @@ class _ExpensesState extends State<Expenses> {
           ),
         ),
       ),
-      body: Row(
-        children: [
-          Text(ListOfExpenses.print())
-        ],
+      body: ListView.builder(
+        itemCount: ListOfExpenses.list.length,
+        itemBuilder: (context, index){
+          if(index.isOdd) return Divider();
+          return _buildListItem(ListOfExpenses.list[index]);
+        },
       ),
     );
-    setState(() {
-    });
   }
 }
 
-class ListOfExpenses {
-  static List<ExpenseNote> list = List();
-
-  static add(ExpenseNote item) {
-    list.add(item);
-  }
-
-  static print(){
-    for(var n in list){
-      return n.toString();
-    }
-  }
+ _buildListItem(ExpenseNote value) {
+  return Row(
+    children: [
+          MyText(value.category, TextAlign.start),
+          // SizedBox(
+          //   width: double.infinity,
+          // ),
+          MyText('${value.sum}', TextAlign.end),
+      ],
+  );
 }

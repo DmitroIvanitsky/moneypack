@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tutorial/MyColors.dart';
-import 'ExpenseNote.dart';
-import 'Expenses.dart';
+import 'package:flutter_tutorial/Objects/ExpenseNote.dart';
+import 'package:flutter_tutorial/Objects/ListOfExpenses.dart';
+import 'file:///C:/Users/nic-pc/Desktop/projects/flutter_tutorial/lib/setting/MyColors.dart';
+
 
 class AddExpenses extends StatelessWidget{
   String category;
