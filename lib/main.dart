@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tutorial/Objects/ListOfExpenses.dart';
 import 'package:flutter_tutorial/pages/AddIncome.dart';
 import 'package:flutter_tutorial/pages/Expenses.dart';
 import 'package:flutter_tutorial/setting/MyColors.dart';
@@ -16,13 +17,24 @@ void main() => runApp(
     )
 );
 
-class FlutterTutorialApp extends StatelessWidget {
+class FlutterTutorialApp extends StatefulWidget {
 
-  final double day = 10.0;
+  @override
+  _FlutterTutorialAppState createState() => _FlutterTutorialAppState();
+}
+
+class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
+
+  //double day = ListOfExpenses.sum();
   final double week = 20.0;
   final double month = 30.0;
   final double income = 100;
   final double balance = 100;
+
+  void s(){
+    setState(() {
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +81,7 @@ class FlutterTutorialApp extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               MyText('day', TextAlign.left),
-                              MyText('$day', TextAlign.right),
+                              MyText('${ListOfExpenses.sum()}', TextAlign.right),
                             ],
                           ),
                       ),
@@ -107,14 +119,15 @@ class FlutterTutorialApp extends StatelessWidget {
                   //padding: EdgeInsets.fromLTRB(0, 0, 20, 50),
                   child: IconButton(
                     iconSize: 35,
-                    onPressed: () => _goTo(context, 'AddExpenses'), // FUNCTION!!!!!!!!!!!!!!!!
+                    onPressed: () => _goTo(context, 'AddExpenses'),
                     icon: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(100)
-                      ),
+                      width: 15,
+                      // decoration: BoxDecoration(
+                      //   color: Colors.red,
+                      //   borderRadius: BorderRadius.circular(100)
+                      // ),
                       child: Icon(
-                          Icons.add
+                          Icons.add_circle
                       ),
                     ),
                   ),
@@ -152,12 +165,13 @@ class FlutterTutorialApp extends StatelessWidget {
                     iconSize: 35,
                     onPressed: () => _goTo(context, 'AddIncome'),
                     icon: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.green,
-                        borderRadius: BorderRadius.circular(100)
-                      ),
+                      width: 20,
+                      // decoration: BoxDecoration(
+                      //   color: Colors.green,
+                      //   borderRadius: BorderRadius.circular(100)
+                      // ),
                       child: Icon(
-                          Icons.add
+                          Icons.add_circle
                       ),
                     ),
                   ),
@@ -195,10 +209,11 @@ class FlutterTutorialApp extends StatelessWidget {
                     iconSize: 35,
                     onPressed: () => _goTo(context, 'ShowBalance'),
                     icon: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.purple,
-                        borderRadius: BorderRadius.circular(100)
-                      ),
+                      width: 20,
+                      // decoration: BoxDecoration(
+                      //   color: Colors.purple,
+                      //   borderRadius: BorderRadius.circular(100)
+                      // ),
                       child: Icon(
                           Icons.apps
                       ),
@@ -218,7 +233,7 @@ class FlutterTutorialApp extends StatelessWidget {
                         bottom: 45,
                         left: 10,
                         child: IconButton(
-                          color: Colors.red,
+                          color: MyColors.textColor,
                           iconSize: 100,
                           icon: Icon(In_Out.png_transparent_computer_icons_money_expense_cost_finance_others_miscellaneous_saving_service),
                           onPressed: () => _goTo(context, 'Expenses'),
@@ -240,7 +255,7 @@ class FlutterTutorialApp extends StatelessWidget {
                       Positioned(
                         bottom: 45,
                         child: IconButton(
-                          color: Colors.green,
+                          color: MyColors.textColor,
                           iconSize: 100,
                           icon: Icon(In_Out.bagofmoney_dollar_4399),
                           onPressed: () => _goTo(context, 'Income'),
@@ -267,7 +282,7 @@ class FlutterTutorialApp extends StatelessWidget {
           context,
           MaterialPageRoute<void>(
               builder: (BuildContext context){
-                return AddExpenses();
+                return AddExpenses(callBack: s);
               }
           )
       );

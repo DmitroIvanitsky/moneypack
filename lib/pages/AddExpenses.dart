@@ -2,11 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tutorial/Objects/ExpenseNote.dart';
 import 'package:flutter_tutorial/Objects/ListOfExpenses.dart';
 import 'package:flutter_tutorial/setting/MyColors.dart';
+import 'package:flutter_tutorial/main.dart';
+
+import '../main.dart';
 
 
 class AddExpenses extends StatelessWidget{
+  Function callBack;
   String category;
   double sum;
+
+  AddExpenses({this.callBack});
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +56,7 @@ class AddExpenses extends StatelessWidget{
                 }
                 return null;
               },
-              onChanged: (v) => sum = v as double,
+              onChanged: (v) => sum = double.parse(v),
             ),
             IconButton(
               iconSize: 35,
@@ -59,8 +65,9 @@ class AddExpenses extends StatelessWidget{
                 color: MyColors.textColor,
               ),
               onPressed: (){
-                Navigator.pop(context);
                 _createExpenseNote(category, sum);
+                callBack();
+                Navigator.pop(context);
               },
             )
           ],

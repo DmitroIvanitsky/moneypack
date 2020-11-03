@@ -32,9 +32,12 @@ class _ExpensesState extends State<Expenses> {
         ),
       ),
       body: ListView.builder(
-        itemCount: ListOfExpenses.list.length,
+        itemCount: ListOfExpenses.list.length * 2,
         itemBuilder: (context, index){
-          return _buildListItem(ListOfExpenses.list[index]);
+          if(index.isOdd)
+            return Divider(color: MyColors.textColor);
+          final int i = index ~/ 2;
+          return _buildListItem(ListOfExpenses.list[index - i]);
         },
       ),
     );
@@ -42,13 +45,21 @@ class _ExpensesState extends State<Expenses> {
 }
 
  _buildListItem(ExpenseNote value) {
-  return Row(
-    children: [
-          MyText(value.category, TextAlign.start),
-          // SizedBox(
-          //   width: double.infinity,
-          // ),
-          MyText('${value.sum}', TextAlign.end),
-      ],
+  return Container(
+    height: 50,
+    child: Padding(
+      padding: EdgeInsets.symmetric(horizontal: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+              MyText(value.category, TextAlign.start),
+              MyText('${value.sum}', TextAlign.end),
+              IconButton(
+                icon: Icon(Icons.arrow_drop_down_circle_outlined),
+                onPressed: null,
+              ),
+          ],
+      ),
+    ),
   );
 }
