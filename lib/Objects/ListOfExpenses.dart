@@ -7,10 +7,11 @@ class ListOfExpenses {
     list.add(item);
   }
 
-  static print(){
-    for(var n in list){
-      String result = (n.category + ' ' + n.sum.toString());
-      return result;
+  static double sum(){
+    double s = 0;
+    for(int i = 0; i < list.length; i++){
+      s += list[i].sum;
     }
+    return s;
   }
 }
