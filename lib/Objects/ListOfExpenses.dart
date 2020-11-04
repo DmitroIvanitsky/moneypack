@@ -5,7 +5,6 @@ class ListOfExpenses {
 
   static add(ExpenseNote item) {
     list.add(item);
-    print(list.length);
   }
 
   static double sum(){

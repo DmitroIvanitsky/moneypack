@@ -65,6 +65,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
         ),
         body: Column(
           children: [
+            // Container of Day Week Month Expenses mapping
             Row(
               children: [
                 Container(
@@ -74,6 +75,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                   color: MyColors.rowColor,
                   child: Column(
                     children: [
+                      // Day Row
                       Container(
                           width: double.infinity,
                           padding: EdgeInsets.all(5),
@@ -85,6 +87,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                             ],
                           ),
                       ),
+                      // Week Row
                       Container(
                           width: double.infinity,
                           padding: EdgeInsets.all(5),
@@ -96,6 +99,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                             ],
                           ),
                       ),
+                      // Month Row
                       Container(
                           width: double.infinity,
                           padding: EdgeInsets.all(5),
@@ -110,6 +114,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                     ],
                   ),
                 ),
+                // Button
                 Container(
                   margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
                   color: MyColors.rowColor,
@@ -224,6 +229,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
             ),
             Row(
               children: [
+                // Expenses button
                 Container(
                   width: 230,
                   height: 250,
@@ -247,6 +253,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                     ],
                   ),
                 ),
+                // Income button
                 Container(
                   height: 250,
                   width: 150,

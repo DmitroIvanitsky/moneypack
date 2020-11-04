@@ -34,9 +34,6 @@ class _ExpensesState extends State<Expenses> {
       body: ListView.builder(
         itemCount: ListOfExpenses.list.length,
         itemBuilder: (context, index){
-          //if(index.isOdd)
-            //return Divider(color: MyColors.textColor);
-          //final int i = index ~/ 2;
           return Column(
             children: [
               _buildListItem(ListOfExpenses.list[index]),
@@ -55,15 +52,27 @@ class _ExpensesState extends State<Expenses> {
     child: Padding(
       padding: EdgeInsets.symmetric(horizontal: 10),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-              MyText(value.category, TextAlign.start),
-              MyText('${value.sum}', TextAlign.end),
-              IconButton(
-                icon: Icon(Icons.arrow_drop_down_circle_outlined),
-                onPressed: null,
+              Container(
+                width: 340,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    MyText(value.category, TextAlign.start),
+                    //SizedBox(width: 250),
+                    MyText('${value.sum}', TextAlign.end),
+                  ],
+                ),
               ),
-          ],
+              Container(
+                width: 50,
+                child: IconButton(
+                  icon: Icon(Icons.arrow_drop_down_circle_outlined),
+                  onPressed: null,
+                ),
+              ),
+        ],
       ),
     ),
   );

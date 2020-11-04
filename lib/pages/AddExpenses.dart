@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tutorial/Objects/ExpenseNote.dart';
 import 'package:flutter_tutorial/Objects/ListOfExpenses.dart';
 import 'package:flutter_tutorial/setting/MyColors.dart';
-import 'package:flutter_tutorial/main.dart';
-
-import '../main.dart';
-
+import 'package:flutter_tutorial/setting/MyText.dart';
 
 class AddExpenses extends StatefulWidget{
   Function callBack;
@@ -30,11 +27,28 @@ class _AddExpensesState extends State<AddExpenses> {
             color: MyColors.textColor
         ),
         backgroundColor: MyColors.appBarColor,
-        title: Text(
-          'Add Expenses',
-          style: TextStyle(
-            color: MyColors.textColor,
-          ),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Add Expenses',
+              style: TextStyle(
+                color: MyColors.textColor,
+              ),
+            ),
+            IconButton(
+              iconSize: 35,
+              icon: Icon(
+                Icons.done,
+                color: MyColors.textColor,
+              ),
+              onPressed: (){
+                _createExpenseNote(date, category, sum);
+                widget.callBack();
+                Navigator.pop(context);
+              },
+            )
+          ],
         ),
       ),
       body: Form(
@@ -42,11 +56,14 @@ class _AddExpensesState extends State<AddExpenses> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             GestureDetector(
-              child: Text(date.toString()
+              child: MyText(
+                date.toString(),
+                TextAlign.left,
               ),
               onTap: _onDateTap
             ),
             TextFormField(
+              style: TextStyle(fontSize: 20),
               decoration: const InputDecoration(
                 hintText: 'Enter category',
               ),
@@ -70,18 +87,6 @@ class _AddExpensesState extends State<AddExpenses> {
               },
               onChanged: (v) => sum = double.parse(v),
             ),
-            IconButton(
-              iconSize: 35,
-              icon: Icon(
-                Icons.add_circle,
-                color: MyColors.textColor,
-              ),
-              onPressed: (){
-                _createExpenseNote(date, category, sum);
-                widget.callBack();
-                Navigator.pop(context);
-              },
-            )
           ],
         ),
       ),
