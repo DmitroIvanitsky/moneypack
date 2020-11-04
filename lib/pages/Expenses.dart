@@ -32,12 +32,17 @@ class _ExpensesState extends State<Expenses> {
         ),
       ),
       body: ListView.builder(
-        itemCount: ListOfExpenses.list.length * 2,
+        itemCount: ListOfExpenses.list.length,
         itemBuilder: (context, index){
-          if(index.isOdd)
-            return Divider(color: MyColors.textColor);
-          final int i = index ~/ 2;
-          return _buildListItem(ListOfExpenses.list[index - i]);
+          //if(index.isOdd)
+            //return Divider(color: MyColors.textColor);
+          //final int i = index ~/ 2;
+          return Column(
+            children: [
+              _buildListItem(ListOfExpenses.list[index]),
+              Divider(color: MyColors.textColor),
+            ],
+          );
         },
       ),
     );

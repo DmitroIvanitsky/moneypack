@@ -7,12 +7,19 @@ import 'package:flutter_tutorial/main.dart';
 import '../main.dart';
 
 
-class AddExpenses extends StatelessWidget{
+class AddExpenses extends StatefulWidget{
   Function callBack;
-  String category;
-  double sum;
 
   AddExpenses({this.callBack});
+
+  @override
+  _AddExpensesState createState() => _AddExpensesState();
+}
+
+class _AddExpensesState extends State<AddExpenses> {
+  DateTime date = DateTime.now();
+  String category;
+  double sum;
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +41,11 @@ class AddExpenses extends StatelessWidget{
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+            GestureDetector(
+              child: Text(date.toString()
+              ),
+              onTap: _onDateTap
+            ),
             TextFormField(
               decoration: const InputDecoration(
                 hintText: 'Enter category',
@@ -65,8 +77,8 @@ class AddExpenses extends StatelessWidget{
                 color: MyColors.textColor,
               ),
               onPressed: (){
-                _createExpenseNote(category, sum);
-                callBack();
+                _createExpenseNote(date, category, sum);
+                widget.callBack();
                 Navigator.pop(context);
               },
             )
@@ -75,8 +87,21 @@ class AddExpenses extends StatelessWidget{
       ),
     );
   }
-  _createExpenseNote(String category, double sum){
-    ExpenseNote expenseNote = ExpenseNote(category, sum);
+
+  _onDateTap() async{
+      final DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        lastDate: DateTime.now().add(Duration(days: 184)),
+        firstDate: DateTime.now().subtract(Duration(days: 184)),
+      );
+      setState(() {
+        date = picked;
+      });
+  }
+
+  _createExpenseNote(DateTime date, String category, double sum){
+    ExpenseNote expenseNote = ExpenseNote(date, category, sum);
     ListOfExpenses.add(expenseNote);
   }
 }
