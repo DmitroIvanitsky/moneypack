@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tutorial/Objects/ListOfExpenses.dart';
+import 'package:flutter_tutorial/Objects/ListOfIncome.dart';
 import 'package:flutter_tutorial/pages/AddIncome.dart';
 import 'package:flutter_tutorial/pages/Expenses.dart';
 import 'package:flutter_tutorial/setting/MyColors.dart';
@@ -28,7 +29,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
   //double day = ListOfExpenses.sum();
   final double week = 20.0;
   final double month = 30.0;
-  final double income = 100;
+  //final double income = 100;
   final double balance = 100;
 
   void s(){
@@ -139,6 +140,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                 ),
               ],
             ),
+            // Container of Income
             Row(
               children: [
                 Container(
@@ -154,7 +156,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children:[
                             MyText('Income', TextAlign.left),
-                            MyText('$income', TextAlign.right),
+                            MyText('${ListOfIncome.sum()}', TextAlign.right),
                           ],
                         ),
                     ),
@@ -183,6 +185,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                 ),
               ],
             ),
+            // Container of Balance
             Row(
               children: [
                 Container(
@@ -227,6 +230,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                 ),
               ],
             ),
+            // Low buttons Expenses and Income
             Row(
               children: [
                 // Expenses button
@@ -298,7 +302,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
           context,
           MaterialPageRoute<void>(
               builder: (BuildContext context){
-                return AddIncome();
+                return AddIncome(callback: s);
               }
           )
       );

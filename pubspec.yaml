@@ -63,6 +63,9 @@ flutter:
     - family:  In_Out
       fonts:
         - asset: assets/fonts/In_Out.ttf
+    - family:  Menu_icon
+      fonts:
+        - asset: assets/fonts/Menu_icon.ttf
 
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

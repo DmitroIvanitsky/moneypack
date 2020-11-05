@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tutorial/Objects/ExpenseNote.dart';
 import 'package:flutter_tutorial/Objects/ListOfExpenses.dart';
+import 'package:flutter_tutorial/pages/ListOfCategories.dart';
 import 'package:flutter_tutorial/setting/MyColors.dart';
 import 'package:flutter_tutorial/setting/MyText.dart';
 
 class AddExpenses extends StatefulWidget{
-  Function callBack;
-
+  final Function callBack;
   AddExpenses({this.callBack});
 
   @override
@@ -15,8 +15,14 @@ class AddExpenses extends StatefulWidget{
 
 class _AddExpensesState extends State<AddExpenses> {
   DateTime date = DateTime.now();
-  String category;
+  String category = 'category';
   double sum;
+
+  void s(String cat){
+    setState(() {
+      category = cat;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,12 +36,7 @@ class _AddExpensesState extends State<AddExpenses> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              'Add Expenses',
-              style: TextStyle(
-                color: MyColors.textColor,
-              ),
-            ),
+            MyText('Add Expenses'),
             IconButton(
               iconSize: 35,
               icon: Icon(
@@ -55,26 +56,20 @@ class _AddExpensesState extends State<AddExpenses> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+            SizedBox(height: 10),
             GestureDetector(
               child: MyText(
-                date.toString(),
+                date.toString().substring(0, 10),
                 TextAlign.left,
               ),
               onTap: _onDateTap
             ),
-            TextFormField(
-              style: TextStyle(fontSize: 20),
-              decoration: const InputDecoration(
-                hintText: 'Enter category',
-              ),
-              validator: (value) {
-                if (value.isEmpty) {
-                  return 'Please enter category';
-                }
-                return null;
-              },
-              onChanged: (v) => category = v,
+            Divider(),
+            GestureDetector(
+              child: MyText(category),
+              onTap: () => _onCategoryTap(context),
             ),
+            Divider(),
             TextFormField(
               decoration: const InputDecoration(
                 hintText: 'Enter sum',
@@ -103,6 +98,17 @@ class _AddExpensesState extends State<AddExpenses> {
       setState(() {
         date = picked;
       });
+  }
+
+  _onCategoryTap(BuildContext context){
+    Navigator.push(
+        context,
+        MaterialPageRoute<void>(
+            builder: (BuildContext context){
+              return ListOfCategories(callback: s, cat: category);
+            }
+        )
+    );
   }
 
   _createExpenseNote(DateTime date, String category, double sum){

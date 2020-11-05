@@ -3,6 +3,7 @@ import 'package:flutter_tutorial/Objects/ExpenseNote.dart';
 import 'package:flutter_tutorial/Objects/ListOfExpenses.dart';
 import 'package:flutter_tutorial/setting/MyColors.dart';
 import 'package:flutter_tutorial/setting/MyText.dart';
+import 'package:flutter_tutorial/setting/menu_icon.dart';
 
 class Expenses extends StatefulWidget{
   @override
@@ -50,7 +51,7 @@ class _ExpensesState extends State<Expenses> {
   return Container(
     height: 50,
     child: Padding(
-      padding: EdgeInsets.symmetric(horizontal: 10),
+      padding: EdgeInsets.only(left: 10),
       child: Row(
         //mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -68,8 +69,10 @@ class _ExpensesState extends State<Expenses> {
               Container(
                 width: 50,
                 child: IconButton(
-                  icon: Icon(Icons.arrow_drop_down_circle_outlined),
-                  onPressed: null,
+                  color: MyColors.textColor,
+                  iconSize: 20,
+                  icon: Icon(Icons.menu),
+                  onPressed: () => print('pressed'),
                 ),
               ),
         ],

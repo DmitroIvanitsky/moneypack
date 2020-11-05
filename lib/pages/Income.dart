@@ -1,23 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tutorial/setting/MyColors.dart';
 
 class Income extends StatelessWidget{
-  final Color appBarColor = Colors.amber[700];
-  final Color backGroudColor = Colors.brown[50];
-  final Color rowColor = Colors.brown[100];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: backGroudColor,
+      backgroundColor: MyColors.backGroudColor,
       appBar: AppBar(
         iconTheme: IconThemeData(
-            color: Colors.black
+            color: MyColors.textColor
         ),
-        backgroundColor: appBarColor,
+        backgroundColor: MyColors.appBarColor,
         title: Text(
           'Income',
           style: TextStyle(
-            color: Colors.black,
+            color: MyColors.textColor,
           ),
         ),
       ),
