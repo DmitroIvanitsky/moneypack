@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tutorial/Objects/ExpenseNote.dart';
 import 'package:flutter_tutorial/Objects/ListOfExpenses.dart';
-import 'package:flutter_tutorial/pages/ListOfCategories.dart';
+import 'package:flutter_tutorial/pages/ListOfExpensesCategories.dart';
 import 'package:flutter_tutorial/setting/MyColors.dart';
 import 'package:flutter_tutorial/setting/MyText.dart';
 
