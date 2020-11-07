@@ -3,16 +3,16 @@ import 'package:flutter_tutorial/Utility/Storage.dart';
 import 'package:flutter_tutorial/setting/MyColors.dart';
 import 'package:flutter_tutorial/setting/MyText.dart';
 
-class ListOfCategories extends StatefulWidget{
+class ListOfExpensesCategories extends StatefulWidget{
   Function callback;
   String cat;
-  ListOfCategories({this.callback, this.cat});
+  ListOfExpensesCategories({this.callback, this.cat});
 
   @override
-  _ListOfCategoriesState createState() => _ListOfCategoriesState();
+  _ListOfExpensesCategoriesState createState() => _ListOfExpensesCategoriesState();
 }
 
-class _ListOfCategoriesState extends State<ListOfCategories> {
+class _ListOfExpensesCategoriesState extends State<ListOfExpensesCategories> {
   List<String> list = [];
   String tempField = '';
 
@@ -41,59 +41,74 @@ class _ListOfCategoriesState extends State<ListOfCategories> {
       body: Column(
         children: [
           Expanded(
-            child: list.isEmpty ? CircularProgressIndicator() :
-            ListView.builder(
+            child: list.isEmpty ? CircularProgressIndicator() : ListView.builder(
               itemCount: list.length,
               itemBuilder: (context, index){
                 return Column(
                   children: [
-                    GestureDetector(
-                      child: MyText(list[index]),
-                      onTap: (){
-                        widget.callback(list[index]);
-                        Navigator.pop(context);
-                      },
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        GestureDetector(
+                          child: MyText(list[index], TextAlign.left),
+                          onTap: (){
+                            widget.callback(list[index]);
+                            Navigator.pop(context);
+                          },
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            Icons.delete
+                          ),
+                          color: MyColors.textColor,
+                          onPressed: () async{
+                            list.removeAt(index);
+                            await Storage.saveList(list, 'Expenses');
+                            setState(() {});
+                          }
+                        )
+                      ]
                     ),
                     Divider(),
                   ],
                 );
               },
-        ),
+            ),
           ),
           Column(
             children: [
               Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: TextFormField(
-                  onChanged: (v) => tempField = v,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                    onChanged: (v) => tempField = v,
+                    ),
                   ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.add),
-                  onPressed: () async{
-                    if(tempField == '') return;
-                    list.add(tempField);
-                    tempField = '';
-                    await Storage.saveList(list, "Expenses");
-                    setState(() {});
-                  },
-                )
-              ]
-            ),
+                  IconButton(
+                    icon: Icon(Icons.add),
+                    onPressed: () async{
+                      if(tempField == '') return;
+                      list.add(tempField);
+                      tempField = '';
+                      await Storage.saveList(list, "Expenses");
+                      setState(() {});
+                    },
+                  )
+                ]
+              ),
               Divider()
-          ]
+            ]
           )
-          // IconButton(
-          //   icon: Icon(Icons.ac_unit),
-          //   onPressed: () async{
-          //     await Storage.saveList(list, 'Expenses');
-          //     List l = await Storage.getList('Expenses');
-          //     print(l[1]);
-          //   },
-          // )
-      ],
+        //   IconButton(
+        //     icon: Icon(Icons.ac_unit),
+        //     onPressed: () async{
+        //       await Storage.saveList(list, 'Expenses');
+        //       list = await Storage.getList('Expenses');
+        //       print(list[0]);
+        //     },
+        //   )
+        ],
       ),
     );
   }

@@ -37,7 +37,21 @@ class _ExpensesState extends State<Expenses> {
         itemBuilder: (context, index){
           return Column(
             children: [
-              _buildListItem(ListOfExpenses.list[index]),
+              Row(
+                children: [
+                  _buildListItem(ListOfExpenses.list[index]),
+                  IconButton(
+                      icon: Icon(
+                          Icons.delete
+                      ),
+                      color: MyColors.textColor,
+                      onPressed: () {
+                        ListOfExpenses.list.removeAt(index);
+                        setState(() {});
+                      }
+                  )
+                ],
+              ),
               Divider(color: MyColors.textColor),
             ],
           );
@@ -64,15 +78,6 @@ class _ExpensesState extends State<Expenses> {
                     //SizedBox(width: 250),
                     MyText('${value.sum}', TextAlign.end),
                   ],
-                ),
-              ),
-              Container(
-                width: 50,
-                child: IconButton(
-                  color: MyColors.textColor,
-                  iconSize: 20,
-                  icon: Icon(Icons.menu),
-                  onPressed: () => print('pressed'),
                 ),
               ),
         ],

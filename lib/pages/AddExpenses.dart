@@ -14,6 +14,7 @@ class AddExpenses extends StatefulWidget{
 }
 
 class _AddExpensesState extends State<AddExpenses> {
+
   DateTime date = DateTime.now();
   String category = 'category';
   double sum;
@@ -44,6 +45,7 @@ class _AddExpensesState extends State<AddExpenses> {
                 color: MyColors.textColor,
               ),
               onPressed: (){
+                if (category == "category") return;
                 _createExpenseNote(date, category, sum);
                 widget.callBack();
                 Navigator.pop(context);
@@ -105,13 +107,14 @@ class _AddExpensesState extends State<AddExpenses> {
         context,
         MaterialPageRoute<void>(
             builder: (BuildContext context){
-              return ListOfCategories(callback: s, cat: category);
+              return ListOfExpensesCategories(callback: s, cat: category);
             }
         )
     );
   }
 
   _createExpenseNote(DateTime date, String category, double sum){
+    // if(category == 'category') return;
     ExpenseNote expenseNote = ExpenseNote(date, category, sum);
     ListOfExpenses.add(expenseNote);
   }
