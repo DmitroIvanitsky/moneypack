@@ -6,6 +6,9 @@ import 'package:flutter_tutorial/setting/MyText.dart';
 import 'package:flutter_tutorial/setting/menu_icon.dart';
 
 class Expenses extends StatefulWidget{
+  final Function callback;
+  Expenses({this.callback});
+
   @override
   _ExpensesState createState() => _ExpensesState();
 }
@@ -16,6 +19,7 @@ class _ExpensesState extends State<Expenses> {
     setState(() {
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,6 +51,7 @@ class _ExpensesState extends State<Expenses> {
                       color: MyColors.textColor,
                       onPressed: () {
                         ListOfExpenses.list.removeAt(index);
+                        widget.callback();
                         setState(() {});
                       }
                   )

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tutorial/Objects/IncomeNote.dart';
 import 'package:flutter_tutorial/Objects/ListOfIncome.dart';
+import 'package:flutter_tutorial/Utility/Storage.dart';
 import 'package:flutter_tutorial/setting/MyText.dart';
 import 'package:flutter_tutorial/setting/MyColors.dart';
 import 'package:flutter_tutorial/pages/ListOfIncomeCategories.dart';
@@ -14,9 +15,23 @@ class AddIncome extends StatefulWidget{
 }
 
 class _AddIncomeState extends State<AddIncome> {
+
   DateTime date = DateTime.now();
-  String category = 'category';
+  String category = '';
   double sum;
+  List<String> _list = [];
+
+  initList() async{
+    _list = await Storage.getList('Income');
+    _list == null || _list.isEmpty ? category = 'category' : category = _list[0];
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    initList();
+    super.initState();
+  }
 
   void s(String cat){
     setState(() {
@@ -43,6 +58,7 @@ class _AddIncomeState extends State<AddIncome> {
                 color: MyColors.textColor,
               ),
               onPressed: (){
+                if (category == "category") return;
                 _createIncomeNote(date, category, sum);
                 widget.callback();
                 Navigator.pop(context);

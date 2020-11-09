@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tutorial/Objects/ExpenseNote.dart';
 import 'package:flutter_tutorial/Objects/ListOfExpenses.dart';
+import 'package:flutter_tutorial/Utility/Storage.dart';
 import 'package:flutter_tutorial/pages/ListOfExpensesCategories.dart';
 import 'package:flutter_tutorial/setting/MyColors.dart';
 import 'package:flutter_tutorial/setting/MyText.dart';
@@ -16,8 +17,21 @@ class AddExpenses extends StatefulWidget{
 class _AddExpensesState extends State<AddExpenses> {
 
   DateTime date = DateTime.now();
-  String category = 'category';
+  String category = '';
   double sum;
+  List<String> _list = [];
+
+  initList() async{
+    _list = await Storage.getList('Expenses');
+    _list == null || _list.isEmpty ? category = 'category' : category = _list[0];
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    initList();
+    super.initState();
+  }
 
   void s(String cat){
     setState(() {
@@ -114,7 +128,6 @@ class _AddExpensesState extends State<AddExpenses> {
   }
 
   _createExpenseNote(DateTime date, String category, double sum){
-    // if(category == 'category') return;
     ExpenseNote expenseNote = ExpenseNote(date, category, sum);
     ListOfExpenses.add(expenseNote);
   }

@@ -26,14 +26,17 @@ class FlutterTutorialApp extends StatefulWidget {
 
 class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
 
-  //double day = ListOfExpenses.sum();
+  double day = 0;
   final double week = 20.0;
   final double month = 30.0;
-  //final double income = 100;
-  final double balance = 100;
+  double income = 0;
+  double balance = 0;
 
   void s(){
     setState(() {
+      day = ListOfExpenses.sum();
+      income = ListOfIncome.sum();
+      balance = ListOfIncome.sum() - ListOfExpenses.sum();
     });
   }
 
@@ -84,7 +87,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               MyText('day', TextAlign.left),
-                              MyText('${ListOfExpenses.sum()}', TextAlign.right),
+                              MyText('$day', TextAlign.right),
                             ],
                           ),
                       ),
@@ -156,7 +159,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children:[
                             MyText('Income', TextAlign.left),
-                            MyText('${ListOfIncome.sum()}', TextAlign.right),
+                            MyText('$income', TextAlign.right),
                           ],
                         ),
                     ),
@@ -320,7 +323,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
           context,
           MaterialPageRoute<void>(
               builder: (BuildContext context){
-                return Income();
+                return Income(callback: s);
               }
           )
       );
@@ -329,7 +332,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
           context,
           MaterialPageRoute<void>(
               builder: (BuildContext context){
-                return Expenses();
+                return Expenses(callback: s);
               }
           )
       );

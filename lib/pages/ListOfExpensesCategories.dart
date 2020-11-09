@@ -1,11 +1,12 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tutorial/Utility/Storage.dart';
 import 'package:flutter_tutorial/setting/MyColors.dart';
 import 'package:flutter_tutorial/setting/MyText.dart';
 
 class ListOfExpensesCategories extends StatefulWidget{
-  Function callback;
-  String cat;
+  final Function callback;
+  final String cat;
   ListOfExpensesCategories({this.callback, this.cat});
 
   @override
@@ -16,15 +17,16 @@ class _ListOfExpensesCategoriesState extends State<ListOfExpensesCategories> {
   List<String> list = [];
   String tempField = '';
 
+  initList() async{
+    list = await Storage.getList('Expenses');
+    if(list == null) list = [];
+    setState(() {});
+  }
+
   @override
   void initState() {
     initList();
     super.initState();
-  }
-
-  initList() async{
-    list = await Storage.getList('Expenses');
-    setState(() {});
   }
 
   @override
@@ -41,7 +43,9 @@ class _ListOfExpensesCategoriesState extends State<ListOfExpensesCategories> {
       body: Column(
         children: [
           Expanded(
-            child: list.isEmpty ? CircularProgressIndicator() : ListView.builder(
+            child: list.isEmpty ?
+            CupertinoActivityIndicator(radius: 20) :
+            ListView.builder(
               itemCount: list.length,
               itemBuilder: (context, index){
                 return Column(
@@ -82,6 +86,7 @@ class _ListOfExpensesCategoriesState extends State<ListOfExpensesCategories> {
                 children: [
                   Expanded(
                     child: TextFormField(
+                      controller: TextEditingController(),
                     onChanged: (v) => tempField = v,
                     ),
                   ),
@@ -91,6 +96,7 @@ class _ListOfExpensesCategoriesState extends State<ListOfExpensesCategories> {
                       if(tempField == '') return;
                       list.add(tempField);
                       tempField = '';
+                      TextEditingController().clear();
                       await Storage.saveList(list, "Expenses");
                       setState(() {});
                     },
