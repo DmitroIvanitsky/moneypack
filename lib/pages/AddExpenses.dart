@@ -41,67 +41,77 @@ class _AddExpensesState extends State<AddExpenses> {
 
   @override
   Widget build(BuildContext context) {
+    print(MediaQuery.of(context).size.width);
+    print(MediaQuery.of(context).size.height);
     return Scaffold(
-      backgroundColor: MyColors.backGroudColor,
-      appBar: AppBar(
-        iconTheme: IconThemeData(
-            color: MyColors.textColor
+        backgroundColor: MyColors.backGroudColor,
+        appBar: AppBar(
+          iconTheme: IconThemeData(
+              color: MyColors.textColor
+          ),
+          backgroundColor: MyColors.appBarColor,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              MyText('Add Expenses'),
+              IconButton(
+                iconSize: 35,
+                icon: Icon(
+                  Icons.done,
+                  color: MyColors.textColor,
+                ),
+                onPressed: (){
+                  if (category == "category") return;
+                  _createExpenseNote(date, category, sum);
+                  widget.callBack();
+                  Navigator.pop(context);
+                },
+              )
+            ],
+          ),
         ),
-        backgroundColor: MyColors.appBarColor,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            MyText('Add Expenses'),
-            IconButton(
-              iconSize: 35,
-              icon: Icon(
-                Icons.done,
-                color: MyColors.textColor,
+        body: Form(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 10),
+              getDateWidget(),
+              Divider(),
+              GestureDetector(
+                child: MyText(category),
+                onTap: () => _onCategoryTap(context),
               ),
-              onPressed: (){
-                if (category == "category") return;
-                _createExpenseNote(date, category, sum);
-                widget.callBack();
-                Navigator.pop(context);
-              },
-            )
-          ],
+              Divider(),
+              TextFormField(
+                decoration: const InputDecoration(
+                  hintText: 'Enter sum',
+                ),
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Please enter sum';
+                  }
+                  return null;
+                },
+                onChanged: (v) => sum = double.parse(v),
+              ),
+            ],
+          ),
         ),
-      ),
-      body: Form(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            SizedBox(height: 10),
-            GestureDetector(
-              child: MyText(
+    );
+  }
+
+
+  Widget getDateWidget(){
+    return GestureDetector(
+            onTap: _onDateTap,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 40.0),
+              child: (date != null)? MyText(
                 date.toString().substring(0, 10),
                 TextAlign.left,
-              ),
-              onTap: _onDateTap
+              ) : Text('please select date'),
             ),
-            Divider(),
-            GestureDetector(
-              child: MyText(category),
-              onTap: () => _onCategoryTap(context),
-            ),
-            Divider(),
-            TextFormField(
-              decoration: const InputDecoration(
-                hintText: 'Enter sum',
-              ),
-              validator: (value) {
-                if (value.isEmpty) {
-                  return 'Please enter sum';
-                }
-                return null;
-              },
-              onChanged: (v) => sum = double.parse(v),
-            ),
-          ],
-        ),
-      ),
-    );
+          );
   }
 
   _onDateTap() async{
@@ -110,10 +120,29 @@ class _AddExpensesState extends State<AddExpenses> {
         initialDate: DateTime.now(),
         lastDate: DateTime.now().add(Duration(days: 184)),
         firstDate: DateTime.now().subtract(Duration(days: 184)),
+        builder:(BuildContext context, Widget child) {
+          return _theme(child);
+          },
       );
       setState(() {
         date = picked;
       });
+  }
+
+  _theme(Widget child){
+    return Theme(
+      data: ThemeData.dark().copyWith(
+        colorScheme: ColorScheme.dark(
+          primary: Colors.cyan,
+          onPrimary: MyColors.textColor,
+          surface: Colors.cyan,
+          onSurface: MyColors.textColor,
+        ),
+        dialogBackgroundColor: MyColors.backGroudColor,
+        buttonColor: MyColors.textColor,
+      ),
+      child: child,
+    );
   }
 
   _onCategoryTap(BuildContext context){

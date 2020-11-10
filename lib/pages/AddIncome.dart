@@ -73,10 +73,10 @@ class _AddIncomeState extends State<AddIncome> {
           children: <Widget>[
             SizedBox(height: 10),
             GestureDetector(
-                child: MyText(
+                child: (date != null) ? MyText(
                   date.toString().substring(0, 10),
                   TextAlign.left,
-                ),
+                ) : Text('please select date'),
                 onTap: _onDateTap
             ),
             Divider(),
