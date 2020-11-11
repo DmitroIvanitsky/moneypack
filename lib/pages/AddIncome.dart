@@ -72,13 +72,7 @@ class _AddIncomeState extends State<AddIncome> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             SizedBox(height: 10),
-            GestureDetector(
-                child: (date != null) ? MyText(
-                  date.toString().substring(0, 10),
-                  TextAlign.left,
-                ) : Text('please select date'),
-                onTap: _onDateTap
-            ),
+            getDateWidget(),
             Divider(),
             GestureDetector(
               child: MyText(category),
@@ -103,16 +97,44 @@ class _AddIncomeState extends State<AddIncome> {
     );
   }
 
+  Widget getDateWidget(){
+    return GestureDetector(
+      onTap: _onDateTap,
+      child: (date != null)? MyText(
+        date.toString().substring(0, 10),
+        TextAlign.left,
+      ) : MyText('select date'),
+    );
+  }
+
   _onDateTap() async{
     final DateTime picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       lastDate: DateTime.now().add(Duration(days: 184)),
       firstDate: DateTime.now().subtract(Duration(days: 184)),
+      builder:(BuildContext context, Widget child) {
+        return _theme(child);
+      },
     );
     setState(() {
       date = picked;
     });
+  }
+
+  _theme(Widget child){
+    return Theme(
+      data: ThemeData.dark().copyWith(
+        colorScheme: ColorScheme.dark(
+          primary: MyColors.appBarColor,
+          onPrimary: MyColors.textColor,
+          surface: MyColors.appBarColor,
+          onSurface: MyColors.textColor,
+        ),
+        dialogBackgroundColor: MyColors.backGroudColor,
+      ),
+      child: child,
+    );
   }
 
   _onCategoryTap(BuildContext context){

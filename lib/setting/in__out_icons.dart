@@ -22,5 +22,5 @@ class In_Out {
   static const _kFontPkg = null;
 
   static const IconData bagofmoney_dollar_4399 = IconData(0xe801, fontFamily: _kFontFam, fontPackage: _kFontPkg);
-  static const IconData png_transparent_computer_icons_money_expense_cost_finance_others_miscellaneous_saving_service = IconData(0xe802, fontFamily: _kFontFam, fontPackage: _kFontPkg);
+  static const IconData cons_money_expense = IconData(0xe802, fontFamily: _kFontFam, fontPackage: _kFontPkg);
 }

@@ -41,8 +41,6 @@ class _AddExpensesState extends State<AddExpenses> {
 
   @override
   Widget build(BuildContext context) {
-    print(MediaQuery.of(context).size.width);
-    print(MediaQuery.of(context).size.height);
     return Scaffold(
         backgroundColor: MyColors.backGroudColor,
         appBar: AppBar(
@@ -62,6 +60,7 @@ class _AddExpensesState extends State<AddExpenses> {
                 ),
                 onPressed: (){
                   if (category == "category") return;
+                  // function to create note object
                   _createExpenseNote(date, category, sum);
                   widget.callBack();
                   Navigator.pop(context);
@@ -75,13 +74,16 @@ class _AddExpensesState extends State<AddExpenses> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 10),
+              // date widget row
               getDateWidget(),
               Divider(),
+              // category row
               GestureDetector(
                 child: MyText(category),
                 onTap: () => _onCategoryTap(context),
               ),
               Divider(),
+              // sum row
               TextFormField(
                 decoration: const InputDecoration(
                   hintText: 'Enter sum',
@@ -103,43 +105,39 @@ class _AddExpensesState extends State<AddExpenses> {
 
   Widget getDateWidget(){
     return GestureDetector(
-            onTap: _onDateTap,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40.0),
-              child: (date != null)? MyText(
-                date.toString().substring(0, 10),
-                TextAlign.left,
-              ) : Text('please select date'),
-            ),
-          );
+      onTap: _onDateTap,
+      child: (date != null)? MyText(
+        date.toString().substring(0, 10),
+        TextAlign.left,
+      ) : MyText('select date'),
+    );
   }
 
   _onDateTap() async{
-      final DateTime picked = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        lastDate: DateTime.now().add(Duration(days: 184)),
-        firstDate: DateTime.now().subtract(Duration(days: 184)),
-        builder:(BuildContext context, Widget child) {
-          return _theme(child);
-          },
-      );
-      setState(() {
-        date = picked;
-      });
+    final DateTime picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      lastDate: DateTime.now().add(Duration(days: 184)),
+      firstDate: DateTime.now().subtract(Duration(days: 184)),
+      builder:(BuildContext context, Widget child) {
+        return _theme(child);
+        },
+    );
+    setState(() {
+      date = picked;
+    });
   }
 
   _theme(Widget child){
     return Theme(
       data: ThemeData.dark().copyWith(
         colorScheme: ColorScheme.dark(
-          primary: Colors.cyan,
+          primary: MyColors.appBarColor,
           onPrimary: MyColors.textColor,
-          surface: Colors.cyan,
+          surface: MyColors.appBarColor,
           onSurface: MyColors.textColor,
         ),
         dialogBackgroundColor: MyColors.backGroudColor,
-        buttonColor: MyColors.textColor,
       ),
       child: child,
     );
@@ -156,9 +154,10 @@ class _AddExpensesState extends State<AddExpenses> {
     );
   }
 
-  _createExpenseNote(DateTime date, String category, double sum){
+  _createExpenseNote(DateTime date, String category, double sum) async{
     ExpenseNote expenseNote = ExpenseNote(date, category, sum);
-    ListOfExpenses.add(expenseNote);
+    ListOfExpenses.list.add(expenseNote);
+    //expenseNote.toJson();
   }
 }
 

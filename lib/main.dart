@@ -42,6 +42,10 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
 
   @override
   Widget build(BuildContext context) {
+
+    var width = (MediaQuery.of(context).size.width);
+    var height = (MediaQuery.of(context).size.height);
+
     return
       Scaffold(
         backgroundColor: MyColors.backGroudColor,
@@ -248,7 +252,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                         child: IconButton(
                           color: MyColors.textColor,
                           iconSize: 100,
-                          icon: Icon(In_Out.png_transparent_computer_icons_money_expense_cost_finance_others_miscellaneous_saving_service),
+                          icon: Icon(In_Out.cons_money_expense),
                           onPressed: () => _goTo(context, 'Expenses'),
                         ),
                       ),

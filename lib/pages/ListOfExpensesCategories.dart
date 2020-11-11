@@ -79,6 +79,7 @@ class _ListOfExpensesCategoriesState extends State<ListOfExpensesCategories> {
               },
             ),
           ),
+          // create a new Expense category
           Column(
             children: [
               Row(
