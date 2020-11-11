@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_tutorial/Objects/ExpenseNote.dart';
 import 'package:flutter_tutorial/Objects/ListOfExpenses.dart';
@@ -157,7 +159,11 @@ class _AddExpensesState extends State<AddExpenses> {
   _createExpenseNote(DateTime date, String category, double sum) async{
     ExpenseNote expenseNote = ExpenseNote(date, category, sum);
     ListOfExpenses.list.add(expenseNote);
-    //expenseNote.toJson();
+    await Storage.saveString(jsonEncode(new ListOfExpenses().toJson()), 'ExpenseNote');
+
+    // String m = await Storage.getString('ExpenseNote');
+    // ListOfExpenses lx = ListOfExpenses.fromJson(jsonDecode(m));
+    // print(ListOfExpenses.list[0]);
   }
 }
 

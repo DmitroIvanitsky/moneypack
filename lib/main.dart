@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tutorial/Objects/ListOfExpenses.dart';
 import 'package:flutter_tutorial/Objects/ListOfIncome.dart';
+import 'package:flutter_tutorial/Utility/Storage.dart';
 import 'package:flutter_tutorial/pages/AddIncome.dart';
 import 'package:flutter_tutorial/pages/Expenses.dart';
 import 'package:flutter_tutorial/setting/MyColors.dart';
@@ -31,6 +34,24 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
   final double month = 30.0;
   double income = 0;
   double balance = 0;
+  double width;
+  double height;
+
+  @override
+  void initState() {
+    loadExpensesList();
+    super.initState();
+  }
+
+  void loadExpensesList() async {
+    String m = await Storage.getString('ExpenseNote');
+    if (m != null){
+      setState(() {
+        ListOfExpenses.fromJson(jsonDecode(m));
+      });
+      s();
+    }
+  }
 
   void s(){
     setState(() {
@@ -42,10 +63,12 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
 
   @override
   Widget build(BuildContext context) {
-
-    var width = (MediaQuery.of(context).size.width);
-    var height = (MediaQuery.of(context).size.height);
-
+    if (width == null || height == null){
+      width = (MediaQuery.of(context).size.width);
+      print(width);
+      height = (MediaQuery.of(context).size.height);
+      print(height);
+    }
     return
       Scaffold(
         backgroundColor: MyColors.backGroudColor,
@@ -58,7 +81,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                 icon: Icon(Icons.list),
               ),
               SizedBox(
-                width: 100,
+                width: width * 0.243,
               ),
               Text(
               'FINANCE',

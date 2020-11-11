@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tutorial/Objects/ExpenseNote.dart';
 import 'package:flutter_tutorial/Objects/ListOfExpenses.dart';
+import 'package:flutter_tutorial/Utility/Storage.dart';
 import 'package:flutter_tutorial/setting/MyColors.dart';
 import 'package:flutter_tutorial/setting/MyText.dart';
 
@@ -17,6 +20,18 @@ class Expenses extends StatefulWidget{
 class _ExpensesState extends State<Expenses> {
   DateTime date = DateTime.now();
 
+  @override
+  void initState() {
+    loadExpensesList();
+    super.initState();
+  }
+
+  void loadExpensesList() async {
+    String m = await Storage.getString('ExpenseNote');
+    setState(() {
+      ListOfExpenses.fromJson(jsonDecode(m));
+    });
+  }
 
   void r(){
     setState(() {
@@ -60,31 +75,36 @@ class _ExpensesState extends State<Expenses> {
             child: CupertinoActivityIndicator(radius: 20),
             alignment: Alignment.center,
           ) :
-          ListView.builder(
-            itemCount: ListOfExpenses.list.length,
-            itemBuilder: (context, index){
-              return Column(
-                children: [
-                  Row(
-                    children: [
-                      _buildListItem(ListOfExpenses.list[index]),
-                      IconButton(
-                          icon: Icon(
-                              Icons.delete
-                          ),
-                          color: MyColors.textColor,
-                          onPressed: () {
-                            ListOfExpenses.list.removeAt(index);
-                            widget.callback();
-                            setState(() {});
-                          }
-                      )
-                    ],
-                  ),
-                  Divider(color: MyColors.textColor),
-                ],
-              );
-            },
+          Expanded(
+            child: ListView.builder(    // list of ExpensesNote
+              itemCount: ListOfExpenses.list.length,
+              itemBuilder: (context, index){
+                return Column(
+                  children: [
+                    Row(
+                      children: [
+                        // row of ExpenseNote
+                        _buildListItem(ListOfExpenses.list[index]), // function return row of ExpenseNote
+                        // delete row button
+                        IconButton(
+                            icon: Icon(
+                                Icons.delete
+                            ),
+                            color: MyColors.textColor,
+                            onPressed: () async {
+                              ListOfExpenses.list.removeAt(index);
+                              await Storage.saveString(jsonEncode(new ListOfExpenses().toJson()), 'ExpenseNote');
+                              widget.callback();
+                              setState(() {});
+                            }
+                        )
+                      ],
+                    ),
+                    Divider(color: MyColors.textColor),
+                  ],
+                );
+              },
+            ),
           ),
         ],
       ),
