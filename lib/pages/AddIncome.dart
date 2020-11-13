@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_tutorial/Objects/IncomeNote.dart';
 import 'package:flutter_tutorial/Objects/ListOfIncome.dart';
@@ -148,8 +150,9 @@ class _AddIncomeState extends State<AddIncome> {
     );
   }
 
-  _createIncomeNote(DateTime date, String category, double sum){
+  _createIncomeNote(DateTime date, String category, double sum) async{
     IncomeNote incomeNote = IncomeNote(date, category, sum);
-    ListOfIncome.add(incomeNote);
+    ListOfIncome.list.add(incomeNote);
+    await Storage.saveString(jsonEncode(ListOfIncome().toJson()), 'IncomeNote');
   }
 }

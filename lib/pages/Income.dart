@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_tutorial/Objects/IncomeNote.dart';
 import 'package:flutter_tutorial/Objects/ListOfIncome.dart';
+import 'package:flutter_tutorial/Utility/Storage.dart';
 import 'package:flutter_tutorial/setting/MyColors.dart';
 import 'package:flutter_tutorial/setting/MyText.dart';
 
@@ -13,6 +16,20 @@ class Income extends StatefulWidget{
 }
 
 class _IncomeState extends State<Income> {
+
+  void initState(){
+    loadIncomeList();
+    super.initState();
+  }
+
+  void loadIncomeList() async {
+    String m = await Storage.getString('IncomeNote');
+    if(m != null){
+      setState(() {
+        ListOfIncome.fromJson(jsonDecode(m));
+      });
+    }
+  }
 
   void r(){
     setState(() {

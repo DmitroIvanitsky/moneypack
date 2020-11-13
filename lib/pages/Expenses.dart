@@ -28,9 +28,11 @@ class _ExpensesState extends State<Expenses> {
 
   void loadExpensesList() async {
     String m = await Storage.getString('ExpenseNote');
-    setState(() {
-      ListOfExpenses.fromJson(jsonDecode(m));
-    });
+    if(m != null) {
+      setState(() {
+        ListOfExpenses.fromJson(jsonDecode(m));
+      });
+    }
   }
 
   void r(){
@@ -56,6 +58,7 @@ class _ExpensesState extends State<Expenses> {
       ),
       body: Column(
         children: [
+// data row in the top of the list
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -70,22 +73,24 @@ class _ExpensesState extends State<Expenses> {
               ),
             ],
           ),
+// indicator
           ListOfExpenses.list.isEmpty ?
           Align(
             child: CupertinoActivityIndicator(radius: 20),
             alignment: Alignment.center,
           ) :
+// list of ExpenseNotes
           Expanded(
-            child: ListView.builder(    // list of ExpensesNote
+            child: ListView.builder(
               itemCount: ListOfExpenses.list.length,
               itemBuilder: (context, index){
                 return Column(
                   children: [
                     Row(
                       children: [
-                        // row of ExpenseNote
+// row of ExpenseNote
                         _buildListItem(ListOfExpenses.list[index]), // function return row of ExpenseNote
-                        // delete row button
+// delete row button
                         IconButton(
                             icon: Icon(
                                 Icons.delete
@@ -111,6 +116,7 @@ class _ExpensesState extends State<Expenses> {
     );
   }
 
+// function return row of ExpenseNote
   _buildListItem(ExpenseNote value) {
     return Container(
       height: 50,

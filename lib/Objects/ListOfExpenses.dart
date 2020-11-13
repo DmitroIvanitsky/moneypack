@@ -17,8 +17,7 @@ class ListOfExpenses {
     return s;
   }
 
-  ListOfExpenses.fromJson(Map<String, dynamic> json)
-  {
+  ListOfExpenses.fromJson(Map<String, dynamic> json){
     list = List<ExpenseNote>.from(json['list'].map((i) => ExpenseNote.fromJson(i)));
   }
 
@@ -29,10 +28,9 @@ class ListOfExpenses {
       tmpList.add(e.toJson());
     }
     return {
-      'list': tmpList
+      'list' : tmpList
     };
   }
-
 }
 
 

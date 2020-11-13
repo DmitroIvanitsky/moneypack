@@ -1,9 +1,7 @@
-import 'dart:convert';
-
 class ExpenseNote{
   final String category;
   final double sum;
-   DateTime date;
+  DateTime date;
 
   ExpenseNote(this.date, this.category, this.sum);
 

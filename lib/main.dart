@@ -13,22 +13,19 @@ import 'package:flutter_tutorial/pages/AddExpenses.dart';
 import 'package:flutter_tutorial/pages/Income.dart';
 import 'package:flutter_tutorial/setting/in__out_icons.dart';
 import 'package:flutter_tutorial/setting/MyText.dart';
+import 'package:flutter_tutorial/setting/menu_icon.dart';
 
-void main() => runApp(
-    MaterialApp(
+void main() => runApp(MaterialApp(
       debugShowCheckedModeBanner: false,
       home: FlutterTutorialApp(),
-    )
-);
+    ));
 
 class FlutterTutorialApp extends StatefulWidget {
-
   @override
   _FlutterTutorialAppState createState() => _FlutterTutorialAppState();
 }
 
 class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
-
   double day = 0;
   final double week = 20.0;
   final double month = 30.0;
@@ -39,21 +36,23 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
 
   @override
   void initState() {
-    loadExpensesList();
+    loadList();
     super.initState();
   }
 
-  void loadExpensesList() async {
-    String m = await Storage.getString('ExpenseNote');
-    if (m != null){
+  void loadList() async {
+    String expN = await Storage.getString('ExpenseNote');
+    String incN = await Storage.getString('IncomeNote');
+    if (expN != null || incN != null) {
       setState(() {
-        ListOfExpenses.fromJson(jsonDecode(m));
+        ListOfExpenses.fromJson(jsonDecode(expN));
+        ListOfIncome.fromJson(jsonDecode(incN));
       });
       s();
     }
   }
 
-  void s(){
+  void s() {
     setState(() {
       day = ListOfExpenses.sum();
       income = ListOfIncome.sum();
@@ -63,51 +62,52 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
 
   @override
   Widget build(BuildContext context) {
-    if (width == null || height == null){
+    if (width == null || height == null) {
       width = (MediaQuery.of(context).size.width);
       print(width);
       height = (MediaQuery.of(context).size.height);
       print(height);
     }
-    return
-      Scaffold(
-        backgroundColor: MyColors.backGroudColor,
-        appBar: AppBar(
-          title: Row(
-            children:[
-              IconButton(
-                color: Colors.black,
-                onPressed: () => print('press'),
-                icon: Icon(Icons.list),
-              ),
-              SizedBox(
-                width: width * 0.243,
-              ),
-              Text(
+    return Scaffold(
+      backgroundColor: MyColors.backGroudColor,
+      appBar: AppBar(
+        title: Row(
+          children: [
+            IconButton(
+              color: Colors.black,
+              onPressed: () => print('press'),
+              icon: Icon(Icons.list),
+            ),
+            SizedBox(
+              width: width * 0.243,
+            ),
+            Text(
               'FINANCE',
               style: TextStyle(
                 color: Colors.black,
-                ),
               ),
-            ],
-          ),
-          centerTitle: true,
-          backgroundColor: MyColors.appBarColor,
+            ),
+          ],
         ),
-        body: Column(
-          children: [
-            // Container of Day Week Month Expenses mapping
-            Row(
-              children: [
-                Container(
-                  width: 295,
-                  height: 110,
-                  margin: EdgeInsets.fromLTRB(10, 20, 0, 10),
-                  color: MyColors.rowColor,
-                  child: Column(
-                    children: [
-                      // Day Row
-                      Container(
+        centerTitle: true,
+        backgroundColor: MyColors.appBarColor,
+      ),
+      body: ListView(
+        children: [
+          Column(
+            children: [
+              // row of Day Week Month Expenses mapping
+              Row(
+                children: [
+                  Container(
+                    width: 320,
+                    height: 110,
+                    margin: EdgeInsets.fromLTRB(10, 20, 0, 10),
+                    color: MyColors.rowColor,
+                    child: Column(
+                      children: [
+                        // Day Row
+                        Container(
                           width: double.infinity,
                           padding: EdgeInsets.all(5),
                           child: Row(
@@ -117,9 +117,9 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                               MyText('$day', TextAlign.right),
                             ],
                           ),
-                      ),
-                      // Week Row
-                      Container(
+                        ),
+                        // Week Row
+                        Container(
                           width: double.infinity,
                           padding: EdgeInsets.all(5),
                           child: Row(
@@ -129,9 +129,9 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                               MyText('$week', TextAlign.right),
                             ],
                           ),
-                      ),
-                      // Month Row
-                      Container(
+                        ),
+                        // Month Row
+                        Container(
                           width: double.infinity,
                           padding: EdgeInsets.all(5),
                           child: Row(
@@ -141,234 +141,202 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                               MyText('$month', TextAlign.right),
                             ],
                           ),
-                      ),
-                    ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                // Button
-                Container(
-                  margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
-                  color: MyColors.rowColor,
-                  width: 95,
-                  height: 110,
-                  //alignment: Alignment.centerRight,
-                  //padding: EdgeInsets.fromLTRB(0, 0, 20, 50),
-                  child: IconButton(
-                    iconSize: 35,
-                    onPressed: () => _goTo(context, 'AddExpenses'),
-                    icon: Container(
-                      width: 15,
-                      // decoration: BoxDecoration(
-                      //   color: Colors.red,
-                      //   borderRadius: BorderRadius.circular(100)
-                      // ),
-                      child: Icon(
-                          Icons.add_circle
+                  // button
+                  Container(
+                    margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                    //color: Colors.yellow,
+                    color: MyColors.rowColor,
+                    width: 70,
+                    height: 110,
+                    child: IconButton(
+                      iconSize: 35,
+                      onPressed: () => _goTo(context, 'AddExpenses'),
+                      icon: Container(
+                        // width: 15,
+                        child: Icon(Icons.add_circle),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            // Container of Income
-            Row(
-              children: [
-                Container(
-                  width: 300,
-                  height: 50,
-                  margin: EdgeInsets.fromLTRB(10, 10, 0, 10),
-                  color: MyColors.rowColor,
-                  child: Center(
-                    child: Container(
+                ],
+              ),
+              // Row of Income
+              Row(
+                children: [
+                  // text
+                  Container(
+                    width: 320,
+                    height: 50,
+                    margin: EdgeInsets.fromLTRB(10, 10, 0, 10),
+                    color: MyColors.rowColor,
+                    child: Center(
+                      child: Container(
                         width: double.infinity,
                         padding: EdgeInsets.all(10),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children:[
+                          children: [
                             MyText('Income', TextAlign.left),
                             MyText('$income', TextAlign.right),
                           ],
                         ),
-                    ),
-                  ),
-                ),
-                Container(
-                  color: MyColors.rowColor,
-                  width: 90,
-                  height: 50,
-                  //alignment: Alignment.centerRight,
-                  //padding: EdgeInsets.fromLTRB(0, 0, 20, 50),
-                  child: IconButton(
-                    iconSize: 35,
-                    onPressed: () => _goTo(context, 'AddIncome'),
-                    icon: Container(
-                      width: 20,
-                      // decoration: BoxDecoration(
-                      //   color: Colors.green,
-                      //   borderRadius: BorderRadius.circular(100)
-                      // ),
-                      child: Icon(
-                          Icons.add_circle
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            // Container of Balance
-            Row(
-              children: [
-                Container(
-                  width: 300,
-                  height: 50,
-                  margin: EdgeInsets.fromLTRB(10, 10, 0, 10),
-                  color: MyColors.rowColor,
-                  child: Center(
-                    child: Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.all(10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  // button
+                  Container(
+                    //color: Colors.yellow,
+                    color: MyColors.rowColor,
+                    width: 70,
+                    height: 50,
+                    child: IconButton(
+                      iconSize: 35,
+                      onPressed: () => _goTo(context, 'AddIncome'),
+                      icon: Container(
+                        child: Icon(Icons.add_circle),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              // Row of Balance
+              Row(
+                children: [
+                  // text
+                  Container(
+                    width: 320,
+                    height: 50,
+                    margin: EdgeInsets.fromLTRB(10, 10, 0, 10),
+                    color: MyColors.rowColor,
+                    child: Center(
+                      child: Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.all(10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            MyText('Balance', TextAlign.left),
+                            MyText('$balance', TextAlign.right),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  // button
+                  Container(
+                    //color: Colors.yellow,
+                    color: MyColors.rowColor,
+                    width: 70,
+                    height: 50,
+                    //alignment: Alignment.centerRight,
+                    //padding: EdgeInsets.fromLTRB(0, 0, 20, 50),
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: IconButton(
+                        iconSize: 35,
+                        onPressed: () => _goTo(context, 'ShowBalance'),
+                        icon: Container(
+                          width: 20,
+                          // decoration: BoxDecoration(
+                          //   color: Colors.purple,
+                          //   borderRadius: BorderRadius.circular(100)
+                          // ),
+                          child: Icon(
+                            Menu_icon.kebab_vertical,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              // Low buttons Expenses and Income
+              Padding(
+                padding: EdgeInsets.only(top: 90),
+                child: Row(
+                  children: [
+                    // Expense button goTo Expense page
+                    Container(
+                      //color: Colors.yellow,
+                      width: 205,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          MyText('Balance', TextAlign.left),
-                          MyText('$balance', TextAlign.right),
+                          Align(
+                            alignment: Alignment(-0.9, 0),
+                            child: IconButton(
+                              color: MyColors.textColor,
+                              iconSize: 100,
+                              icon: Icon(In_Out.cons_money_expense),
+                              onPressed: () => _goTo(context, 'Expenses'),
+                            ),
+                          ),
+                          MyText('expenses')
                         ],
                       ),
                     ),
-                  ),
-                ),
-                Container(
-                  color: MyColors.rowColor,
-                  width: 90,
-                  height: 50,
-                  //alignment: Alignment.centerRight,
-                  //padding: EdgeInsets.fromLTRB(0, 0, 20, 50),
-                  child: IconButton(
-                    iconSize: 35,
-                    onPressed: () => _goTo(context, 'ShowBalance'),
-                    icon: Container(
-                      width: 20,
-                      // decoration: BoxDecoration(
-                      //   color: Colors.purple,
-                      //   borderRadius: BorderRadius.circular(100)
-                      // ),
-                      child: Icon(
-                          Icons.apps
+                    // Income button goTo Income page
+                    Container(
+                      //color: Colors.green,
+                      width: 205,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            color: MyColors.textColor,
+                            iconSize: 100,
+                            icon: Icon(In_Out.bagofmoney_dollar_4399),
+                            onPressed: () => _goTo(context, 'Income'),
+                          ),
+                          MyText('income'),
+                        ],
                       ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
-            ),
-            // Low buttons Expenses and Income
-            Row(
-              children: [
-                // Expenses button
-                Container(
-                  width: 230,
-                  height: 250,
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        bottom: 45,
-                        left: 10,
-                        child: IconButton(
-                          color: MyColors.textColor,
-                          iconSize: 100,
-                          icon: Icon(In_Out.cons_money_expense),
-                          onPressed: () => _goTo(context, 'Expenses'),
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 35,
-                          left: 65,
-                          child: MyText('expenses'),
-                      ),
-                    ],
-                  ),
-                ),
-                // Income button
-                Container(
-                  height: 250,
-                  width: 150,
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        bottom: 45,
-                        child: IconButton(
-                          color: MyColors.textColor,
-                          iconSize: 100,
-                          icon: Icon(In_Out.bagofmoney_dollar_4399),
-                          onPressed: () => _goTo(context, 'Income'),
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 35,
-                          left: 25,
-                          child: MyText('income'),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      );
+              ),
+            ],
+          ),
+        ]
+      ),
+    );
   }
 
-  _goTo(BuildContext context, String index){
-    switch(index){
-      case 'AddExpenses': Navigator.push(
-          context,
-          MaterialPageRoute<void>(
-              builder: (BuildContext context){
-                return AddExpenses(callBack: s);
-              }
-          )
-      );
-      break;
-      case 'AddIncome': Navigator.push(
-          context,
-          MaterialPageRoute<void>(
-              builder: (BuildContext context){
-                return AddIncome(callback: s);
-              }
-          )
-      );
-      break;
-      case 'ShowBalance': Navigator.push(
-          context,
-          MaterialPageRoute<void>(
-              builder: (BuildContext context){
-                return ShowBalance();
-              }
-          )
-      );
-      break;
-      case 'Income': Navigator.push(
-          context,
-          MaterialPageRoute<void>(
-              builder: (BuildContext context){
-                return Income(callback: s);
-              }
-          )
-      );
-      break;
-      case 'Expenses': Navigator.push(
-          context,
-          MaterialPageRoute<void>(
-              builder: (BuildContext context){
-                return Expenses(callback: s);
-              }
-          )
-      );
-      break;
+  _goTo(BuildContext context, String index) {
+    switch (index) {
+      case 'AddExpenses':
+        Navigator.push(context,
+            MaterialPageRoute<void>(builder: (BuildContext context) {
+          return AddExpenses(callBack: s);
+        }));
+        break;
+      case 'AddIncome':
+        Navigator.push(context,
+            MaterialPageRoute<void>(builder: (BuildContext context) {
+          return AddIncome(callback: s);
+        }));
+        break;
+      case 'ShowBalance':
+        Navigator.push(context,
+            MaterialPageRoute<void>(builder: (BuildContext context) {
+          return ShowBalance();
+        }));
+        break;
+      case 'Income':
+        Navigator.push(context,
+            MaterialPageRoute<void>(builder: (BuildContext context) {
+          return Income(callback: s);
+        }));
+        break;
+      case 'Expenses':
+        Navigator.push(context,
+            MaterialPageRoute<void>(builder: (BuildContext context) {
+          return Expenses(callback: s);
+        }));
+        break;
     }
   }
 }
-
-
-
-
-

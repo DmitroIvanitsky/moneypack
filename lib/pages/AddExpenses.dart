@@ -76,16 +76,16 @@ class _AddExpensesState extends State<AddExpenses> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 10),
-              // date widget row
+// date widget row
               getDateWidget(),
               Divider(),
-              // category row
+// category row
               GestureDetector(
                 child: MyText(category),
                 onTap: () => _onCategoryTap(context),
               ),
               Divider(),
-              // sum row
+// sum row
               TextFormField(
                 decoration: const InputDecoration(
                   hintText: 'Enter sum',
@@ -159,7 +159,7 @@ class _AddExpensesState extends State<AddExpenses> {
   _createExpenseNote(DateTime date, String category, double sum) async{
     ExpenseNote expenseNote = ExpenseNote(date, category, sum);
     ListOfExpenses.list.add(expenseNote);
-    await Storage.saveString(jsonEncode(new ListOfExpenses().toJson()), 'ExpenseNote');
+    await Storage.saveString(jsonEncode(ListOfExpenses().toJson()), 'ExpenseNote');
 
     // String m = await Storage.getString('ExpenseNote');
     // ListOfExpenses lx = ListOfExpenses.fromJson(jsonDecode(m));
