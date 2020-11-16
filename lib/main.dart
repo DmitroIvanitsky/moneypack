@@ -100,10 +100,13 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
               Row(
                 children: [
                   Container(
+                    decoration: BoxDecoration(
+                      color: MyColors.rowColor,
+                    ),
                     width: 320,
                     height: 110,
                     margin: EdgeInsets.fromLTRB(10, 20, 0, 10),
-                    color: MyColors.rowColor,
+                    // color: MyColors.rowColor,
                     child: Column(
                       children: [
                         // Day Row
@@ -147,9 +150,13 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                   ),
                   // button
                   Container(
+                    decoration: BoxDecoration(
+                      color: MyColors.rowColor,
+
+                    ),
                     margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
                     //color: Colors.yellow,
-                    color: MyColors.rowColor,
+                    // color: MyColors.rowColor,
                     width: 70,
                     height: 110,
                     child: IconButton(
