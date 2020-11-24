@@ -18,6 +18,7 @@ class ListOfExpenses {
   }
 
   ListOfExpenses.fromJson(Map<String, dynamic> json){
+    if (json['list'] != null)
     list = List<ExpenseNote>.from(json['list'].map((i) => ExpenseNote.fromJson(i)));
   }
 

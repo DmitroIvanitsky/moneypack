@@ -41,7 +41,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
   void loadList() async {
     String expN = await Storage.getString('ExpenseNote');
     String incN = await Storage.getString('IncomeNote');
-    if (expN != null || incN != null) {
+    if (expN != null && incN != null) {
       setState(() {
         ListOfExpenses.fromJson(jsonDecode(expN));
         ListOfIncome.fromJson(jsonDecode(incN));
@@ -85,18 +85,18 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                   ),
                   width: 320,
                   height: 110,
-                  margin: EdgeInsets.fromLTRB(10, 20, 0, 10),
+                  margin: EdgeInsets.only(left: 10, top: 20, bottom: 10),
                   // color: MyColors.rowColor,
                   child: Column(
                     children: [
                       // Day Row
                       Container(
                         width: double.infinity,
-                        padding: EdgeInsets.all(5),
+                        padding: EdgeInsets.only(left: 10, top: 10, right: 10),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            MyText('day', TextAlign.left),
+                            MyText('Day', TextAlign.left),
                             MyText('$day', TextAlign.right),
                           ],
                         ),
@@ -104,7 +104,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                       // Week Row
                       Container(
                         width: double.infinity,
-                        padding: EdgeInsets.all(5),
+                        padding: EdgeInsets.only(left: 10, top: 10, right: 10),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -116,7 +116,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                       // Month Row
                       Container(
                         width: double.infinity,
-                        padding: EdgeInsets.all(5),
+                        padding: EdgeInsets.all(10),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [

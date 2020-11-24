@@ -18,7 +18,8 @@ class ListOfIncome {
   }
 
   ListOfIncome.fromJson(Map<String, dynamic> json){
-    list = List<IncomeNote>.from(json['list'].map((i) => IncomeNote.fromJson(i)));
+    if (json['list'] != null)
+      list = List<IncomeNote>.from(json['list'].map((i) => IncomeNote.fromJson(i)));
   }
 
   toJson() {

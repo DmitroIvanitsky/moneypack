@@ -53,12 +53,15 @@ class _ListOfExpensesCategoriesState extends State<ListOfExpensesCategories> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        GestureDetector(
-                          child: MyText(list[index], TextAlign.left),
-                          onTap: (){
-                            widget.callback(list[index]);
-                            Navigator.pop(context);
-                          },
+                        Padding(
+                          padding: EdgeInsets.only(left: 10),
+                          child: GestureDetector(
+                            child: MyText(list[index], TextAlign.left),
+                            onTap: (){
+                              widget.callback(list[index]);
+                              Navigator.pop(context);
+                            },
+                          ),
                         ),
                         IconButton(
                           icon: Icon(

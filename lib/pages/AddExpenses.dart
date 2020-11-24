@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_tutorial/Objects/ExpenseNote.dart';
 import 'package:flutter_tutorial/Objects/ListOfExpenses.dart';
@@ -77,26 +76,35 @@ class _AddExpensesState extends State<AddExpenses> {
             children: [
               SizedBox(height: 10),
 // date widget row
-              getDateWidget(),
+              Padding(
+                padding: EdgeInsets.only(left: 10, right: 10),
+                  child: getDateWidget()
+              ),
               Divider(),
 // category row
-              GestureDetector(
-                child: MyText(category),
-                onTap: () => _onCategoryTap(context),
+              Padding(
+                padding: EdgeInsets.only(left: 10, right: 10),
+                child: GestureDetector(
+                  child: MyText(category),
+                  onTap: () => _onCategoryTap(context),
+                ),
               ),
               Divider(),
 // sum row
-              TextFormField(
-                decoration: const InputDecoration(
-                  hintText: 'Enter sum',
+              Padding(
+                padding: EdgeInsets.only(left: 10, right: 10),
+                child: TextFormField(
+                  decoration: const InputDecoration(
+                    hintText: 'Enter sum',
+                  ),
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return 'Please enter sum';
+                    }
+                    return null;
+                  },
+                  onChanged: (v) => sum = double.parse(v),
                 ),
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return 'Please enter sum';
-                  }
-                  return null;
-                },
-                onChanged: (v) => sum = double.parse(v),
               ),
             ],
           ),
