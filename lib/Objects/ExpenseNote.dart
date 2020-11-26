@@ -3,7 +3,7 @@ class ExpenseNote{
   final double sum;
   DateTime date;
 
-  ExpenseNote(this.date, this.category, this.sum);
+  ExpenseNote({this.date, this.category, this.sum});
 
   ExpenseNote.fromJson(Map<String, dynamic> json)
   : category = json['category'],

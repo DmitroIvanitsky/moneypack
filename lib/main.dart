@@ -64,91 +64,31 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
       size = MediaQuery.of(context).size;
       print(size);
     }
-    return Scaffold(
-      backgroundColor: MyColors.backGroudColor,
-      appBar: buildAppBar(),
-      body: buildListView(context),
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: MyColors.backGroudColor,
+        // appBar: buildAppBar(),
+        body: buildListView(),
+      ),
     );
   }
 
-  ListView buildListView(BuildContext context) {
+  buildListView(){
     return ListView(
       children: [
         Column(
           children: [
-            // row of Day Week Month Expenses mapping
-            Row(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: MyColors.rowColor,
-                  ),
-                  width: 320,
-                  height: 110,
-                  margin: EdgeInsets.only(left: 10, top: 20, bottom: 10),
-                  // color: MyColors.rowColor,
-                  child: Column(
-                    children: [
-                      // Day Row
-                      Container(
-                        width: double.infinity,
-                        padding: EdgeInsets.only(left: 10, top: 10, right: 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            MyText('Day', TextAlign.left),
-                            MyText('$day', TextAlign.right),
-                          ],
-                        ),
-                      ),
-                      // Week Row
-                      Container(
-                        width: double.infinity,
-                        padding: EdgeInsets.only(left: 10, top: 10, right: 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            MyText('Week', TextAlign.left),
-                            MyText('$week', TextAlign.right),
-                          ],
-                        ),
-                      ),
-                      // Month Row
-                      Container(
-                        width: double.infinity,
-                        padding: EdgeInsets.all(10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            MyText('Month', TextAlign.left),
-                            MyText('$month', TextAlign.right),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                // button
-                Container(
-                  decoration: BoxDecoration(
-                    color: MyColors.rowColor,
-
-                  ),
-                  margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
-                  //color: Colors.yellow,
-                  // color: MyColors.rowColor,
-                  width: 70,
-                  height: 110,
-                  child: IconButton(
-                    iconSize: 35,
-                    onPressed: () => _goTo(context, 'AddExpenses'),
-                    icon: Container(
-                      // width: 15,
-                      child: Icon(Icons.add_circle),
-                    ),
-                  ),
-                ),
-              ],
+            Container(
+              color: MyColors.backGroudColor,
+              margin: EdgeInsets.only(left: 10, top: 20, right: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  muFlatButton(period: 'Day'),
+                  muFlatButton(period: 'Week'),
+                  muFlatButton(period: 'Month'),
+                ],
+              ),
             ),
             // Row of Income
             Row(
@@ -157,38 +97,53 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                 Container(
                   width: 320,
                   height: 50,
-                  margin: EdgeInsets.fromLTRB(10, 10, 0, 10),
+                  margin: margin(),
                   color: MyColors.rowColor,
                   child: Center(
-                    child: Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.all(10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          MyText('Income', TextAlign.left),
-                          MyText('$income', TextAlign.right),
-                        ],
-                      ),
-                    ),
+                    child: viewInfo(period: 'Income', per: income),
                   ),
                 ),
                 // button
                 Container(
-                  //color: Colors.yellow,
+                  margin: EdgeInsets.only(top: 20),
                   color: MyColors.rowColor,
                   width: 70,
                   height: 50,
-                  child: IconButton(
-                    iconSize: 35,
-                    onPressed: () => _goTo(context, 'AddIncome'),
-                    icon: Container(
-                      child: Icon(Icons.add_circle),
-                    ),
+                  child: button(index: 'AddIncome', icon: Icon(Icons.add_circle)),
+                ),
+              ]
+            ),
+            // row of Expenses
+            Row(
+              children: [
+                // text
+                Container(
+                  color: MyColors.rowColor,
+                  width: 320,
+                  height: 110,
+                  margin: margin(),
+                  child: Column(
+                    children: [
+                      // Day Row
+                      viewInfo(period: 'Day', per: day),
+                      // Week Row
+                      viewInfo(period: 'Week', per: week),
+                      // Month Row
+                      viewInfo(period: 'Month', per: month),
+                    ],
                   ),
+                ),
+                // button
+                Container(
+                  color: MyColors.rowColor,
+                  margin: EdgeInsets.only(top: 20),
+                  width: 70,
+                  height: 110,
+                  child: button(index: 'AddExpenses', icon: Icon(Icons.add_circle)),
                 ),
               ],
             ),
+
             // Row of Balance
             Row(
               children: [
@@ -196,46 +151,21 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                 Container(
                   width: 320,
                   height: 50,
-                  margin: EdgeInsets.fromLTRB(10, 10, 0, 10),
+                  margin: margin(),
                   color: MyColors.rowColor,
                   child: Center(
-                    child: Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.all(10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          MyText('Balance', TextAlign.left),
-                          MyText('$balance', TextAlign.right),
-                        ],
-                      ),
-                    ),
+                    child: viewInfo(period: 'Balance', per: balance),
                   ),
                 ),
                 // button
                 Container(
-                  //color: Colors.yellow,
+                  margin: EdgeInsets.only(top: 20),
                   color: MyColors.rowColor,
                   width: 70,
                   height: 50,
-                  //alignment: Alignment.centerRight,
-                  //padding: EdgeInsets.fromLTRB(0, 0, 20, 50),
                   child: Align(
                     alignment: Alignment.center,
-                    child: IconButton(
-                      iconSize: 35,
-                      onPressed: () => _goTo(context, 'ShowBalance'),
-                      icon: Container(
-                        width: 20,
-                        // decoration: BoxDecoration(
-                        //   color: Colors.purple,
-                        //   borderRadius: BorderRadius.circular(100)
-                        // ),
-                        child: Icon(
-                          Menu_icon.kebab_vertical,
-                        ),
-                      ),
-                    ),
+                    child: button(index: 'ShowBalance', icon: Icon(Menu_icon.kebab_vertical)),
                   ),
                 ),
               ],
@@ -288,6 +218,46 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
           ],
         ),
       ]
+    );
+  }
+
+  muFlatButton({String period}){
+    return FlatButton(
+      color: MyColors.appBarColor,
+      height: 50,
+      onPressed: () {},
+      child: MyText(period)
+    );
+  }
+
+  margin(){
+    return EdgeInsets.only(left: 10, top: 20);
+  }
+
+  button({String index, Icon icon}){
+    return IconButton(
+      iconSize: 35,
+      onPressed: () => _goTo(context, index),
+      icon: Container(
+        child: icon,
+      ),
+    );
+  }
+
+  viewInfo({String period, double per}){
+    double top = 10;
+    if (period == 'Income' || period == "Balance")
+      top = 0;
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.only(left: 10, right: 10, top: top),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          MyText(period, TextAlign.left),
+          MyText('$per', TextAlign.right),
+        ],
+      ),
     );
   }
 

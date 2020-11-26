@@ -42,62 +42,71 @@ class _ExpensesState extends State<Expenses> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: MyColors.backGroudColor,
-      appBar: AppBar(
-        iconTheme: IconThemeData(
-            color: MyColors.textColor
+//////////////////////////////////////////////////////////////////////////////////////
+    List middleList = List();
+    for (int i = 0; i < ListOfExpenses.list.length; i++) {
+      if (_isInFilter(ListOfExpenses.list[i].date))
+        middleList.add(ListOfExpenses.list[i]);
+    }
+    List resultList = List();
+    for(int i= 0; i < middleList.length; i++){
+      bool isFound = false;
+      ExpenseNote currentExpenseNote = middleList[i];
+
+      for(ExpenseNote E in resultList){
+        if(currentExpenseNote.category == E.category){
+          isFound = true;
+          break;
+        }
+      }
+      if(isFound) continue;
+
+      double sum = middleList[i].sum;
+      for (int j = i + 1; j < middleList.length; j++){
+        if (currentExpenseNote.category == middleList[j].category)
+          sum += middleList[j].sum;
+      }
+      resultList.add(ExpenseNote(category: currentExpenseNote.category, sum: sum));
+    }
+///////////////////////////////////////////////////////////////////////////////////////
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: MyColors.backGroudColor,
+        appBar: AppBar(
+          iconTheme: IconThemeData(
+              color: MyColors.textColor
+          ),
+          backgroundColor: MyColors.appBarColor,
+          title: _buildDropdownButton() // dropdown menu button
         ),
-        backgroundColor: MyColors.appBarColor,
-        title: DropdownButton(
-          hint: MyText(selMode),
-          items: [
-            DropdownMenuItem(value: 'Day', child: MyText('Day')),
-            DropdownMenuItem(value: 'Week', child: MyText('Week')),
-            DropdownMenuItem(value: 'Month', child: MyText('Month')),
-            DropdownMenuItem(value: 'Year', child: MyText('Year')),
-          ],
-          onChanged: (String newValue) {
-            if (selMode != 'Week' && newValue == 'Week') {
-              // oldDate = date;
-              date = date.subtract(Duration(days: date.weekday + 1)).add(Duration(days: 7));
-            }
-
-            if (selMode == 'Week' && newValue != 'Week' && oldDate != null) {
-              //date = oldDate;
-              date = DateTime.now();
-            }
-
-            setState(() {
-              selMode = newValue;
-            });
-          }
-        )
-      ),
-      body: Column(
-        children: [
-// data row in the top of the list
-          _getData(),
-// indicator
-          ListOfExpenses.list.isEmpty ?
-          Align(
-            child: CupertinoActivityIndicator(radius: 20),
-            alignment: Alignment.center,
-          ) :
-// list of ExpenseNotes
-          Expanded(
-            child: ListView.builder(
-              itemCount: ListOfExpenses.list.length,
-              itemBuilder: (context, index){
-                if (_isInFilter(ListOfExpenses.list[index].date))
-                return Column(
-                  children: [
-                    Row(
-                      children: [
-// row of ExpenseNote
-                        _buildListItem(ListOfExpenses.list[index]), // function return row of ExpenseNote
-// delete row button
-                        IconButton(
+        body: Column(
+          children: [
+            // data row in the top of the list
+            _getData(),
+            // indicator cupertino when list is empty
+            //ListOfExpenses.list.isEmpty ?
+            resultList.isEmpty ?
+            Align(
+              child: CupertinoActivityIndicator(radius: 20),
+              alignment: Alignment.center,
+            ) :
+            // list of ExpenseNotes
+            Expanded(
+              child: ListView.builder(
+                //itemCount: ListOfExpenses.list.length,
+                itemCount: resultList.length,
+                itemBuilder: (context, index){
+                  //if (_isInFilter(ListOfExpenses.list[index].date))
+                  //if (_isInFilter(resultList[index].date))
+                  return Column(
+                    children: [
+                      Row(
+                        children: [
+                          // row of ExpenseNote
+                          //_buildListItem(ListOfExpenses.list[index]), // function return row of ExpenseNote
+                          _buildListItem(resultList[index]),
+                          // delete row button
+                          IconButton(
                             icon: Icon(
                                 Icons.delete
                             ),
@@ -108,21 +117,51 @@ class _ExpensesState extends State<Expenses> {
                               widget.callback();
                               setState(() {});
                             }
-                        )
-                      ],
-                    ),
-                    Divider(color: MyColors.textColor),
-                  ],
-                );
-              else return Container();
-              },
+                          )
+                        ],
+                      ),
+                      Divider(color: MyColors.textColor),
+                    ],
+                  );
+                // else return Container();
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
+  // dropdown menu button
+  _buildDropdownButton() {
+    return DropdownButton(
+        hint: MyText(selMode),
+        items: [
+          DropdownMenuItem(value: 'Day', child: MyText('Day')),
+          DropdownMenuItem(value: 'Week', child: MyText('Week')),
+          DropdownMenuItem(value: 'Month', child: MyText('Month')),
+          DropdownMenuItem(value: 'Year', child: MyText('Year')),
+        ],
+        onChanged: (String newValue) {
+          if (selMode != 'Week' && newValue == 'Week') {
+            // oldDate = date;
+            date = date.subtract(Duration(days: date.weekday + 1)).add(Duration(days: 7));
+          }
+
+          if (selMode == 'Week' && newValue != 'Week' && oldDate != null) {
+            //date = oldDate;
+            date = DateTime.now();
+          }
+
+          setState(() {
+            selMode = newValue;
+          });
+        }
+      );
+  }
+
+  // date filter function for list of expenses
   _isInFilter(DateTime d){
     if (d == null) return false;
 
@@ -151,6 +190,7 @@ class _ExpensesState extends State<Expenses> {
     }
   }
 
+  // function return date with buttons
   _getData(){
     switch(selMode){
       case 'Day':
@@ -253,7 +293,7 @@ class _ExpensesState extends State<Expenses> {
     }
   }
 
-// function return row of ExpenseNote
+  // function return row of ExpenseNote
   _buildListItem(ExpenseNote value) {
 
     return Container(

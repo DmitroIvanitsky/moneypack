@@ -31,81 +31,89 @@ class _ListOfIncomeCategoriesState extends State<ListOfIncomeCategories> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: MyColors.backGroudColor,
-      appBar: AppBar(
-        backgroundColor: MyColors.appBarColor,
-        iconTheme: IconThemeData(
-            color: MyColors.textColor
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: MyColors.backGroudColor,
+        appBar: AppBar(
+          backgroundColor: MyColors.appBarColor,
+          iconTheme: IconThemeData(
+              color: MyColors.textColor
+          ),
+          title: MyText('Categories'),
         ),
-        title: MyText('Categories'),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: list.isEmpty ? CupertinoActivityIndicator(radius: 20) :
-            ListView.builder(
-              itemCount: list.length,
-              itemBuilder: (context, index){
-                return Column(
+        body: Column(
+          children: [
+            Expanded(
+              child: list.isEmpty ? CupertinoActivityIndicator(radius: 20) :
+              ListView.builder(
+                itemCount: list.length,
+                itemBuilder: (context, index){
+                  return Padding(
+                    padding: EdgeInsets.only(left: 10, right: 10),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            GestureDetector(
+                              child: MyText(list[index]),
+                              onTap: (){
+                                widget.callback(list[index]);
+                                Navigator.pop(context);
+                              },
+                            ),
+                            IconButton(
+                                icon: Icon(
+                                    Icons.delete
+                                ),
+                                color: MyColors.textColor,
+                                onPressed: () async{
+                                  list.removeAt(index);
+                                  await Storage.saveList(list, 'Income');
+                                  setState(() {});
+                                }
+                            )
+                          ]
+                        ),
+                        Divider(),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(left: 10, right: 10),
+              child: Column(
                   children: [
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        GestureDetector(
-                          child: MyText(list[index]),
-                          onTap: (){
-                            widget.callback(list[index]);
-                            Navigator.pop(context);
-                          },
-                        ),
-                        IconButton(
-                            icon: Icon(
-                                Icons.delete
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              controller: TextEditingController(),
+                              onChanged: (v) => tempField = v,
                             ),
-                            color: MyColors.textColor,
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.add),
                             onPressed: () async{
-                              list.removeAt(index);
-                              await Storage.saveList(list, 'Income');
+                              if(tempField == '') return;
+                              list.add(tempField);
+                              tempField = '';
+                              TextEditingController().clear();
+                              await Storage.saveList(list, "Income");
                               setState(() {});
-                            }
-                        )
-                      ]
+                            },
+                          )
+                        ]
                     ),
-                    Divider(),
-                  ],
-                );
-              },
-            ),
-          ),
-          Column(
-              children: [
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          controller: TextEditingController(),
-                          onChanged: (v) => tempField = v,
-                        ),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.add),
-                        onPressed: () async{
-                          if(tempField == '') return;
-                          list.add(tempField);
-                          tempField = '';
-                          TextEditingController().clear();
-                          await Storage.saveList(list, "Income");
-                          setState(() {});
-                        },
-                      )
-                    ]
-                ),
-                Divider()
-              ]
-          )
-        ]
+                    Divider()
+                  ]
+              ),
+            )
+          ]
+        ),
       ),
     );
   }

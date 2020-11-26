@@ -40,11 +40,49 @@ class _AddIncomeState extends State<AddIncome> {
       category = cat;
     });
   }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: MyColors.backGroudColor,
-      appBar: AppBar(
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: MyColors.backGroudColor,
+        appBar: buildAppBar(),
+        body: Padding(
+          padding: EdgeInsets.only(left: 10, right: 10),
+          child: Form(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                SizedBox(height: 10),
+                getDateWidget(),
+                Divider(),
+                GestureDetector(
+                  child: MyText(category),
+                  onTap: () => _onCategoryTap(context),
+                ),
+                Divider(),
+                TextFormField(
+                  decoration: const InputDecoration(
+                    hintText: 'Enter sum',
+                  ),
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return 'Please enter sum';
+                    }
+                    return null;
+                  },
+                  onChanged: (v) => sum = double.parse(v),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  buildAppBar() {
+    return AppBar(
         iconTheme: IconThemeData(
           color: MyColors.textColor
         ),
@@ -68,35 +106,7 @@ class _AddIncomeState extends State<AddIncome> {
             )
           ],
         ),
-      ),
-      body: Form(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            SizedBox(height: 10),
-            getDateWidget(),
-            Divider(),
-            GestureDetector(
-              child: MyText(category),
-              onTap: () => _onCategoryTap(context),
-            ),
-            Divider(),
-            TextFormField(
-              decoration: const InputDecoration(
-                hintText: 'Enter sum',
-              ),
-              validator: (value) {
-                if (value.isEmpty) {
-                  return 'Please enter sum';
-                }
-                return null;
-              },
-              onChanged: (v) => sum = double.parse(v),
-            ),
-          ],
-        ),
-      ),
-    );
+      );
   }
 
   Widget getDateWidget(){

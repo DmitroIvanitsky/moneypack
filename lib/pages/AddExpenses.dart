@@ -42,73 +42,69 @@ class _AddExpensesState extends State<AddExpenses> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: MyColors.backGroudColor,
-        appBar: AppBar(
-          iconTheme: IconThemeData(
-              color: MyColors.textColor
-          ),
-          backgroundColor: MyColors.appBarColor,
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              MyText('Add Expenses'),
-              IconButton(
-                iconSize: 35,
-                icon: Icon(
-                  Icons.done,
-                  color: MyColors.textColor,
-                ),
-                onPressed: (){
-                  if (category == "category") return;
-                  // function to create note object
-                  _createExpenseNote(date, category, sum);
-                  widget.callBack();
-                  Navigator.pop(context);
-                },
-              )
-            ],
-          ),
-        ),
-        body: Form(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 10),
-// date widget row
-              Padding(
-                padding: EdgeInsets.only(left: 10, right: 10),
-                  child: getDateWidget()
-              ),
-              Divider(),
-// category row
-              Padding(
-                padding: EdgeInsets.only(left: 10, right: 10),
-                child: GestureDetector(
-                  child: MyText(category),
-                  onTap: () => _onCategoryTap(context),
-                ),
-              ),
-              Divider(),
-// sum row
-              Padding(
-                padding: EdgeInsets.only(left: 10, right: 10),
-                child: TextFormField(
-                  decoration: const InputDecoration(
-                    hintText: 'Enter sum',
+    return SafeArea(
+      child: Scaffold(
+          backgroundColor: MyColors.backGroudColor,
+          appBar: AppBar(
+            iconTheme: IconThemeData(
+                color: MyColors.textColor
+            ),
+            backgroundColor: MyColors.appBarColor,
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                MyText('Add Expenses'),
+                IconButton(
+                  iconSize: 35,
+                  icon: Icon(
+                    Icons.done,
+                    color: MyColors.textColor,
                   ),
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Please enter sum';
-                    }
-                    return null;
+                  onPressed: (){
+                    if (category == "category") return;
+                    // function to create note object
+                    _createExpenseNote(date, category, sum);
+                    widget.callBack();
+                    Navigator.pop(context);
                   },
-                  onChanged: (v) => sum = double.parse(v),
-                ),
-              ),
-            ],
+                )
+              ],
+            ),
           ),
-        ),
+          body: Padding(
+            padding: EdgeInsets.only(left: 10, right: 10),
+            child: Form(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 10),
+                  // date widget row
+                  getDateWidget(),
+                  Divider(),
+                  // category row
+                  GestureDetector(
+                    child: MyText(category),
+                    onTap: () => _onCategoryTap(context),
+                  ),
+                  Divider(),
+                  // sum row
+                  TextFormField(
+                    decoration: const InputDecoration(
+                      hintText: 'Enter sum',
+                    ),
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'Please enter sum';
+                      }
+                      return null;
+                    },
+                    onChanged: (v) => sum = double.parse(v),
+                  ),
+                ],
+              ),
+            ),
+          ),
+      ),
     );
   }
 
@@ -165,7 +161,7 @@ class _AddExpensesState extends State<AddExpenses> {
   }
 
   _createExpenseNote(DateTime date, String category, double sum) async{
-    ExpenseNote expenseNote = ExpenseNote(date, category, sum);
+    ExpenseNote expenseNote = ExpenseNote(date: date, category: category, sum: sum);
     ListOfExpenses.list.add(expenseNote);
     await Storage.saveString(jsonEncode(ListOfExpenses().toJson()), 'ExpenseNote');
 

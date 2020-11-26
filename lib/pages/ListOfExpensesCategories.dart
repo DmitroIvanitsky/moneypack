@@ -31,94 +31,99 @@ class _ListOfExpensesCategoriesState extends State<ListOfExpensesCategories> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: MyColors.backGroudColor,
-      appBar: AppBar(
-        backgroundColor: MyColors.appBarColor,
-        iconTheme: IconThemeData(
-            color: MyColors.textColor
-        ),
-        title: MyText('Categories'),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: list.isEmpty ?
-            CupertinoActivityIndicator(radius: 20) :
-            ListView.builder(
-              itemCount: list.length,
-              itemBuilder: (context, index){
-                return Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.only(left: 10),
-                          child: GestureDetector(
-                            child: MyText(list[index], TextAlign.left),
-                            onTap: (){
-                              widget.callback(list[index]);
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ),
-                        IconButton(
-                          icon: Icon(
-                            Icons.delete
-                          ),
-                          color: MyColors.textColor,
-                          onPressed: () async{
-                            list.removeAt(index);
-                            await Storage.saveList(list, 'Expenses');
-                            setState(() {});
-                          }
-                        )
-                      ]
-                    ),
-                    Divider(),
-                  ],
-                );
-              },
-            ),
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: MyColors.backGroudColor,
+        appBar: AppBar(
+          backgroundColor: MyColors.appBarColor,
+          iconTheme: IconThemeData(
+              color: MyColors.textColor
           ),
-          // create a new Expense category
-          Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          title: MyText('Categories'),
+        ),
+        body: Column(
+          children: [
+            Expanded(
+              child: list.isEmpty ?
+              CupertinoActivityIndicator(radius: 20) :
+              ListView.builder(
+                itemCount: list.length,
+                itemBuilder: (context, index){
+                  return Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(left: 10),
+                            child: GestureDetector(
+                              child: MyText(list[index], TextAlign.left),
+                              onTap: (){
+                                widget.callback(list[index]);
+                                Navigator.pop(context);
+                              },
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(
+                              Icons.delete
+                            ),
+                            color: MyColors.textColor,
+                            onPressed: () async{
+                              list.removeAt(index);
+                              await Storage.saveList(list, 'Expenses');
+                              setState(() {});
+                            }
+                          )
+                        ]
+                      ),
+                      Divider(),
+                    ],
+                  );
+                },
+              ),
+            ),
+            // create a new Expense category
+            Padding(
+              padding: EdgeInsets.only(left: 10, right: 10),
+              child: Column(
                 children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: TextEditingController(),
-                    onChanged: (v) => tempField = v,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller: TextEditingController(),
+                        onChanged: (v) => tempField = v,
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.add),
+                        onPressed: () async{
+                          if(tempField == '') return;
+                          list.add(tempField);
+                          tempField = '';
+                          TextEditingController().clear();
+                          await Storage.saveList(list, "Expenses");
+                          setState(() {});
+                        },
+                      )
+                    ]
                   ),
-                  IconButton(
-                    icon: Icon(Icons.add),
-                    onPressed: () async{
-                      if(tempField == '') return;
-                      list.add(tempField);
-                      tempField = '';
-                      TextEditingController().clear();
-                      await Storage.saveList(list, "Expenses");
-                      setState(() {});
-                    },
-                  )
+                  Divider()
                 ]
               ),
-              Divider()
-            ]
-          )
-        //   IconButton(
-        //     icon: Icon(Icons.ac_unit),
-        //     onPressed: () async{
-        //       await Storage.saveList(list, 'Expenses');
-        //       list = await Storage.getList('Expenses');
-        //       print(list[0]);
-        //     },
-        //   )
-        ],
+            )
+          //   IconButton(
+          //     icon: Icon(Icons.ac_unit),
+          //     onPressed: () async{
+          //       await Storage.saveList(list, 'Expenses');
+          //       list = await Storage.getList('Expenses');
+          //       print(list[0]);
+          //     },
+          //   )
+          ],
+        ),
       ),
     );
   }
