@@ -43,35 +43,11 @@ class _ExpensesState extends State<Expenses> {
   @override
   Widget build(BuildContext context) {
 //////////////////////////////////////////////////////////////////////////////////////
-    List middleList = List();
-    for (int i = 0; i < ListOfExpenses.list.length; i++) {
-      if (_isInFilter(ListOfExpenses.list[i].date))
-        middleList.add(ListOfExpenses.list[i]);
-    }
-    List resultList = List();
-    for(int i= 0; i < middleList.length; i++){
-      bool isFound = false;
-      ExpenseNote currentExpenseNote = middleList[i];
-
-      for(ExpenseNote E in resultList){
-        if(currentExpenseNote.category == E.category){
-          isFound = true;
-          break;
-        }
-      }
-      if(isFound) continue;
-
-      double sum = middleList[i].sum;
-      for (int j = i + 1; j < middleList.length; j++){
-        if (currentExpenseNote.category == middleList[j].category)
-          sum += middleList[j].sum;
-      }
-      resultList.add(ExpenseNote(category: currentExpenseNote.category, sum: sum));
-    }
+    List resultList = sumOfCategories();
 ///////////////////////////////////////////////////////////////////////////////////////
     return SafeArea(
       child: Scaffold(
-        backgroundColor: MyColors.backGroudColor,
+        backgroundColor: MyColors.backGroundColor,
         appBar: AppBar(
           iconTheme: IconThemeData(
               color: MyColors.textColor
@@ -131,6 +107,35 @@ class _ExpensesState extends State<Expenses> {
         ),
       ),
     );
+  }
+
+  List sumOfCategories() {
+    List middleList = List();
+    for (int i = 0; i < ListOfExpenses.list.length; i++) {
+      if (_isInFilter(ListOfExpenses.list[i].date))
+        middleList.add(ListOfExpenses.list[i]);
+    }
+    List resultList = List();
+    for(int i= 0; i < middleList.length; i++){
+      bool isFound = false;
+      ExpenseNote currentExpenseNote = middleList[i];
+
+      for(ExpenseNote E in resultList){
+        if(currentExpenseNote.category == E.category){
+          isFound = true;
+          break;
+        }
+      }
+      if(isFound) continue;
+
+      double sum = middleList[i].sum;
+      for (int j = i + 1; j < middleList.length; j++){
+        if (currentExpenseNote.category == middleList[j].category)
+          sum += middleList[j].sum;
+      }
+      resultList.add(ExpenseNote(category: currentExpenseNote.category, sum: sum));
+    }
+    return resultList;
   }
 
   // dropdown menu button

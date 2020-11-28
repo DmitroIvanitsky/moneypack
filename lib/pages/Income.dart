@@ -40,7 +40,7 @@ class _IncomeState extends State<Income> {
     Size size = MediaQuery.of(context).size;
     return SafeArea(
       child: Scaffold(
-        backgroundColor: MyColors.backGroudColor,
+        backgroundColor: MyColors.backGroundColor,
         appBar: AppBar(
           iconTheme: IconThemeData(
               color: MyColors.textColor

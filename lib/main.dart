@@ -25,9 +25,7 @@ class FlutterTutorialApp extends StatefulWidget {
 }
 
 class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
-  double day = 0;
-  final double week = 20.0;
-  final double month = 30.0;
+  double expense = 0;
   double income = 0;
   double balance = 0;
   Size size;
@@ -52,7 +50,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
 
   void stateFunc() {
     setState(() {
-      day = ListOfExpenses.sum();
+      expense = ListOfExpenses.sum();
       income = ListOfIncome.sum();
       balance = ListOfIncome.sum() - ListOfExpenses.sum();
     });
@@ -66,8 +64,8 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
     }
     return SafeArea(
       child: Scaffold(
-        backgroundColor: MyColors.backGroudColor,
-        // appBar: buildAppBar(),
+        backgroundColor: MyColors.backGroundColor,
+        appBar: buildAppBar(),
         body: buildListView(),
       ),
     );
@@ -78,29 +76,30 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
       children: [
         Column(
           children: [
+/////////// Buttons on the first row ///////////////////////////////////////////
             Container(
-              color: MyColors.backGroudColor,
+              color: MyColors.backGroundColor,
               margin: EdgeInsets.only(left: 10, top: 20, right: 10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  muFlatButton(period: 'Day'),
-                  muFlatButton(period: 'Week'),
-                  muFlatButton(period: 'Month'),
+                  myFlatButton(period: 'Day'),
+                  myFlatButton(period: 'Week'),
+                  myFlatButton(period: 'Month'),
                 ],
               ),
             ),
-            // Row of Income
+/////////// Income /////////////////////////////////////////////////////////////
             Row(
               children: [
-                // text
+                // category
                 Container(
                   width: 320,
                   height: 50,
                   margin: margin(),
                   color: MyColors.rowColor,
                   child: Center(
-                    child: viewInfo(period: 'Income', per: income),
+                    child: viewInfo(period: 'Income', category: income),
                   ),
                 ),
                 // button
@@ -109,14 +108,17 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                   color: MyColors.rowColor,
                   width: 70,
                   height: 50,
-                  child: button(index: 'AddIncome', icon: Icon(Icons.add_circle)),
+                  child: button(
+                      index: 'AddIncome',
+                      icon: Icon(Icons.add_circle)
+                  ),
                 ),
               ]
             ),
-            // row of Expenses
+/////////// Expenses ///////////////////////////////////////////////////////////
             Row(
               children: [
-                // text
+                // category
                 Container(
                   color: MyColors.rowColor,
                   width: 320,
@@ -125,11 +127,11 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                   child: Column(
                     children: [
                       // Day Row
-                      viewInfo(period: 'Day', per: day),
+                      viewInfo(period: 'Expense', category: expense),
                       // Week Row
-                      viewInfo(period: 'Week', per: week),
+                      //viewInfo(period: 'Week', per: week),
                       // Month Row
-                      viewInfo(period: 'Month', per: month),
+                      //viewInfo(period: 'Month', per: month),
                     ],
                   ),
                 ),
@@ -139,22 +141,24 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                   margin: EdgeInsets.only(top: 20),
                   width: 70,
                   height: 110,
-                  child: button(index: 'AddExpenses', icon: Icon(Icons.add_circle)),
+                  child: button(
+                      index: 'AddExpenses',
+                      icon: Icon(Icons.add_circle)
+                  ),
                 ),
               ],
             ),
-
-            // Row of Balance
+/////////// Balance ////////////////////////////////////////////////////////////
             Row(
               children: [
-                // text
+                // category
                 Container(
                   width: 320,
                   height: 50,
                   margin: margin(),
                   color: MyColors.rowColor,
                   child: Center(
-                    child: viewInfo(period: 'Balance', per: balance),
+                    child: viewInfo(period: 'Balance', category: balance),
                   ),
                 ),
                 // button
@@ -165,12 +169,15 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                   height: 50,
                   child: Align(
                     alignment: Alignment.center,
-                    child: button(index: 'ShowBalance', icon: Icon(Menu_icon.kebab_vertical)),
+                    child: button(
+                        index: 'ShowBalance',
+                        icon: Icon(Menu_icon.kebab_vertical)
+                    ),
                   ),
                 ),
               ],
             ),
-            // Low buttons Expenses and Income
+/////////// Low buttons Expenses and Income ////////////////////////////////////
             Padding(
               padding: EdgeInsets.only(top: 90),
               child: Row(
@@ -215,13 +222,15 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                 ],
               ),
             ),
+/////////// Add Expense button /////////////////////////////////////////////////
+
           ],
         ),
       ]
     );
   }
-
-  muFlatButton({String period}){
+//////////// Functions /////////////////////////////////////////////////////////
+  myFlatButton({String period}){
     return FlatButton(
       color: MyColors.appBarColor,
       height: 50,
@@ -244,7 +253,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
     );
   }
 
-  viewInfo({String period, double per}){
+  viewInfo({String period, double category}){
     double top = 10;
     if (period == 'Income' || period == "Balance")
       top = 0;
@@ -255,7 +264,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           MyText(period, TextAlign.left),
-          MyText('$per', TextAlign.right),
+          MyText('$category', TextAlign.right),
         ],
       ),
     );
@@ -320,4 +329,5 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
         break;
     }
   }
+//////////// Functions /////////////////////////////////////////////////////////
 }

@@ -45,7 +45,7 @@ class _AddIncomeState extends State<AddIncome> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: MyColors.backGroudColor,
+        backgroundColor: MyColors.backGroundColor,
         appBar: buildAppBar(),
         body: Padding(
           padding: EdgeInsets.only(left: 10, right: 10),
@@ -98,7 +98,7 @@ class _AddIncomeState extends State<AddIncome> {
                 color: MyColors.textColor,
               ),
               onPressed: (){
-                if (category == "category") return;
+                if (category == "category" || sum == null) return;
                 _createIncomeNote(date, category, sum);
                 widget.callback();
                 Navigator.pop(context);
@@ -143,7 +143,7 @@ class _AddIncomeState extends State<AddIncome> {
           surface: MyColors.appBarColor,
           onSurface: MyColors.textColor,
         ),
-        dialogBackgroundColor: MyColors.backGroudColor,
+        dialogBackgroundColor: MyColors.backGroundColor,
       ),
       child: child,
     );

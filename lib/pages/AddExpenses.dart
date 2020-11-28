@@ -44,7 +44,7 @@ class _AddExpensesState extends State<AddExpenses> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-          backgroundColor: MyColors.backGroudColor,
+          backgroundColor: MyColors.backGroundColor,
           appBar: AppBar(
             iconTheme: IconThemeData(
                 color: MyColors.textColor
@@ -61,7 +61,8 @@ class _AddExpensesState extends State<AddExpenses> {
                     color: MyColors.textColor,
                   ),
                   onPressed: (){
-                    if (category == "category") return;
+                    // to not add empty sum note
+                    if (category == "category" || sum == null) return;
                     // function to create note object
                     _createExpenseNote(date, category, sum);
                     widget.callBack();
@@ -143,7 +144,7 @@ class _AddExpensesState extends State<AddExpenses> {
           surface: MyColors.appBarColor,
           onSurface: MyColors.textColor,
         ),
-        dialogBackgroundColor: MyColors.backGroudColor,
+        dialogBackgroundColor: MyColors.backGroundColor,
       ),
       child: child,
     );

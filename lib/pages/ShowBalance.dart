@@ -7,7 +7,7 @@ class ShowBalance extends StatelessWidget{
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: MyColors.backGroudColor,
+        backgroundColor: MyColors.backGroundColor,
         appBar: AppBar(
           iconTheme: IconThemeData(
               color: MyColors.textColor

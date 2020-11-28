@@ -33,7 +33,7 @@ class _ListOfIncomeCategoriesState extends State<ListOfIncomeCategories> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: MyColors.backGroudColor,
+        backgroundColor: MyColors.backGroundColor,
         appBar: AppBar(
           backgroundColor: MyColors.appBarColor,
           iconTheme: IconThemeData(
