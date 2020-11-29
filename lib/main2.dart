@@ -117,7 +117,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
 
   myFlatButton({String index}){
     return FlatButton(
-        color: MyColors.appBarColor,
+        color: MyColors.mainColor,
         height: 50,
         onPressed: () => _goTo(context, index),
         child: MyText(index)
@@ -175,7 +175,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
         ],
       ),
       centerTitle: true,
-      backgroundColor: MyColors.appBarColor,
+      backgroundColor: MyColors.mainColor,
     );
   }
 

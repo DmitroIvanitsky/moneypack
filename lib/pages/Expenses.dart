@@ -52,7 +52,7 @@ class _ExpensesState extends State<Expenses> {
           iconTheme: IconThemeData(
               color: MyColors.textColor
           ),
-          backgroundColor: MyColors.appBarColor,
+          backgroundColor: MyColors.mainColor2,
           title: _buildDropdownButton() // dropdown menu button
         ),
         body: Column(

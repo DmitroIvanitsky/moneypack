@@ -232,7 +232,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
 //////////// Functions /////////////////////////////////////////////////////////
   myFlatButton({String period}){
     return FlatButton(
-      color: MyColors.appBarColor,
+      color: MyColors.mainColor,
       height: 50,
       onPressed: () {},
       child: MyText(period)
@@ -291,7 +291,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
         ],
       ),
       centerTitle: true,
-      backgroundColor: MyColors.appBarColor,
+      backgroundColor: MyColors.mainColor,
     );
   }
 

@@ -86,7 +86,7 @@ class _AddIncomeState extends State<AddIncome> {
         iconTheme: IconThemeData(
           color: MyColors.textColor
         ),
-        backgroundColor: MyColors.appBarColor,
+        backgroundColor: MyColors.mainColor2,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children:[
@@ -138,9 +138,9 @@ class _AddIncomeState extends State<AddIncome> {
     return Theme(
       data: ThemeData.dark().copyWith(
         colorScheme: ColorScheme.dark(
-          primary: MyColors.appBarColor,
+          primary: MyColors.mainColor2,
           onPrimary: MyColors.textColor,
-          surface: MyColors.appBarColor,
+          surface: MyColors.mainColor2,
           onSurface: MyColors.textColor,
         ),
         dialogBackgroundColor: MyColors.backGroundColor,

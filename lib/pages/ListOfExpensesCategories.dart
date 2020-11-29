@@ -35,7 +35,7 @@ class _ListOfExpensesCategoriesState extends State<ListOfExpensesCategories> {
       child: Scaffold(
         backgroundColor: MyColors.backGroundColor,
         appBar: AppBar(
-          backgroundColor: MyColors.appBarColor,
+          backgroundColor: MyColors.mainColor2,
           iconTheme: IconThemeData(
               color: MyColors.textColor
           ),

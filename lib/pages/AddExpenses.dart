@@ -49,7 +49,7 @@ class _AddExpensesState extends State<AddExpenses> {
             iconTheme: IconThemeData(
                 color: MyColors.textColor
             ),
-            backgroundColor: MyColors.appBarColor,
+            backgroundColor: MyColors.mainColor2,
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -139,9 +139,9 @@ class _AddExpensesState extends State<AddExpenses> {
     return Theme(
       data: ThemeData.dark().copyWith(
         colorScheme: ColorScheme.dark(
-          primary: MyColors.appBarColor,
+          primary: MyColors.mainColor2,
           onPrimary: MyColors.textColor,
-          surface: MyColors.appBarColor,
+          surface: MyColors.mainColor2,
           onSurface: MyColors.textColor,
         ),
         dialogBackgroundColor: MyColors.backGroundColor,

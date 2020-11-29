@@ -45,7 +45,7 @@ class _IncomeState extends State<Income> {
           iconTheme: IconThemeData(
               color: MyColors.textColor
           ),
-          backgroundColor: MyColors.appBarColor,
+          backgroundColor: MyColors.mainColor2,
           title: Text(
             'Income',
             style: TextStyle(

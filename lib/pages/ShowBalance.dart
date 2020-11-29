@@ -12,7 +12,7 @@ class ShowBalance extends StatelessWidget{
           iconTheme: IconThemeData(
               color: MyColors.textColor
           ),
-          backgroundColor: MyColors.appBarColor,
+          backgroundColor: MyColors.mainColor2,
           title: Text(
             'Show Balance',
             style: TextStyle(

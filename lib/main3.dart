@@ -92,7 +92,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
               child: Center(child: viewInfo(index: 'Balance', category: balance)),
             ),
             SizedBox(height: 50),
-//////// low buttons to add notes
+            //////// low buttons to add notes
             Container(
               alignment: Alignment.bottomCenter,
               margin: EdgeInsets.only(left: 10, top: 20, right: 10),
@@ -112,7 +112,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
 
   myFlatButton({String index}){
     return FlatButton(
-        color: MyColors.appBarColor,
+        color: MyColors.mainColor,
         height: 50,
         onPressed: () => _goTo(context, index),
         child: MyText(index)
@@ -218,7 +218,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
         ],
       ),
       centerTitle: true,
-      backgroundColor: MyColors.appBarColor,
+      backgroundColor: MyColors.mainColor,
     );
   }
 }
