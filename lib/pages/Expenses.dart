@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tutorial/Objects/ExpenseNote.dart';
@@ -6,6 +7,7 @@ import 'package:flutter_tutorial/Objects/ListOfExpenses.dart';
 import 'package:flutter_tutorial/Utility/Storage.dart';
 import 'package:flutter_tutorial/setting/MyColors.dart';
 import 'package:flutter_tutorial/setting/MyText.dart';
+import 'package:flutter_tutorial/setting/menu_icon.dart';
 
 class Expenses extends StatefulWidget{
   final Function callback;
@@ -42,70 +44,105 @@ class _ExpensesState extends State<Expenses> {
 
   @override
   Widget build(BuildContext context) {
-//////////////////////////////////////////////////////////////////////////////////////
     List resultList = sumOfCategories();
-///////////////////////////////////////////////////////////////////////////////////////
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: MyColors.backGroundColor,
-        appBar: AppBar(
-          iconTheme: IconThemeData(
-              color: MyColors.textColor
-          ),
-          backgroundColor: MyColors.mainColor2,
-          title: _buildDropdownButton() // dropdown menu button
-        ),
-        body: Column(
-          children: [
-            // data row in the top of the list
-            _getData(),
-            // indicator cupertino when list is empty
-            //ListOfExpenses.list.isEmpty ?
-            resultList.isEmpty ?
-            Align(
-              child: CupertinoActivityIndicator(radius: 20),
-              alignment: Alignment.center,
-            ) :
-            // list of ExpenseNotes
-            Expanded(
-              child: ListView.builder(
-                //itemCount: ListOfExpenses.list.length,
-                itemCount: resultList.length,
-                itemBuilder: (context, index){
-                  //if (_isInFilter(ListOfExpenses.list[index].date))
-                  //if (_isInFilter(resultList[index].date))
-                  return Column(
-                    children: [
-                      Row(
-                        children: [
-                          // row of ExpenseNote
-                          //_buildListItem(ListOfExpenses.list[index]), // function return row of ExpenseNote
-                          _buildListItem(resultList[index]),
-                          // delete row button
-                          IconButton(
-                            icon: Icon(
-                                Icons.delete
-                            ),
-                            color: MyColors.textColor,
-                            onPressed: () async {
-                              ListOfExpenses.list.removeAt(index);
-                              await Storage.saveString(jsonEncode(new ListOfExpenses().toJson()), 'ExpenseNote');
-                              widget.callback();
-                              setState(() {});
-                            }
-                          )
-                        ],
-                      ),
-                      Divider(color: MyColors.textColor),
-                    ],
-                  );
-                // else return Container();
-                },
-              ),
-            ),
-          ],
-        ),
+        appBar: buildAppBar(),
+        body: buildBody(resultList),
       ),
+    );
+  }
+
+  Widget buildAppBar() {
+    return AppBar(
+      iconTheme: IconThemeData(
+          color: MyColors.textColor
+      ),
+      backgroundColor: MyColors.mainColor,
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          MyText('Expenses'),
+          _buildDropdownButton()
+        ],
+      ), // dropdown menu button
+    );
+  }
+
+  Widget buildBody(List resultList) {
+    return Column(
+      children: [
+        // data row in the top of the list
+        _getData(),
+        resultList.isEmpty ?
+        Align(
+          child: CupertinoActivityIndicator(radius: 20),
+          alignment: Alignment.center,
+        ) :
+        // list of ExpenseNotes
+        Expanded(
+          child: ListView.builder(
+            itemCount: resultList.length,
+            itemBuilder: (context, index){
+              return Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(left: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        MyText(resultList[index].category),
+                        Row(
+                          children: [
+                            MyText('${resultList[index].sum}'),
+                            IconButton(
+                              icon: Icon(
+                                  Icons.delete
+                              ),
+                              color: MyColors.textColor,
+                              onPressed: () async {
+                                ListOfExpenses.list.removeAt(index);
+                                await Storage.saveString(jsonEncode(new ListOfExpenses().toJson()), 'ExpenseNote');
+                                widget.callback();
+                                setState(() {});
+                              }
+                            ),
+                            IconButton(
+                              icon: Icon(Menu_icon.kebab_vertical, color: MyColors.textColor),
+                              onPressed: () => ExpansionTile(
+                                backgroundColor: MyColors.backGroundColor,
+                                onExpansionChanged: (e) {},
+                                title: MyText('1'),
+                                children: [
+                                  MyText('1'),
+                                  MyText('1'),
+                                  MyText('1'),
+                                  MyText('1'),
+                                ],
+                              )
+                            )
+                            // IconButton(
+                            //     icon: Icon(Menu_icon.kebab_vertical, color: MyColors.textColor),
+                            //     onPressed: () {
+                            //       for(ExpenseNote e in expandedCategory(resultList[index].category)){
+                            //         print('${e.category} ' + '${e.sum}');
+                            //       }
+                            //     }
+                            // )
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  Divider(color: MyColors.textColor),
+                ],
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 
@@ -136,6 +173,15 @@ class _ExpensesState extends State<Expenses> {
       resultList.add(ExpenseNote(category: currentExpenseNote.category, sum: sum));
     }
     return resultList;
+  }
+
+  List expandedCategory(String category) {
+    List middleList = List();
+    for (int i = 0; i < ListOfExpenses.list.length; i++) {
+      if (_isInFilter(ListOfExpenses.list[i].date) && ListOfExpenses.list[i].category == category)
+        middleList.add(ListOfExpenses.list[i]);
+    }
+    return middleList;
   }
 
   // dropdown menu button
@@ -298,32 +344,6 @@ class _ExpensesState extends State<Expenses> {
     }
   }
 
-  // function return row of ExpenseNote
-  _buildListItem(ExpenseNote value) {
-
-    return Container(
-      height: 50,
-      child: Padding(
-        padding: EdgeInsets.only(left: 10),
-        child: Row(
-          //mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Container(
-              width: 340,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  MyText(value.category, TextAlign.start),
-                  //SizedBox(width: 250),
-                  MyText('${value.sum}', TextAlign.end),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
 
 

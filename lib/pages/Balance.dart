@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tutorial/setting/MyColors.dart';
+import 'package:flutter_tutorial/setting/MyText.dart';
 
 class ShowBalance extends StatelessWidget{
 
@@ -9,16 +10,9 @@ class ShowBalance extends StatelessWidget{
       child: Scaffold(
         backgroundColor: MyColors.backGroundColor,
         appBar: AppBar(
-          iconTheme: IconThemeData(
-              color: MyColors.textColor
-          ),
-          backgroundColor: MyColors.mainColor2,
-          title: Text(
-            'Show Balance',
-            style: TextStyle(
-              color: MyColors.textColor,
-            ),
-          ),
+          iconTheme: IconThemeData(color: MyColors.textColor),
+          backgroundColor: MyColors.mainColor,
+          title: MyText('Balance'),
         ),
       ),
     );
