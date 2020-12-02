@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tutorial/Objects/ExpenseNote.dart';
@@ -37,7 +36,7 @@ class _Expenses2State extends State<Expenses2> {
     }
   }
 
-  void r(){
+  void stateFunc(){
     setState(() {
     });
   }
@@ -83,18 +82,17 @@ class _Expenses2State extends State<Expenses2> {
         ) :
         // list of ExpenseNotes
         Expanded(
-            child: ExpansionTile(
-              backgroundColor: Colors.red,
-              onExpansionChanged: (e) {},
-              title:  Icon(Menu_icon.kebab_vertical, color: MyColors.textColor),
-              children: [
-                MyText('1'),
-                MyText('1'),
-                MyText('1'),
-                MyText('1'),
-              ],
-
-            )
+          child: ExpansionTile(
+            backgroundColor: Colors.red,
+            onExpansionChanged: (e) {},
+            title:  Icon(Menu_icon.kebab_vertical, color: MyColors.textColor),
+            children: [
+              MyText('1'),
+              MyText('1'),
+              MyText('1'),
+              MyText('1'),
+            ],
+          )
         ),
       ],
     );
