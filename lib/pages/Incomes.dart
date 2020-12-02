@@ -8,15 +8,15 @@ import 'package:flutter_tutorial/Utility/Storage.dart';
 import 'package:flutter_tutorial/setting/MyColors.dart';
 import 'package:flutter_tutorial/setting/MyText.dart';
 
-class Income extends StatefulWidget{
+class Incomes extends StatefulWidget{
   final Function callback;
-  Income({this.callback});
+  Incomes({this.callback});
 
   @override
-  _IncomeState createState() => _IncomeState();
+  _IncomesState createState() => _IncomesState();
 }
 
-class _IncomeState extends State<Income> {
+class _IncomesState extends State<Incomes> {
   DateTime date = DateTime.now();
   DateTime oldDate;
   String selMode = 'Day';
