@@ -6,6 +6,7 @@ import 'package:flutter_tutorial/Utility/Storage.dart';
 import 'package:flutter_tutorial/pages/AddExpense.dart';
 import 'package:flutter_tutorial/pages/AddIncome.dart';
 import 'package:flutter_tutorial/pages/Expenses.dart';
+import 'package:flutter_tutorial/pages/Expenses2.dart';
 import 'package:flutter_tutorial/pages/Incomes.dart';
 import 'package:flutter_tutorial/pages/Balance.dart';
 import 'package:flutter_tutorial/setting/MyColors.dart';
@@ -279,7 +280,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
       case 'Expenses':
         Navigator.push(context,
             MaterialPageRoute<void>(builder: (BuildContext context) {
-              return Expenses(callback: stateFunc);
+              return Expenses2(callback: stateFunc);
             }));
         break;
     }

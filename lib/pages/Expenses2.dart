@@ -9,15 +9,15 @@ import 'package:flutter_tutorial/setting/MyColors.dart';
 import 'package:flutter_tutorial/setting/MyText.dart';
 import 'package:flutter_tutorial/setting/menu_icon.dart';
 
-class Expenses extends StatefulWidget{
+class Expenses2 extends StatefulWidget{
   final Function callback;
-  Expenses({this.callback});
+  Expenses2({this.callback});
 
   @override
-  _ExpensesState createState() => _ExpensesState();
+  _Expenses2State createState() => _Expenses2State();
 }
 
-class _ExpensesState extends State<Expenses> {
+class _Expenses2State extends State<Expenses2> {
   DateTime date = DateTime.now();
   DateTime oldDate;
   String selMode = 'Day';
@@ -83,50 +83,18 @@ class _ExpensesState extends State<Expenses> {
         ) :
         // list of ExpenseNotes
         Expanded(
-          child: ListView.builder(
-            itemCount: resultList.length,
-            itemBuilder: (context, index){
-              return Column(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(left: 10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        MyText(resultList[index].category),
-                        Row(
-                          children: [
-                            MyText('${resultList[index].sum}'),
-                            IconButton(
-                              icon: Icon(
-                                  Icons.delete
-                              ),
-                              color: MyColors.textColor,
-                              onPressed: () async {
-                                ListOfExpenses.list.removeAt(index);
-                                await Storage.saveString(jsonEncode(new ListOfExpenses().toJson()), 'ExpenseNote');
-                                widget.callback();
-                                setState(() {});
-                              }
-                            ),
-                            IconButton(
-                                icon: Icon(Menu_icon.kebab_vertical, color: MyColors.textColor),
-                                onPressed: () {
-                                  for(ExpenseNote e in expandedCategory(resultList[index].category)){
-                                    print('${e.category} ' + '${e.sum}');
-                                  }
-                                }
-                            )
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  Divider(color: MyColors.textColor),
-                ],
-              );
-            },
-          ),
+            child: ExpansionTile(
+              backgroundColor: Colors.red,
+              onExpansionChanged: (e) {},
+              title:  Icon(Menu_icon.kebab_vertical, color: MyColors.textColor),
+              children: [
+                MyText('1'),
+                MyText('1'),
+                MyText('1'),
+                MyText('1'),
+              ],
+
+            )
         ),
       ],
     );
