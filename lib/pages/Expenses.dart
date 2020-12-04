@@ -170,6 +170,23 @@ class _ExpensesState extends State<Expenses> {
     return middleList;
   }
 
+  // backup function
+  expansionFunc(){
+    Expanded(
+        child: ExpansionTile(
+          backgroundColor: Colors.red,
+          onExpansionChanged: (e) {},
+          title:  Icon(Menu_icon.kebab_vertical, color: MyColors.textColor),
+          children: [
+            MyText('1'),
+            MyText('1'),
+            MyText('1'),
+            MyText('1'),
+          ],
+        )
+    );
+  }
+
   // dropdown menu button
   _buildDropdownButton() {
     return DropdownButton(

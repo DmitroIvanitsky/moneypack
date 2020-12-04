@@ -280,7 +280,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
       case 'Expenses':
         Navigator.push(context,
             MaterialPageRoute<void>(builder: (BuildContext context) {
-              return Expenses(callback: stateFunc);
+              return Expenses2(callback: stateFunc);
             }));
         break;
     }

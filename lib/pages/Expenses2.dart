@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_tutorial/Objects/ExpenseNote.dart';
-import 'package:flutter_tutorial/Objects/ListOfExpenses.dart';
-import 'package:flutter_tutorial/Utility/Storage.dart';
-import 'package:flutter_tutorial/setting/MyColors.dart';
-import 'package:flutter_tutorial/setting/MyText.dart';
-import 'package:flutter_tutorial/setting/menu_icon.dart';
+import '../Objects/ExpenseNote.dart';
+import '../Objects/ListOfExpenses.dart';
+import '../Utility/Storage.dart';
+import '../setting/MyColors.dart';
+import '../setting/MyText.dart';
+import '../setting/menu_icon.dart';
 
 class Expenses2 extends StatefulWidget{
   final Function callback;
@@ -81,19 +81,26 @@ class _Expenses2State extends State<Expenses2> {
           alignment: Alignment.center,
         ) :
         // list of ExpenseNotes
-        Expanded(
-          child: ExpansionTile(
-            backgroundColor: Colors.red,
-            onExpansionChanged: (e) {},
-            title:  Icon(Menu_icon.kebab_vertical, color: MyColors.textColor),
-            children: [
-              MyText('1'),
-              MyText('1'),
-              MyText('1'),
-              MyText('1'),
-            ],
-          )
-        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            MyText('category'),
+            Expanded(
+              child: ExpansionTile(
+                backgroundColor: MyColors.backGroundColor,
+                onExpansionChanged: (e) {},
+                // title:  Icon(Menu_icon.kebab_vertical, color: MyColors.textColor),
+                children: [
+                  Row(
+                    children: [
+                      MyText('1')
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        )
       ],
     );
   }
@@ -135,6 +142,50 @@ class _Expenses2State extends State<Expenses2> {
     }
     return middleList;
   }
+
+  // ListView expandedCatFunc(String category){
+  //   List middleList = List();
+  //   for (int i = 0; i < ListOfExpenses.list.length; i++) {
+  //     if (_isInFilter(ListOfExpenses.list[i].date) && ListOfExpenses.list[i].category == category)
+  //       middleList.add(ListOfExpenses.list[i]);
+  //   }
+  //   return ListView.builder(
+  //     itemCount: middleList.length,
+  //     itemBuilder: (context, index){
+  //       return Column(
+  //         children: [
+  //           Padding(
+  //             padding: EdgeInsets.only(left: 10),
+  //             child: Row(
+  //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //               children: [
+  //                 MyText(middleList[index].category),
+  //                 Row(
+  //                   children: [
+  //                     MyText('${middleList[index].sum}'),
+  //                     IconButton(
+  //                       icon: Icon(
+  //                           Icons.delete
+  //                       ),
+  //                       color: MyColors.textColor,
+  //                       onPressed: () async {
+  //                         ListOfExpenses.list.removeAt(index);
+  //                         await Storage.saveString(jsonEncode(new ListOfExpenses().toJson()), 'ExpenseNote');
+  //                         widget.callback();
+  //                         setState(() {});
+  //                       }
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //           Divider(color: MyColors.textColor),
+  //         ],
+  //       );
+  //     }
+  //   );
+  // }
 
   // dropdown menu button
   _buildDropdownButton() {
