@@ -30,7 +30,7 @@ class _AddIncomeState extends State<AddIncome> {
 
   initList() async{
     _list = await Storage.getList('Income');
-    _list == null || _list.isEmpty ? category = 'category' : category = _list[0];
+    _list == null || _list.isEmpty ? category = 'Категория дохода' : category = _list[0];
     setState(() {});
   }
 
@@ -47,6 +47,34 @@ class _AddIncomeState extends State<AddIncome> {
         backgroundColor: MyColors.backGroundColor,
         appBar: buildAppBar(),
         body: buildBody(),
+      ),
+    );
+  }
+
+  Widget buildAppBar() {
+    return AppBar(
+      iconTheme: IconThemeData(
+          color: MyColors.textColor
+      ),
+      backgroundColor: MyColors.mainColor,
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children:[
+          MyText('Добавить доход'),
+          IconButton(
+            iconSize: 35,
+            icon: Icon(
+              Icons.done,
+              color: MyColors.textColor,
+            ),
+            onPressed: (){
+              if (category == "category" || sum == null) return;
+              _createIncomeNote(date, category, sum);
+              widget.callback();
+              Navigator.pop(context);
+            },
+          )
+        ],
       ),
     );
   }
@@ -68,11 +96,11 @@ class _AddIncomeState extends State<AddIncome> {
             Divider(),
             TextFormField(
               decoration: const InputDecoration(
-                hintText: 'Enter sum',
+                hintText: 'Введите сумму',
               ),
               validator: (value) {
                 if (value.isEmpty) {
-                  return 'Please enter sum';
+                  return 'Пожалуйста введите сумму';
                 }
                 return null;
               },
@@ -84,41 +112,13 @@ class _AddIncomeState extends State<AddIncome> {
     );
   }
 
-  Widget buildAppBar() {
-    return AppBar(
-        iconTheme: IconThemeData(
-          color: MyColors.textColor
-        ),
-        backgroundColor: MyColors.mainColor,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children:[
-            MyText('Add Income'),
-            IconButton(
-              iconSize: 35,
-              icon: Icon(
-                  Icons.done,
-                color: MyColors.textColor,
-              ),
-              onPressed: (){
-                if (category == "category" || sum == null) return;
-                _createIncomeNote(date, category, sum);
-                widget.callback();
-                Navigator.pop(context);
-              },
-            )
-          ],
-        ),
-      );
-  }
-
   Widget getDateWidget(){
     return GestureDetector(
       onTap: _onDateTap,
       child: (date != null)? MyText(
         date.toString().substring(0, 10),
         TextAlign.left,
-      ) : MyText('select date'),
+      ) : MyText('Выберите дату'),
     );
   }
 
@@ -168,4 +168,5 @@ class _AddIncomeState extends State<AddIncome> {
     ListOfIncome.list.add(incomeNote);
     await Storage.saveString(jsonEncode(ListOfIncome().toJson()), 'IncomeNote');
   }
+
 }

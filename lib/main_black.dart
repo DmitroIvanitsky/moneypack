@@ -11,6 +11,8 @@ import 'package:flutter_tutorial/pages/Balance.dart';
 import 'package:flutter_tutorial/setting/MyColors.dart';
 import 'package:flutter_tutorial/setting/MyText.dart';
 
+/// this is the file in which i try dark theme with neon light
+
 void main() => runApp(MaterialApp(
   debugShowCheckedModeBanner: true,
   home: FlutterTutorialApp(),
@@ -25,7 +27,7 @@ class FlutterTutorialApp extends StatefulWidget {
 class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
   DateTime date = DateTime.now();
   DateTime lastWeekDay = DateTime.now().subtract(Duration(days: DateTime.now().weekday)).add(Duration(days: 7));
-  String selMode = 'День';
+  String selMode = 'Day';
   double income = 0;
   double expense = 0;
   double balance = 0;
@@ -77,45 +79,25 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        backgroundColor: MyColors.backGroundColor,
-        drawer: buildDrawer(),
+        backgroundColor: MyColors.backGroundColor2,
         appBar: buildAppBar(),
         body: buildBody(),
       )
     );
   }
 
-  Widget buildDrawer(){
-    return Drawer(
-      child: Container(
-        color: MyColors.backGroundColor,
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(top: 25),
-              child: MyText('Настройки'),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 25),
-              child: MyText('Тема'),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 25),
-              child: MyText('Язык'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget buildAppBar() {
     return AppBar(
-      iconTheme: IconThemeData(color: MyColors.textColor),
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          MyText('Учёт'),
+          IconButton(
+            color: Colors.black,
+            onPressed: () => print('press'),
+            icon: Icon(Icons.list),
+          ),
+          // SizS
+          MyText('Finance'),
           buildDropdownButton(),
         ],
       ),
@@ -141,7 +123,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
             ),
             height: size.height * 0.075,
             margin: EdgeInsets.only(left: 10, right: 10),
-            child: Center(child: viewInfo(index: 'Доход', category: income)),
+            child: Center(child: viewInfo(index: 'Incomes', category: income)),
           ),
 
           // expense row
@@ -153,7 +135,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
             ),
             height: size.height * 0.075,
             margin: EdgeInsets.only(left: 10, right: 10, top: 10),
-            child: Center(child: viewInfo(index: 'Расход', category: expense)),
+            child: Center(child: viewInfo(index: 'Expenses', category: expense)),
           ),
 
           // balance row
@@ -165,7 +147,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
             ),
             height: size.height * 0.075,
             margin: EdgeInsets.only(left: 10, right: 10, top: 10),
-            child: Center(child: viewInfo(index: 'Баланс', category: balance)),
+            child: Center(child: viewInfo(index: 'Balance', category: balance)),
           ),
 
           // low buttons to add notes
@@ -179,10 +161,10 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
               children: [
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 15),
-                  child: myFlatButton(index: 'Добавить расход', width: size.width/1.3),
+                  child: myFlatButton(index: 'Add Expense', width: size.width/1.3),
                 ),
                 Padding(padding: EdgeInsets.symmetric(vertical: 15),
-                  child: myFlatButton(index: 'Добавить доход', width: size.width/1.3),
+                  child: myFlatButton(index: 'Add Income', width: size.width/1.3),
                 )
               ],
             ),
@@ -192,23 +174,24 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
   }
 
   myFlatButton({String index, double width = 200}){
-    Color buttonColor;
-    if (index == 'Добавить расход')
-      buttonColor = MyColors.expenseButton;
-    if (index == 'Добавить доход')
-      buttonColor = MyColors.incomeButton;
+    Color textColor;
+    if (index == 'Add Expense')
+      textColor = MyColors.expenseButton;
+    if (index == 'Add Income')
+      textColor = MyColors.incomeButton;
     return Container(
       height: 70,
       width: width,
       decoration: BoxDecoration(
-          color: buttonColor,
+          color: MyColors.backGroundColor2,
           //boxShadow: [BoxShadow(color: buttonColor, blurRadius: 10, spreadRadius: 1),],
           borderRadius: BorderRadius.all(Radius.circular(25),
-          )
+          ),
+          boxShadow: [BoxShadow(color: MyColors.blurColor, blurRadius: 15, spreadRadius: 5),]
       ),
       child: FlatButton(
           onPressed: () => _goTo(context, index),
-          child: MyText(index)
+          child: Text(index,style: TextStyle(color: textColor, fontSize: 20), )
       ),
     );
   }
@@ -217,23 +200,23 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
     return DropdownButton(
         hint: MyText(selMode),
         items: [
-          DropdownMenuItem(value: 'День', child: MyText('День')),
-          DropdownMenuItem(value: 'Неделя', child: MyText('Неделя')),
-          DropdownMenuItem(value: 'Месяц', child: MyText('Месяц')),
-          DropdownMenuItem(value: 'Год', child: MyText('Год')),
+          DropdownMenuItem(value: 'Day', child: MyText('Day')),
+          DropdownMenuItem(value: 'Week', child: MyText('Week')),
+          DropdownMenuItem(value: 'Month', child: MyText('Month')),
+          DropdownMenuItem(value: 'Year', child: MyText('Year')),
         ],
         onChanged: (String newValue) {
-          if (selMode == 'День' && newValue != 'День') {
+          if (selMode == 'Day' && newValue != 'Day') {
             lastWeekDay = DateTime.now().subtract(Duration(days: DateTime.now().weekday)).add(Duration(days: 7));
           }
-          if (selMode == 'Неделя' && newValue != 'Неделя') {
+          if (selMode == 'Week' && newValue != 'Week') {
             date = DateTime.now();
           }
-          if (selMode == 'Месяц' && newValue != 'Месяц') {
+          if (selMode == 'Month' && newValue != 'Month') {
             date = DateTime.now();
             lastWeekDay = DateTime.now().subtract(Duration(days: DateTime.now().weekday)).add(Duration(days: 7));
           }
-          if (selMode == 'Год' && newValue != 'Год') {
+          if (selMode == 'Year' && newValue != 'Year') {
             date = DateTime.now();
             lastWeekDay = DateTime.now().subtract(Duration(days: DateTime.now().weekday)).add(Duration(days: 7));
           }
@@ -272,31 +255,31 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
 
   _goTo(BuildContext context, String index) {
     switch (index) {
-      case 'Добавить расход':
+      case 'Add Expense':
         Navigator.push(context,
             MaterialPageRoute<void>(builder: (BuildContext context) {
               return AddExpenses(callBack: stateFunc);
             }));
         break;
-      case 'Добавить доход':
+      case 'Add Income':
         Navigator.push(context,
             MaterialPageRoute<void>(builder: (BuildContext context) {
               return AddIncome(callback: stateFunc);
             }));
         break;
-      case 'Баланс':
+      case 'Balance':
         Navigator.push(context,
             MaterialPageRoute<void>(builder: (BuildContext context) {
               return ShowBalance();
             }));
         break;
-      case 'Доход':
+      case 'Incomes':
         Navigator.push(context,
             MaterialPageRoute<void>(builder: (BuildContext context) {
               return Incomes(callback: stateFunc);
             }));
         break;
-      case 'Расход':
+      case 'Expenses':
         Navigator.push(context,
             MaterialPageRoute<void>(builder: (BuildContext context) {
               return Expenses(callback: stateFunc);
@@ -309,24 +292,24 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
     if (d == null) return false;
 
     switch (selMode) {
-      case 'День' :
+      case 'Day' :
         return
           d.year == date.year &&
               d.month == date.month &&
               d.day == date.day;
         break;
-      case 'Неделя':
+      case 'Week':
         return
           d.year == lastWeekDay.year &&
               //d.month == lastWeekDay.month &&
               d.isBefore(lastWeekDay) && d.isAfter(lastWeekDay.subtract(Duration(days: 7)));
         break;
-      case 'Месяц' :
+      case 'Month' :
         return
           d.year == date.year &&
               d.month == date.month;
         break;
-      case 'Год' :
+      case 'Year' :
         return
           d.year == date.year;
         break;
@@ -335,7 +318,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
 
   _getData(){
     switch(selMode){
-      case 'День':
+      case 'Day':
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -362,7 +345,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
             ),
           ],
         );
-      case 'Неделя':
+      case 'Week':
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -392,7 +375,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
             ),
           ],
         );
-      case 'Месяц':
+      case 'Month':
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -417,7 +400,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
             ),
           ],
         );
-      case 'Год':
+      case 'Year':
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

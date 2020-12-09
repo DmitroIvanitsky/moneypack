@@ -46,7 +46,7 @@ class _ListOfIncomeCategoriesState extends State<ListOfIncomeCategories> {
       iconTheme: IconThemeData(
           color: MyColors.textColor
       ),
-      title: MyText('Categories'),
+      title: MyText('Категории дохода'),
     );
   }
 
@@ -54,7 +54,7 @@ class _ListOfIncomeCategoriesState extends State<ListOfIncomeCategories> {
     return Column(
       children: [
         Expanded(
-          child: list.isEmpty ? CupertinoActivityIndicator(radius: 20) :
+          child: list.isEmpty ? MyText('Добавьте категорию') :
           ListView.builder(
             itemCount: list.length,
             itemBuilder: (context, index){

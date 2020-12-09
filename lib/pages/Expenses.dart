@@ -1,13 +1,12 @@
 import 'dart:convert';
-import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_tutorial/Objects/ExpenseNote.dart';
-import 'package:flutter_tutorial/Objects/ListOfExpenses.dart';
-import 'package:flutter_tutorial/Utility/Storage.dart';
-import 'package:flutter_tutorial/setting/MyColors.dart';
-import 'package:flutter_tutorial/setting/MyText.dart';
-import 'package:flutter_tutorial/setting/menu_icon.dart';
+import '../Objects/ExpenseNote.dart';
+import '../Objects/ListOfExpenses.dart';
+import '../Utility/Storage.dart';
+import '../setting/MyColors.dart';
+import '../setting/MyText.dart';
+import '../setting/menu_icon.dart';
 
 class Expenses extends StatefulWidget{
   final Function callback;
@@ -20,7 +19,7 @@ class Expenses extends StatefulWidget{
 class _ExpensesState extends State<Expenses> {
   DateTime date = DateTime.now();
   DateTime oldDate;
-  String selMode = 'Day';
+  String selMode = 'День';
 
   @override
   void initState() {
@@ -37,7 +36,7 @@ class _ExpensesState extends State<Expenses> {
     }
   }
 
-  void r(){
+  void stateFunc(){
     setState(() {
     });
   }
@@ -64,7 +63,7 @@ class _ExpensesState extends State<Expenses> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          MyText('Expenses'),
+          MyText('Расход'),
           _buildDropdownButton()
         ],
       ), // dropdown menu button
@@ -78,56 +77,60 @@ class _ExpensesState extends State<Expenses> {
         _getData(),
         resultList.isEmpty ?
         Align(
-          child: CupertinoActivityIndicator(radius: 20),
+          child: MyText('Расходов нет'),
           alignment: Alignment.center,
         ) :
-        // list of ExpenseNotes
         Expanded(
           child: ListView.builder(
-            itemCount: resultList.length,
-            itemBuilder: (context, index){
-              return Column(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(left: 10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        MyText(resultList[index].category),
-                        Row(
-                          children: [
-                            MyText('${resultList[index].sum}'),
-                            IconButton(
-                              icon: Icon(
-                                  Icons.delete
-                              ),
-                              color: MyColors.textColor,
-                              onPressed: () async {
-                                ListOfExpenses.list.removeAt(index);
-                                await Storage.saveString(jsonEncode(new ListOfExpenses().toJson()), 'ExpenseNote');
-                                widget.callback();
-                                setState(() {});
-                              }
+              itemCount: resultList.length,
+              itemBuilder: (context, index){
+                return Column(
+                  children: [
+                    ExpansionTile(
+                      title: Column(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(left: 5),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                MyText(resultList[index].category),
+                                Row(
+                                  children: [
+                                    MyText('${resultList[index].sum}'),
+                                    // IconButton(
+                                    //   icon: Icon(Icons.delete),
+                                    //   color: MyColors.textColor,
+                                    //   onPressed: () async {
+                                    //     ListOfExpenses.list.removeAt(index);
+                                    //     await Storage.saveString(jsonEncode(new ListOfExpenses().toJson()), 'ExpenseNote');
+                                    //     widget.callback();
+                                    //     setState(() {});
+                                    //   }
+                                    // ),
+                                  ],
+                                ),
+                              ],
                             ),
-                            IconButton(
-                                icon: Icon(Menu_icon.kebab_vertical, color: MyColors.textColor),
-                                onPressed: () {
-                                  for(ExpenseNote e in expandedCategory(resultList[index].category)){
-                                    print('${e.category} ' + '${e.sum}');
-                                  }
-                                }
-                            )
-                          ],
-                        ),
+                          ),
+                          //Divider(color: MyColors.textColor),
+                        ],
+                      ),
+                      backgroundColor: MyColors.backGroundColor,
+                      onExpansionChanged: (e) {},
+                      children: [
+                        Container(
+                          height: double.maxFinite,
+                          //height: 200, // how to optimize height to max needed
+                          child: expandedCategory(resultList[index].category),
+                        )
                       ],
                     ),
-                  ),
-                  Divider(color: MyColors.textColor),
-                ],
-              );
-            },
+                  ],
+                );
+              }
           ),
-        ),
+        )
       ],
     );
   }
@@ -161,29 +164,49 @@ class _ExpensesState extends State<Expenses> {
     return resultList;
   }
 
-  List expandedCategory(String category) {
+  /// list which expanded category by single notes
+  ListView expandedCategory(String category) {
     List middleList = List();
     for (int i = 0; i < ListOfExpenses.list.length; i++) {
       if (_isInFilter(ListOfExpenses.list[i].date) && ListOfExpenses.list[i].category == category)
         middleList.add(ListOfExpenses.list[i]);
     }
-    return middleList;
-  }
-
-  // backup function
-  expansionFunc(){
-    Expanded(
-        child: ExpansionTile(
-          backgroundColor: Colors.red,
-          onExpansionChanged: (e) {},
-          title:  Icon(Menu_icon.kebab_vertical, color: MyColors.textColor),
-          children: [
-            MyText('1'),
-            MyText('1'),
-            MyText('1'),
-            MyText('1'),
-          ],
-        )
+    /// ListView.getChildren and expanded to children
+    return ListView.builder(
+        itemCount: middleList.length,
+        itemBuilder: (context, index) {
+          return Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.only(left: 21),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    MyText(middleList[index].category),
+                    Row(
+                      children: [
+                        MyText('${middleList[index].sum}'),
+                        IconButton(
+                          icon: Icon(Icons.delete),
+                          color: MyColors.textColor,
+                          onPressed: () async {
+                            ListOfExpenses.list.removeAt(index);
+                            await Storage.saveString(jsonEncode(
+                                new ListOfExpenses().toJson()),
+                                'ExpenseNote');
+                            widget.callback();
+                            setState(() {});
+                          }
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              //Divider(color: MyColors.textColor),
+            ],
+          );
+        }
     );
   }
 
@@ -192,18 +215,18 @@ class _ExpensesState extends State<Expenses> {
     return DropdownButton(
         hint: MyText(selMode),
         items: [
-          DropdownMenuItem(value: 'Day', child: MyText('Day')),
-          DropdownMenuItem(value: 'Week', child: MyText('Week')),
-          DropdownMenuItem(value: 'Month', child: MyText('Month')),
-          DropdownMenuItem(value: 'Year', child: MyText('Year')),
+          DropdownMenuItem(value: 'День', child: MyText('День')),
+          DropdownMenuItem(value: 'Неделя', child: MyText('Неделя')),
+          DropdownMenuItem(value: 'Месяц', child: MyText('Месяц')),
+          DropdownMenuItem(value: 'Год', child: MyText('Год')),
         ],
         onChanged: (String newValue) {
-          if (selMode != 'Week' && newValue == 'Week') {
+          if (selMode != 'Неделя' && newValue == 'Неделя') {
             // oldDate = date;
             date = date.subtract(Duration(days: date.weekday + 1)).add(Duration(days: 7));
           }
 
-          if (selMode == 'Week' && newValue != 'Week' && oldDate != null) {
+          if (selMode == 'Неделя' && newValue != 'Неделя' && oldDate != null) {
             //date = oldDate;
             date = DateTime.now();
           }
@@ -220,24 +243,24 @@ class _ExpensesState extends State<Expenses> {
     if (d == null) return false;
 
     switch (selMode) {
-      case 'Day' :
+      case 'День' :
         return
             d.year == date.year &&
             d.month == date.month &&
             d.day == date.day;
         break;
-      case 'Week':
+      case 'Неделя':
         return
             d.year == date.year &&
             d.month == date.month &&
             d.isBefore(date) && d.isAfter(date.subtract(Duration(days: 7)));
             break;
-      case 'Month' :
+      case 'Месяц' :
         return
             d.year == date.year &&
             d.month == date.month;
         break;
-      case 'Year' :
+      case 'Год' :
         return
             d.year == date.year;
         break;
@@ -247,7 +270,7 @@ class _ExpensesState extends State<Expenses> {
   // function return date with buttons
   _getData(){
     switch(selMode){
-      case 'Day':
+      case 'День':
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -270,7 +293,7 @@ class _ExpensesState extends State<Expenses> {
             ),
           ],
         );
-      case 'Week':
+      case 'Неделя':
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -298,7 +321,7 @@ class _ExpensesState extends State<Expenses> {
             ),
           ],
         );
-      case 'Month':
+      case 'Месяц':
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -321,7 +344,7 @@ class _ExpensesState extends State<Expenses> {
             ),
           ],
         );
-      case 'Year':
+      case 'Год':
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

@@ -20,6 +20,7 @@ class _AddExpensesState extends State<AddExpenses> {
   DateTime date = DateTime.now();
   String category = '';
   double sum;
+  String comment = '';
   List<String> _list = [];
 
   @override
@@ -30,7 +31,7 @@ class _AddExpensesState extends State<AddExpenses> {
 
   initList() async{
     _list = await Storage.getList('Expenses');
-    _list == null || _list.isEmpty ? category = 'category' : category = _list[0];
+    _list == null || _list.isEmpty ? category = 'Категория расхода' : category = _list[0];
     setState(() {});
   }
 
@@ -60,7 +61,7 @@ class _AddExpensesState extends State<AddExpenses> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          MyText('Add Expense'),
+          MyText('Добавить расход'),
           IconButton(
             iconSize: 35,
             icon: Icon(
@@ -99,15 +100,21 @@ class _AddExpensesState extends State<AddExpenses> {
             // sum row
             TextFormField(
               decoration: const InputDecoration(
-                hintText: 'Enter sum',
+                hintText: 'Введите сумму',
               ),
               validator: (value) {
                 if (value.isEmpty) {
-                  return 'Please enter sum';
+                  return 'Пожалуйста введите сумму';
                 }
                 return null;
               },
               onChanged: (v) => sum = double.parse(v),
+            ),
+            TextFormField(
+              decoration: const InputDecoration(
+                hintText: 'Введите коментарий',
+              ),
+              //onChanged: (v) => comment = (v),
             ),
           ],
         ),
@@ -121,7 +128,7 @@ class _AddExpensesState extends State<AddExpenses> {
       child: (date != null)? MyText(
         date.toString().substring(0, 10),
         TextAlign.left,
-      ) : MyText('select date'),
+      ) : MyText('Выберите дату'),
     );
   }
 
@@ -175,7 +182,6 @@ class _AddExpensesState extends State<AddExpenses> {
       child: child,
     );
   }
-
 
 }
 

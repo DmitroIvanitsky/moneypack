@@ -1,12 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_tutorial/Objects/ExpenseNote.dart';
-import 'package:flutter_tutorial/Objects/IncomeNote.dart';
-import 'package:flutter_tutorial/Objects/ListOfIncome.dart';
-import 'package:flutter_tutorial/Utility/Storage.dart';
-import 'package:flutter_tutorial/setting/MyColors.dart';
-import 'package:flutter_tutorial/setting/MyText.dart';
+import '../Objects/IncomeNote.dart';
+import '../Objects/ListOfIncome.dart';
+import '../Utility/Storage.dart';
+import '../setting/MyColors.dart';
+import '../setting/MyText.dart';
 
 class Incomes extends StatefulWidget{
   final Function callback;
@@ -19,8 +18,7 @@ class Incomes extends StatefulWidget{
 class _IncomesState extends State<Incomes> {
   DateTime date = DateTime.now();
   DateTime oldDate;
-  String selMode = 'Day';
-  Size size;
+  String selMode = 'День';
 
   void initState(){
     loadIncomeList();
@@ -36,67 +34,100 @@ class _IncomesState extends State<Incomes> {
     }
   }
 
-  void r(){
+  void stateFunc(){
     setState(() {
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    size = MediaQuery.of(context).size;
     List resultList = sumOfCategories();
 
     return SafeArea(
       child: Scaffold(
         backgroundColor: MyColors.backGroundColor,
         appBar: buildAppBar(),
-        body: Column(
-          children: [
-            _getData(),
-            resultList.isEmpty ?
-            Align(
-              child: CupertinoActivityIndicator(radius: 20),
-              alignment: Alignment.center,
-            ) :
-            Expanded(
-              child: ListView.builder(
-                itemCount: ListOfIncome.list.length,
-                itemBuilder: (context, index) {
-                  return Column(
-                    children: [
-                      Row(
-                        children: [
-                          // row of list creating function
-                          _buildListItem(ListOfIncome.list[index]),
-                          IconButton(
-                              icon: Icon(
-                                  Icons.delete
-                              ),
-                              color: MyColors.textColor,
-                              onPressed: () async {
-                                // remove note from the listOfIncome
-                                ListOfIncome.list.removeAt(index);
-                                // rewrite list to the file
-                                await Storage.saveString(
-                                    jsonEncode(new ListOfIncome().toJson()),
-                                    'IncomeNote');
-                                // setState function of main.dart
-                                widget.callback();
-                                // setState function of Income.dart
-                                setState(() {});
-                              }
-                          )
-                        ],
-                      ),
-                      Divider(color: MyColors.textColor),
-                    ],
-                  );
-                }
-              ),
-            ),
-          ],
-        ),
+        body: buildBody(resultList),
       ),
+    );
+  }
+
+  Widget buildAppBar() {
+    return AppBar(
+      iconTheme: IconThemeData(
+          color: MyColors.textColor
+      ),
+      backgroundColor: MyColors.mainColor,
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          MyText('Доход'),
+          buildDropdownButton(),
+        ],
+      ),
+    );
+  }
+
+  Widget buildBody(List resultList){
+    return Column(
+      children: [
+        _getData(),
+        resultList.isEmpty ?
+        Align(
+          child: MyText('Доходов нет'),
+          alignment: Alignment.center,
+        ) :
+        Expanded(
+          child: ListView.builder(
+            itemCount: resultList.length,
+            itemBuilder: (context, index){
+              return Column(
+                children: [
+                  ExpansionTile(
+                    title: Column(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(left: 5),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              MyText(resultList[index].category),
+                              Row(
+                                children: [
+                                  MyText('${resultList[index].sum}'),
+                                  IconButton(
+                                    icon: Icon(Icons.delete),
+                                    color: MyColors.textColor,
+                                    onPressed: () async {
+                                      await Storage.saveString(jsonEncode(new ListOfIncome().toJson()), 'IncomeNote');
+                                      widget.callback();
+                                      setState(() {});
+                                    }
+                                  )
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        //Divider(color: MyColors.textColor),
+                      ],
+                    ),
+                    backgroundColor: MyColors.backGroundColor,
+                    onExpansionChanged: (e) {},
+                    children: [
+                      Container(
+                        height: double.maxFinite,
+                        //height: 200, // how to optimize height to max needed
+                        child: expandedCategory(resultList[index].category),
+                      )
+                    ],
+                  ),
+                ],
+              );
+            }
+          ),
+        ),
+      ],
     );
   }
 
@@ -129,53 +160,108 @@ class _IncomesState extends State<Incomes> {
     return resultList;
   }
 
+  /// list which expanded category by single notes
+  ListView expandedCategory(String category){
+    List middleList = List();
+    for (int i = 0; i < ListOfIncome.list.length; i++){
+      if (_isInFilter(ListOfIncome.list[i].date) && ListOfIncome.list[i].category == category)
+        middleList.add(ListOfIncome.list[i]);
+    }
+    /// ListView.getChildren and expanded to children
+    return ListView.builder(
+      itemCount: middleList.length,
+      itemBuilder: (context, index){
+        return Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(left: 21),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  MyText(middleList[index].category),
+                  Row(
+                    children: [
+                      MyText("${middleList[index].sum}"),
+                      IconButton(
+                        icon: Icon(Icons.delete),
+                        color: MyColors.textColor,
+                        onPressed: () async {
+                          ListOfIncome.list.removeAt(index);
+                          await Storage.saveString(jsonEncode(new ListOfIncome().toJson()), 'IncomeNote');
+                          widget.callback();
+                          setState(() {});
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            //Divider(color: MyColors.textColor),
+          ],
+        );
+      }
+    );
+  }
+
+  buildDropdownButton() {
+    return DropdownButton(
+        hint: MyText(selMode),
+        items: [
+          DropdownMenuItem(value: 'День', child: MyText('День')),
+          DropdownMenuItem(value: 'Неделя', child: MyText('Неделя')),
+          DropdownMenuItem(value: 'Месяц', child: MyText('Месяц')),
+          DropdownMenuItem(value: 'Год', child: MyText('Год')),
+        ],
+        onChanged: (String newValue) {
+          if (selMode != 'Неделя' && newValue == 'Неделя') {
+            // oldDate = date;
+            date = date.subtract(Duration(days: date.weekday + 1)).add(Duration(days: 7));
+          }
+
+          if (selMode == 'Неделя' && newValue != 'Неделя' && oldDate != null) {
+            //date = oldDate;
+            date = DateTime.now();
+          }
+
+          setState(() {
+            selMode = newValue;
+          });
+        }
+    );
+  }
+
   _isInFilter(DateTime d){
     if (d == null) return false;
 
     switch (selMode) {
-      case 'Day' :
+      case 'День' :
         return
           d.year == date.year &&
               d.month == date.month &&
               d.day == date.day;
         break;
-      case 'Week':
+      case 'Неделя':
         return
           d.year == date.year &&
               d.month == date.month &&
               d.isBefore(date) && d.isAfter(date.subtract(Duration(days: 7)));
         break;
-      case 'Month' :
+      case 'Месяц' :
         return
           d.year == date.year &&
               d.month == date.month;
         break;
-      case 'Year' :
+      case 'Год' :
         return
           d.year == date.year;
         break;
     }
   }
 
-  AppBar buildAppBar() {
-    return AppBar(
-        iconTheme: IconThemeData(
-            color: MyColors.textColor
-        ),
-        backgroundColor: MyColors.mainColor,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            MyText('Incomes'),
-            buildDropdownButton(),
-          ],
-        ),
-      );
-  }
-
   _getData(){
     switch(selMode){
-      case 'Day':
+      case 'День':
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -198,7 +284,7 @@ class _IncomesState extends State<Incomes> {
             ),
           ],
         );
-      case 'Week':
+      case 'Неделя':
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -226,7 +312,7 @@ class _IncomesState extends State<Incomes> {
             ),
           ],
         );
-      case 'Month':
+      case 'Месяц':
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -249,7 +335,7 @@ class _IncomesState extends State<Incomes> {
             ),
           ],
         );
-      case 'Year':
+      case 'Год':
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -275,49 +361,6 @@ class _IncomesState extends State<Incomes> {
     }
   }
 
-  buildDropdownButton() {
-    return DropdownButton(
-        hint: MyText(selMode),
-        items: [
-          DropdownMenuItem(value: 'Day', child: MyText('Day')),
-          DropdownMenuItem(value: 'Week', child: MyText('Week')),
-          DropdownMenuItem(value: 'Month', child: MyText('Month')),
-          DropdownMenuItem(value: 'Year', child: MyText('Year')),
-        ],
-        onChanged: (String newValue) {
-          if (selMode != 'Week' && newValue == 'Week') {
-            // oldDate = date;
-            date = date.subtract(Duration(days: date.weekday + 1)).add(Duration(days: 7));
-          }
-
-          if (selMode == 'Week' && newValue != 'Week' && oldDate != null) {
-            //date = oldDate;
-            date = DateTime.now();
-          }
-
-          setState(() {
-            selMode = newValue;
-          });
-        }
-    );
-  }
-  // row of list creating function. creates row from list of income
-  _buildListItem(IncomeNote value) {
-    return Padding(
-      padding: EdgeInsets.only(left: 10),
-      child: Container(
-        width: 340,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            MyText(value.category, TextAlign.start),
-            //SizedBox(width: 250),
-            MyText('${value.sum}', TextAlign.end),
-          ],
-        ),
-      ),
-    );
-  }
 }
 
 
