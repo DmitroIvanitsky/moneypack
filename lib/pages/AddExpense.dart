@@ -20,7 +20,7 @@ class _AddExpensesState extends State<AddExpenses> {
   DateTime date = DateTime.now();
   String category = '';
   double sum;
-  String comment = '';
+  String comment;
   List<String> _list = [];
 
   @override
@@ -70,7 +70,7 @@ class _AddExpensesState extends State<AddExpenses> {
             ),
             onPressed: (){
               if (category == "category" || sum == null) return; // to not add empty sum note
-              createExpenseNote(date, category, sum); // function to create note object
+              createExpenseNote(date, category, sum, comment: comment); // function to create note object
               widget.callBack();
               Navigator.pop(context);
             },
@@ -114,7 +114,7 @@ class _AddExpensesState extends State<AddExpenses> {
               decoration: const InputDecoration(
                 hintText: 'Введите коментарий',
               ),
-              //onChanged: (v) => comment = (v),
+              onChanged: (v) => comment = v,
             ),
           ],
         ),
@@ -132,8 +132,8 @@ class _AddExpensesState extends State<AddExpenses> {
     );
   }
 
-  createExpenseNote(DateTime date, String category, double sum) async{
-    ExpenseNote expenseNote = ExpenseNote(date: date, category: category, sum: sum);
+  createExpenseNote(DateTime date, String category, double sum, {String comment}) async{
+    ExpenseNote expenseNote = ExpenseNote(date: date, category: category, sum: sum, comment: comment);
     ListOfExpenses.list.add(expenseNote);
     await Storage.saveString(jsonEncode(ListOfExpenses().toJson()), 'ExpenseNote');
 

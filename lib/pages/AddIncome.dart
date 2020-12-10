@@ -20,6 +20,7 @@ class _AddIncomeState extends State<AddIncome> {
   DateTime date = DateTime.now();
   String category = '';
   double sum;
+  String comment;
   List<String> _list = [];
 
   @override
@@ -69,7 +70,7 @@ class _AddIncomeState extends State<AddIncome> {
             ),
             onPressed: (){
               if (category == "category" || sum == null) return;
-              _createIncomeNote(date, category, sum);
+              _createIncomeNote(date, category, sum, comment: comment);
               widget.callback();
               Navigator.pop(context);
             },
@@ -105,6 +106,12 @@ class _AddIncomeState extends State<AddIncome> {
                 return null;
               },
               onChanged: (v) => sum = double.parse(v),
+            ),
+            TextFormField(
+              decoration: const InputDecoration(
+                hintText: 'Введите коментарий',
+              ),
+              onChanged: (v) => comment = v,
             ),
           ],
         ),
@@ -163,8 +170,8 @@ class _AddIncomeState extends State<AddIncome> {
     );
   }
 
-  _createIncomeNote(DateTime date, String category, double sum) async{
-    IncomeNote incomeNote = IncomeNote(date: date, category: category, sum: sum);
+  _createIncomeNote(DateTime date, String category, double sum, {String comment}) async{
+    IncomeNote incomeNote = IncomeNote(date: date, category: category, sum: sum, comment: comment);
     ListOfIncome.list.add(incomeNote);
     await Storage.saveString(jsonEncode(ListOfIncome().toJson()), 'IncomeNote');
   }

@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tutorial/Utility/appLocalizations.dart';
+import 'package:intl/intl.dart';
 import '../Objects/IncomeNote.dart';
 import '../Objects/ListOfIncome.dart';
 import '../Utility/Storage.dart';
@@ -92,20 +94,7 @@ class _IncomesState extends State<Incomes> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               MyText(resultList[index].category),
-                              Row(
-                                children: [
-                                  MyText('${resultList[index].sum}'),
-                                  IconButton(
-                                    icon: Icon(Icons.delete),
-                                    color: MyColors.textColor,
-                                    onPressed: () async {
-                                      await Storage.saveString(jsonEncode(new ListOfIncome().toJson()), 'IncomeNote');
-                                      widget.callback();
-                                      setState(() {});
-                                    }
-                                  )
-                                ],
-                              ),
+                              MyText('${resultList[index].sum}'),
                             ],
                           ),
                         ),
@@ -155,12 +144,19 @@ class _IncomesState extends State<Incomes> {
         if (currentIncomeNote.category == middleList[j].category)
           sum += middleList[j].sum;
       }
-      resultList.add(IncomeNote(category: currentIncomeNote.category, sum: sum));
+      resultList.add(
+          IncomeNote(
+              category: currentIncomeNote.category,
+              sum: sum,
+              date: currentIncomeNote.date,
+            comment: currentIncomeNote.comment
+          )
+      );
     }
     return resultList;
   }
 
-  /// list which expanded category by single notes
+  // list which expanded category by single notes
   ListView expandedCategory(String category){
     List middleList = List();
     for (int i = 0; i < ListOfIncome.list.length; i++){
@@ -179,6 +175,7 @@ class _IncomesState extends State<Incomes> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   MyText(middleList[index].category),
+                  comment(middleList, index),
                   Row(
                     children: [
                       MyText("${middleList[index].sum}"),
@@ -197,11 +194,17 @@ class _IncomesState extends State<Incomes> {
                 ],
               ),
             ),
-            //Divider(color: MyColors.textColor),
           ],
         );
       }
     );
+  }
+
+  comment(middleList, index){
+    if (middleList[index].comment == null)
+      return MyText('');
+    else
+      return MyText(middleList[index].comment);
   }
 
   buildDropdownButton() {
@@ -324,7 +327,8 @@ class _IncomesState extends State<Incomes> {
                 });
               },
             ),
-            MyText(date.month.toString()),
+            MyText(AppLocalizations.of(context).translate(DateFormat.MMMM().format(date))+ ' '
+                + DateFormat.y().format(date)),
             IconButton(
               icon: Icon(Icons.arrow_right),
               onPressed: () {

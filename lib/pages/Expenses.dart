@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tutorial/Utility/appLocalizations.dart';
+import 'package:intl/intl.dart';
 import '../Objects/ExpenseNote.dart';
 import '../Objects/ListOfExpenses.dart';
 import '../Utility/Storage.dart';
@@ -44,6 +46,9 @@ class _ExpensesState extends State<Expenses> {
   @override
   Widget build(BuildContext context) {
     List resultList = sumOfCategories();
+    // for (int y = 0; y < resultList.length; y++){
+    //   print('${resultList[y].sum} ${resultList[y].comment}');
+    // }
 
     return SafeArea(
       child: Scaffold(
@@ -82,53 +87,38 @@ class _ExpensesState extends State<Expenses> {
         ) :
         Expanded(
           child: ListView.builder(
-              itemCount: resultList.length,
-              itemBuilder: (context, index){
-                return Column(
-                  children: [
-                    ExpansionTile(
-                      title: Column(
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(left: 5),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                MyText(resultList[index].category),
-                                Row(
-                                  children: [
-                                    MyText('${resultList[index].sum}'),
-                                    // IconButton(
-                                    //   icon: Icon(Icons.delete),
-                                    //   color: MyColors.textColor,
-                                    //   onPressed: () async {
-                                    //     ListOfExpenses.list.removeAt(index);
-                                    //     await Storage.saveString(jsonEncode(new ListOfExpenses().toJson()), 'ExpenseNote');
-                                    //     widget.callback();
-                                    //     setState(() {});
-                                    //   }
-                                    // ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                          //Divider(color: MyColors.textColor),
-                        ],
-                      ),
-                      backgroundColor: MyColors.backGroundColor,
-                      onExpansionChanged: (e) {},
+            itemCount: resultList.length,
+            itemBuilder: (context, index){
+              return Column(
+                children: [
+                  ExpansionTile(
+                    title: Column(
                       children: [
-                        Container(
-                          height: double.maxFinite,
-                          //height: 200, // how to optimize height to max needed
-                          child: expandedCategory(resultList[index].category),
-                        )
+                        Padding(
+                          padding: EdgeInsets.only(left: 5),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              MyText(resultList[index].category),
+                              MyText('${resultList[index].sum}'),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
-                  ],
-                );
-              }
+                    backgroundColor: MyColors.backGroundColor,
+                    onExpansionChanged: (e) {},
+                    children: [
+                      Container(
+                        height: double.maxFinite,
+                        //height: 200, // how to optimize height to max needed
+                        child: expandedCategory(resultList[index].category),
+                      )
+                    ],
+                  ),
+                ],
+              );
+            }
           ),
         )
       ],
@@ -159,12 +149,19 @@ class _ExpensesState extends State<Expenses> {
         if (currentExpenseNote.category == middleList[j].category)
           sum += middleList[j].sum;
       }
-      resultList.add(ExpenseNote(category: currentExpenseNote.category, sum: sum));
+      resultList.add(
+        ExpenseNote(
+          category: currentExpenseNote.category,
+          sum: sum,
+          date: currentExpenseNote.date,
+          comment: currentExpenseNote.comment
+        )
+      );
     }
     return resultList;
   }
 
-  /// list which expanded category by single notes
+  // list which expanded category by single notes
   ListView expandedCategory(String category) {
     List middleList = List();
     for (int i = 0; i < ListOfExpenses.list.length; i++) {
@@ -183,6 +180,7 @@ class _ExpensesState extends State<Expenses> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     MyText(middleList[index].category),
+                    comment(middleList, index),
                     Row(
                       children: [
                         MyText('${middleList[index].sum}'),
@@ -210,33 +208,40 @@ class _ExpensesState extends State<Expenses> {
     );
   }
 
+  comment(List middleList, int index) {
+      if (middleList[index].comment == null)
+        return MyText('');
+      else
+        return MyText(middleList[index].comment);
+  }
+
   // dropdown menu button
   _buildDropdownButton() {
-    return DropdownButton(
-        hint: MyText(selMode),
-        items: [
-          DropdownMenuItem(value: 'День', child: MyText('День')),
-          DropdownMenuItem(value: 'Неделя', child: MyText('Неделя')),
-          DropdownMenuItem(value: 'Месяц', child: MyText('Месяц')),
-          DropdownMenuItem(value: 'Год', child: MyText('Год')),
-        ],
-        onChanged: (String newValue) {
-          if (selMode != 'Неделя' && newValue == 'Неделя') {
-            // oldDate = date;
-            date = date.subtract(Duration(days: date.weekday + 1)).add(Duration(days: 7));
-          }
+        return DropdownButton(
+            hint: MyText(selMode),
+            items: [
+              DropdownMenuItem(value: 'День', child: MyText('День')),
+              DropdownMenuItem(value: 'Неделя', child: MyText('Неделя')),
+              DropdownMenuItem(value: 'Месяц', child: MyText('Месяц')),
+              DropdownMenuItem(value: 'Год', child: MyText('Год')),
+            ],
+            onChanged: (String newValue) {
+              if (selMode != 'Неделя' && newValue == 'Неделя') {
+                // oldDate = date;
+                date = date.subtract(Duration(days: date.weekday + 1)).add(Duration(days: 7));
+              }
 
-          if (selMode == 'Неделя' && newValue != 'Неделя' && oldDate != null) {
-            //date = oldDate;
-            date = DateTime.now();
-          }
+              if (selMode == 'Неделя' && newValue != 'Неделя' && oldDate != null) {
+                //date = oldDate;
+                date = DateTime.now();
+              }
 
-          setState(() {
-            selMode = newValue;
-          });
-        }
-      );
-  }
+              setState(() {
+                selMode = newValue;
+              });
+            }
+        );
+      }
 
   // date filter function for list of expenses
   _isInFilter(DateTime d){
@@ -245,24 +250,24 @@ class _ExpensesState extends State<Expenses> {
     switch (selMode) {
       case 'День' :
         return
-            d.year == date.year &&
-            d.month == date.month &&
-            d.day == date.day;
+          d.year == date.year &&
+              d.month == date.month &&
+              d.day == date.day;
         break;
       case 'Неделя':
         return
-            d.year == date.year &&
-            d.month == date.month &&
-            d.isBefore(date) && d.isAfter(date.subtract(Duration(days: 7)));
-            break;
+          d.year == date.year &&
+              d.month == date.month &&
+              d.isBefore(date) && d.isAfter(date.subtract(Duration(days: 7)));
+        break;
       case 'Месяц' :
         return
-            d.year == date.year &&
-            d.month == date.month;
+          d.year == date.year &&
+              d.month == date.month;
         break;
       case 'Год' :
         return
-            d.year == date.year;
+          d.year == date.year;
         break;
     }
   }
@@ -333,7 +338,8 @@ class _ExpensesState extends State<Expenses> {
                 });
               },
             ),
-            MyText(date.month.toString()),
+            MyText(AppLocalizations.of(context).translate(DateFormat.MMMM().format(date))+ ' '
+                + DateFormat.y().format(date)),
             IconButton(
               icon: Icon(Icons.arrow_right),
               onPressed: () {

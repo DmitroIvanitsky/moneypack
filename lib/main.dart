@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_tutorial/Objects/ListOfExpenses.dart';
 import 'package:flutter_tutorial/Objects/ListOfIncome.dart';
 import 'package:flutter_tutorial/Utility/Storage.dart';
@@ -10,12 +12,26 @@ import 'package:flutter_tutorial/pages/Incomes.dart';
 import 'package:flutter_tutorial/pages/Balance.dart';
 import 'package:flutter_tutorial/setting/MyColors.dart';
 import 'package:flutter_tutorial/setting/MyText.dart';
+import 'package:intl/intl.dart';
+import 'Utility/appLocalizations.dart';
 
 void main() => runApp(MaterialApp(
   debugShowCheckedModeBanner: true,
+  localizationsDelegates: [
+    // A class which loads the translations from JSON files
+    AppLocalizationsDelegate(),
+    GlobalMaterialLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+    DefaultCupertinoLocalizations.delegate
+  ],
+  supportedLocales: [
+    const Locale.fromSubtags(languageCode: 'en'), // English, no country code
+    const Locale.fromSubtags(languageCode: 'ru'),
+    const Locale.fromSubtags(languageCode: 'ua'),
+  ],
   home: FlutterTutorialApp(),
 ));
-
 
 class FlutterTutorialApp extends StatefulWidget {
   @override
@@ -405,7 +421,8 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                 });
               },
             ),
-            MyText(date.month.toString()),
+            MyText(AppLocalizations.of(context).translate(DateFormat.MMMM().format(date))+ ' '
+                + DateFormat.y().format(date)),
             IconButton(
               icon: Icon(Icons.arrow_right),
               onPressed: () {
