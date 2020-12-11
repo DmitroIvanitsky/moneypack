@@ -45,7 +45,6 @@ class _ExpensesState extends State<Expenses> {
 
   @override
   Widget build(BuildContext context) {
-    List resultList = sumOfCategories();
     // for (int y = 0; y < resultList.length; y++){
     //   print('${resultList[y].sum} ${resultList[y].comment}');
     // }
@@ -54,7 +53,7 @@ class _ExpensesState extends State<Expenses> {
       child: Scaffold(
         backgroundColor: MyColors.backGroundColor,
         appBar: buildAppBar(),
-        body: buildBody(resultList),
+        body: buildBody(),
       ),
     );
   }
@@ -75,47 +74,53 @@ class _ExpensesState extends State<Expenses> {
     );
   }
 
-  Widget buildBody(List resultList) {
+  List <ExpenseNote> getFilteredChildrenOfCategory (ExpenseNote expenseNote) {
+    List <ExpenseNote> childrenList = [];
+    for (int i = 0; i < ListOfExpenses.list.length; i++) {
+      if (_isInFilter(ListOfExpenses.list[i].date) && ListOfExpenses.list[i].category == expenseNote.category)
+        childrenList.add(ListOfExpenses.list[i]);
+    }
+    return childrenList;
+  }
+
+  Widget buildBody() {
+    List categoriesList = filteredExpenses();
+
     return Column(
       children: [
         // data row in the top of the list
         _getData(),
-        resultList.isEmpty ?
+        categoriesList.isEmpty ?
         Align(
           child: MyText('Расходов нет'),
           alignment: Alignment.center,
         ) :
         Expanded(
           child: ListView.builder(
-            itemCount: resultList.length,
+            itemCount: categoriesList.length,
             itemBuilder: (context, index){
-              return Column(
-                children: [
-                  ExpansionTile(
-                    title: Column(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.only(left: 5),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              MyText(resultList[index].category),
-                              MyText('${resultList[index].sum}'),
-                            ],
-                          ),
-                        ),
-                      ],
+              ExpenseNote singleCategory = categoriesList[index];
+              List <ExpenseNote> childrenList = getFilteredChildrenOfCategory(singleCategory);
+
+              return ExpansionTile(
+                title: Padding(
+                      padding: EdgeInsets.only(left: 5),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          MyText(singleCategory.category),
+                          MyText('${singleCategory.sum}'),
+                        ],
+                      ),
                     ),
-                    backgroundColor: MyColors.backGroundColor,
-                    onExpansionChanged: (e) {},
-                    children: [
-                      Container(
-                        height: double.maxFinite,
-                        //height: 200, // how to optimize height to max needed
-                        child: expandedCategory(resultList[index].category),
-                      )
-                    ],
-                  ),
+                backgroundColor: MyColors.backGroundColor,
+                onExpansionChanged: (e) {},
+                children: [
+                  Container(
+                    height: childrenList.length * 50.0,
+                    //height: 200, // how to optimize height to max needed
+                    child: getExpandedChildrenForCategory(childrenList),
+                  )
                 ],
               );
             }
@@ -125,7 +130,7 @@ class _ExpensesState extends State<Expenses> {
     );
   }
 
-  List sumOfCategories() {
+  List filteredExpenses() {
     List middleList = List();
     for (int i = 0; i < ListOfExpenses.list.length; i++) {
       if (_isInFilter(ListOfExpenses.list[i].date))
@@ -162,12 +167,7 @@ class _ExpensesState extends State<Expenses> {
   }
 
   // list which expanded category by single notes
-  ListView expandedCategory(String category) {
-    List middleList = List();
-    for (int i = 0; i < ListOfExpenses.list.length; i++) {
-      if (_isInFilter(ListOfExpenses.list[i].date) && ListOfExpenses.list[i].category == category)
-        middleList.add(ListOfExpenses.list[i]);
-    }
+  ListView getExpandedChildrenForCategory(List<ExpenseNote> middleList) {
     /// ListView.getChildren and expanded to children
     return ListView.builder(
         itemCount: middleList.length,
@@ -201,7 +201,6 @@ class _ExpensesState extends State<Expenses> {
                   ],
                 ),
               ),
-              //Divider(color: MyColors.textColor),
             ],
           );
         }

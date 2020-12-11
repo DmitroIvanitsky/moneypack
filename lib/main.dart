@@ -56,16 +56,15 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
   void loadList() async {
     String expN = await Storage.getString('ExpenseNote');
     String incN = await Storage.getString('IncomeNote');
-    if (expN != null && incN != null) {
-      setState(() {
-        ListOfExpenses.fromJson(jsonDecode(expN));
-        ListOfIncome.fromJson(jsonDecode(incN));
-      });
-      stateFunc();
-    }
+    setState(() {
+      if (expN != null) ListOfExpenses.fromJson(jsonDecode(expN));
+      if (incN != null) ListOfIncome.fromJson(jsonDecode(incN));
+    });
+
+    updateData();
   }
 
-  void stateFunc() {
+  void updateData() {
     setState(() {
       income = filterOnPeriod(ListOfIncome.list);
       expense = filterOnPeriod(ListOfExpenses.list);
@@ -256,7 +255,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
           setState(() {
             selMode = newValue;
           });
-          stateFunc();
+          updateData();
         }
     );
   }
@@ -291,13 +290,13 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
       case 'Добавить расход':
         Navigator.push(context,
             MaterialPageRoute<void>(builder: (BuildContext context) {
-              return AddExpenses(callBack: stateFunc);
+              return AddExpenses(callBack: updateData);
             }));
         break;
       case 'Добавить доход':
         Navigator.push(context,
             MaterialPageRoute<void>(builder: (BuildContext context) {
-              return AddIncome(callback: stateFunc);
+              return AddIncome(callback: updateData);
             }));
         break;
       case 'Баланс':
@@ -309,13 +308,13 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
       case 'Доход':
         Navigator.push(context,
             MaterialPageRoute<void>(builder: (BuildContext context) {
-              return Incomes(callback: stateFunc);
+              return Incomes(callback: updateData);
             }));
         break;
       case 'Расход':
         Navigator.push(context,
             MaterialPageRoute<void>(builder: (BuildContext context) {
-              return Expenses(callback: stateFunc);
+              return Expenses(callback: updateData);
             }));
         break;
     }
@@ -360,7 +359,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
               onPressed: () {
                 setState(() {
                   date = date.subtract(Duration(days: 1));
-                  stateFunc();
+                  updateData();
                 });
 
               },
@@ -371,7 +370,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
               onPressed: () {
                 setState(() {
                   date = date.add(Duration(days: 1));
-                  stateFunc();
+                  updateData();
                 });
 
               },
@@ -387,7 +386,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
               onPressed: () {
                 setState(() {
                   lastWeekDay = lastWeekDay.subtract(Duration(days: 7));
-                  stateFunc();
+                  updateData();
                 });
               },
             ),
@@ -402,7 +401,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
               onPressed: () {
                 setState(() {
                   lastWeekDay = lastWeekDay.add(Duration(days: 7));
-                  stateFunc();
+                  updateData();
                 });
               },
             ),
@@ -417,7 +416,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
               onPressed: () {
                 setState(() {
                   date = new DateTime(date.year, date.month - 1, date.day);
-                  stateFunc();
+                  updateData();
                 });
               },
             ),
@@ -428,7 +427,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
               onPressed: () {
                 setState(() {
                   date = DateTime(date.year, date.month + 1, date.day);
-                  stateFunc();
+                  updateData();
                 });
               },
             ),
@@ -443,7 +442,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
               onPressed: () {
                 setState(() {
                   date = new DateTime(date.year - 1, date.month, date.day);
-                  stateFunc();
+                  updateData();
                 });
               },
             ),
@@ -453,7 +452,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
               onPressed: () {
                 setState(() {
                   date = DateTime(date.year + 1, date.month, date.day);
-                  stateFunc();
+                  updateData();
                 });
               },
             ),
