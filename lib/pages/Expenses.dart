@@ -1,14 +1,12 @@
 import 'dart:convert';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_tutorial/Utility/appLocalizations.dart';
+import '../Utility/appLocalizations.dart';
 import 'package:intl/intl.dart';
 import '../Objects/ExpenseNote.dart';
 import '../Objects/ListOfExpenses.dart';
 import '../Utility/Storage.dart';
 import '../setting/MyColors.dart';
 import '../setting/MyText.dart';
-import '../setting/menu_icon.dart';
 
 class Expenses extends StatefulWidget{
   final Function callback;
@@ -45,10 +43,6 @@ class _ExpensesState extends State<Expenses> {
 
   @override
   Widget build(BuildContext context) {
-    // for (int y = 0; y < resultList.length; y++){
-    //   print('${resultList[y].sum} ${resultList[y].comment}');
-    // }
-
     return SafeArea(
       child: Scaffold(
         backgroundColor: MyColors.backGroundColor,
@@ -74,21 +68,11 @@ class _ExpensesState extends State<Expenses> {
     );
   }
 
-  List <ExpenseNote> getFilteredChildrenOfCategory (ExpenseNote expenseNote) {
-    List <ExpenseNote> childrenList = [];
-    for (int i = 0; i < ListOfExpenses.list.length; i++) {
-      if (_isInFilter(ListOfExpenses.list[i].date) && ListOfExpenses.list[i].category == expenseNote.category)
-        childrenList.add(ListOfExpenses.list[i]);
-    }
-    return childrenList;
-  }
-
   Widget buildBody() {
     List categoriesList = filteredExpenses();
 
     return Column(
       children: [
-        // data row in the top of the list
         _getData(),
         categoriesList.isEmpty ?
         Align(
@@ -104,15 +88,15 @@ class _ExpensesState extends State<Expenses> {
 
               return ExpansionTile(
                 title: Padding(
-                      padding: EdgeInsets.only(left: 5),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          MyText(singleCategory.category),
-                          MyText('${singleCategory.sum}'),
-                        ],
-                      ),
-                    ),
+                  padding: EdgeInsets.only(left: 5),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      MyText(singleCategory.category),
+                      MyText('${singleCategory.sum}'),
+                    ],
+                  ),
+                ),
                 backgroundColor: MyColors.backGroundColor,
                 onExpansionChanged: (e) {},
                 children: [
@@ -156,9 +140,9 @@ class _ExpensesState extends State<Expenses> {
       }
       resultList.add(
         ExpenseNote(
+          date: currentExpenseNote.date,
           category: currentExpenseNote.category,
           sum: sum,
-          date: currentExpenseNote.date,
           comment: currentExpenseNote.comment
         )
       );
@@ -166,44 +150,52 @@ class _ExpensesState extends State<Expenses> {
     return resultList;
   }
 
+  List <ExpenseNote> getFilteredChildrenOfCategory (ExpenseNote expenseNote) {
+    List <ExpenseNote> childrenList = [];
+    for (int i = 0; i < ListOfExpenses.list.length; i++) {
+      if (_isInFilter(ListOfExpenses.list[i].date) && ListOfExpenses.list[i].category == expenseNote.category)
+        childrenList.add(ListOfExpenses.list[i]);
+    }
+    return childrenList;
+  }
+
   // list which expanded category by single notes
   ListView getExpandedChildrenForCategory(List<ExpenseNote> middleList) {
-    /// ListView.getChildren and expanded to children
+    // ListView.getChildren and expanded to children
     return ListView.builder(
-        itemCount: middleList.length,
-        itemBuilder: (context, index) {
-          return Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(left: 21),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    MyText(middleList[index].category),
-                    comment(middleList, index),
-                    Row(
-                      children: [
-                        MyText('${middleList[index].sum}'),
-                        IconButton(
-                          icon: Icon(Icons.delete),
-                          color: MyColors.textColor,
-                          onPressed: () async {
-                            ListOfExpenses.list.removeAt(index);
-                            await Storage.saveString(jsonEncode(
-                                new ListOfExpenses().toJson()),
-                                'ExpenseNote');
-                            widget.callback();
-                            setState(() {});
-                          }
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+      itemCount: middleList.length,
+      itemBuilder: (context, index) {
+        return Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(left: 21),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  MyText(middleList[index].category),
+                  comment(middleList, index),
+                  Row(
+                    children: [
+                      MyText('${middleList[index].sum}'),
+                      IconButton(
+                        icon: Icon(Icons.delete),
+                        color: MyColors.textColor,
+                        onPressed: () async {
+                          ListOfExpenses.list.removeAt(index);
+                          await Storage.saveString(jsonEncode(
+                            new ListOfExpenses().toJson()), 'ExpenseNote');
+                          widget.callback();
+                          setState(() {});
+                        }
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            ],
-          );
-        }
+            ),
+          ],
+        );
+      }
     );
   }
 

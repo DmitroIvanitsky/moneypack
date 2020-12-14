@@ -1,10 +1,17 @@
-class ExpenseNote{
-  final String category;
-  final double sum;
-  DateTime date;
-  final String comment;
+import 'package:flutter/material.dart';
 
-  ExpenseNote({this.date, this.category, this.sum, this.comment});
+class ExpenseNote{
+  String category;
+  double sum;
+  DateTime date;
+  String comment;
+
+  ExpenseNote({
+    @required this.date,
+    @required this.category,
+    @required this.sum,
+    this.comment
+  });
 
   ExpenseNote.fromJson(Map<String, dynamic> json)
   : category = json['category'],

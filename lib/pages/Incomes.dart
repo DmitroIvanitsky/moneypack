@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_tutorial/Utility/appLocalizations.dart';
+import '../pages/EditPageForIncomeCategory.dart';
+import '../Utility/appLocalizations.dart';
 import 'package:intl/intl.dart';
 import '../Objects/IncomeNote.dart';
 import '../Objects/ListOfIncome.dart';
@@ -36,20 +36,18 @@ class _IncomesState extends State<Incomes> {
     }
   }
 
-  void stateFunc(){
+  void updateData(){
     setState(() {
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    List resultList = sumOfCategories();
-
     return SafeArea(
       child: Scaffold(
         backgroundColor: MyColors.backGroundColor,
         appBar: buildAppBar(),
-        body: buildBody(resultList),
+        body: buildBody(),
       ),
     );
   }
@@ -70,19 +68,24 @@ class _IncomesState extends State<Incomes> {
     );
   }
 
-  Widget buildBody(List resultList){
+  Widget buildBody(){
+    List categoriesList = filteredIncomes();
+
     return Column(
       children: [
         _getData(),
-        resultList.isEmpty ?
+        categoriesList.isEmpty ?
         Align(
           child: MyText('Доходов нет'),
           alignment: Alignment.center,
         ) :
         Expanded(
           child: ListView.builder(
-            itemCount: resultList.length,
+            itemCount: categoriesList.length,
             itemBuilder: (context, index){
+              IncomeNote singleCategory = categoriesList[index];
+              List <IncomeNote> childrenList = getFilteredChildrenCategory(singleCategory);
+
               return Column(
                 children: [
                   ExpansionTile(
@@ -93,8 +96,8 @@ class _IncomesState extends State<Incomes> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              MyText(resultList[index].category),
-                              MyText('${resultList[index].sum}'),
+                              MyText(categoriesList[index].category),
+                              MyText('${categoriesList[index].sum}'),
                             ],
                           ),
                         ),
@@ -105,9 +108,9 @@ class _IncomesState extends State<Incomes> {
                     onExpansionChanged: (e) {},
                     children: [
                       Container(
-                        height: double.maxFinite,
+                        height: childrenList.length * 50.0,
                         //height: 200, // how to optimize height to max needed
-                        child: expandedCategory(resultList[index].category),
+                        child: getExpandedChildrenForCategory(childrenList),
                       )
                     ],
                   ),
@@ -120,7 +123,7 @@ class _IncomesState extends State<Incomes> {
     );
   }
 
-  List sumOfCategories() {
+  List filteredIncomes() {
     List middleList = List();
     for (int i = 0; i < ListOfIncome.list.length; i++) {
       if (_isInFilter(ListOfIncome.list[i].date))
@@ -146,9 +149,9 @@ class _IncomesState extends State<Incomes> {
       }
       resultList.add(
           IncomeNote(
-              category: currentIncomeNote.category,
-              sum: sum,
-              date: currentIncomeNote.date,
+            date: currentIncomeNote.date,
+            category: currentIncomeNote.category,
+            sum: sum,
             comment: currentIncomeNote.comment
           )
       );
@@ -156,14 +159,18 @@ class _IncomesState extends State<Incomes> {
     return resultList;
   }
 
-  // list which expanded category by single notes
-  ListView expandedCategory(String category){
-    List middleList = List();
+  List <IncomeNote> getFilteredChildrenCategory(IncomeNote incomeNote){
+    List <IncomeNote> childrenList = [];
     for (int i = 0; i < ListOfIncome.list.length; i++){
-      if (_isInFilter(ListOfIncome.list[i].date) && ListOfIncome.list[i].category == category)
-        middleList.add(ListOfIncome.list[i]);
+      if (_isInFilter(ListOfIncome.list[i].date) && ListOfIncome.list[i].category == incomeNote.category)
+        childrenList.add(ListOfIncome.list[i]);
     }
-    /// ListView.getChildren and expanded to children
+    return childrenList;
+  }
+
+  // list which expanded category by single notes
+  ListView getExpandedChildrenForCategory(List <IncomeNote> middleList){
+    // ListView.getChildren and expanded to children
     return ListView.builder(
       itemCount: middleList.length,
       itemBuilder: (context, index){
@@ -180,11 +187,20 @@ class _IncomesState extends State<Incomes> {
                     children: [
                       MyText("${middleList[index].sum}"),
                       IconButton(
+                        icon: Icon(Icons.edit),
+                        color: MyColors.textColor,
+                        onPressed: () => goToEditPage(
+                            context,
+                            middleList[index],
+                        ),
+                      ),
+                      IconButton(
                         icon: Icon(Icons.delete),
                         color: MyColors.textColor,
                         onPressed: () async {
                           ListOfIncome.list.removeAt(index);
-                          await Storage.saveString(jsonEncode(new ListOfIncome().toJson()), 'IncomeNote');
+                          await Storage.saveString(jsonEncode(
+                            new ListOfIncome().toJson()), 'IncomeNote');
                           widget.callback();
                           setState(() {});
                         },
@@ -198,6 +214,13 @@ class _IncomesState extends State<Incomes> {
         );
       }
     );
+  }
+
+  goToEditPage(BuildContext context, IncomeNote incomeNote){
+    Navigator.push(context,
+        MaterialPageRoute(builder: (BuildContext context){
+          return EditPage(callback: updateData, note: incomeNote);
+        }));
   }
 
   comment(middleList, index){

@@ -1,43 +1,54 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_tutorial/Objects/ExpenseNote.dart';
-import 'package:flutter_tutorial/Objects/ListOfExpenses.dart';
-import 'package:flutter_tutorial/Utility/Storage.dart';
-import 'package:flutter_tutorial/pages/ListOfExpensesCategories.dart';
-import 'package:flutter_tutorial/setting/MyColors.dart';
-import 'package:flutter_tutorial/setting/MyText.dart';
+import '../Objects/IncomeNote.dart';
+import '../Objects/ListOfIncome.dart';
+import '../Utility/Storage.dart';
+import '../pages/ListOfIncomeCategories.dart';
+import '../setting/MyColors.dart';
+import '../setting/MyText.dart';
 
-class AddExpenses extends StatefulWidget{
-  final Function callBack;
-  AddExpenses({this.callBack});
+class EditPage extends StatefulWidget {
+  final Function callback;
+  final IncomeNote note;
+
+  EditPage({this.callback, this.note});
 
   @override
-  _AddExpensesState createState() => _AddExpensesState();
+  _EditPageState createState() => _EditPageState();
 }
 
-class _AddExpensesState extends State<AddExpenses> {
-
-  DateTime date = DateTime.now();
-  String category = '';
+class _EditPageState extends State<EditPage> {
+  DateTime date;
+  String category;
   double sum;
   String comment;
-  List<String> _list = [];
+  int oldIndex;
+  int newIndex;
 
   @override
   void initState() {
-    initList();
+    initData();
     super.initState();
   }
 
-  initList() async{
-    _list = await Storage.getList('Expenses');
-    _list == null || _list.isEmpty ? category = 'Категория расхода' : category = _list[0];
-    setState(() {});
+  void initData(){
+    date = widget.note.date;
+    category = widget.note.category;
+    sum = widget.note.sum;
+    comment = widget.note.comment;
+    oldIndex = ListOfIncome.list.indexOf(widget.note);
   }
 
-  void stateFunc(String cat){
+  void updateData(String cat){
+    if (category != cat)
+      setState(() {
+        category = cat;
+        newIndex = -1;
+      });
+    else
     setState(() {
       category = cat;
+      newIndex = oldIndex;
     });
   }
 
@@ -45,36 +56,50 @@ class _AddExpensesState extends State<AddExpenses> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-          backgroundColor: MyColors.backGroundColor,
-          appBar: buildAppBar(),
-          body: buildBody(),
+        backgroundColor: MyColors.backGroundColor,
+        appBar: buildAppBar(),
+        body: buildBody(),
       ),
     );
   }
 
-  Widget buildAppBar() {
+  Widget buildAppBar(){
     return AppBar(
       iconTheme: IconThemeData(
-          color: MyColors.textColor
+        color: MyColors.textColor,
       ),
       backgroundColor: MyColors.mainColor,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          MyText('Добавить расход'),
+          MyText(widget.note.category),
           IconButton(
             iconSize: 35,
             icon: Icon(Icons.done, color: MyColors.textColor),
             onPressed: (){
-              if (category == "category" || sum == null) return; // to not add empty sum note
-              createExpenseNote(date, category, sum, comment: comment); // function to create note object
-              widget.callBack();
+              editNote(oldIndex, newIndex, date, category, sum, comment: comment);
+              widget.callback();
               Navigator.pop(context);
-            },
-          )
+            }
+          ),
         ],
       ),
     );
+  }
+
+  editNote(int oldIndex, int newIndex, DateTime date, String category, double sum, {String comment}) async{
+    IncomeNote newIncomeNote = IncomeNote(date: date, category: category, sum: sum, comment: comment);
+    if (newIndex != -1) {
+      ListOfIncome.list.removeAt(oldIndex);
+      ListOfIncome.list.insert(oldIndex, newIncomeNote);
+      await Storage.saveString(
+          jsonEncode(ListOfIncome().toJson()), 'IncomeNote');
+    }
+    else{
+      ListOfIncome.list.removeAt(oldIndex);
+      ListOfIncome.list.add(newIncomeNote);
+      await Storage.saveString(jsonEncode(ListOfIncome().toJson()), 'IncomeNote');
+    }
   }
 
   Widget buildBody() {
@@ -86,7 +111,7 @@ class _AddExpensesState extends State<AddExpenses> {
           children: [
             SizedBox(height: 10),
             // date widget row
-            getDateWidget(),
+            getDateWidget(date),
             Divider(),
             // category row
             GestureDetector(
@@ -96,6 +121,7 @@ class _AddExpensesState extends State<AddExpenses> {
             Divider(),
             // sum row
             TextFormField(
+              initialValue: sum.toString(),
               decoration: const InputDecoration(
                 hintText: 'Введите сумму',
               ),
@@ -108,6 +134,7 @@ class _AddExpensesState extends State<AddExpenses> {
               onChanged: (v) => sum = double.parse(v),
             ),
             TextFormField(
+              initialValue: comment,
               decoration: const InputDecoration(
                 hintText: 'Введите коментарий',
               ),
@@ -119,7 +146,7 @@ class _AddExpensesState extends State<AddExpenses> {
     );
   }
 
-  Widget getDateWidget(){
+  Widget getDateWidget(DateTime date){
     return GestureDetector(
       onTap: onDateTap,
       child: (date != null)? MyText(
@@ -129,22 +156,12 @@ class _AddExpensesState extends State<AddExpenses> {
     );
   }
 
-  createExpenseNote(DateTime date, String category, double sum, {String comment}) async{
-    ExpenseNote expenseNote = ExpenseNote(date: date, category: category, sum: sum, comment: comment);
-    ListOfExpenses.list.add(expenseNote);
-    await Storage.saveString(jsonEncode(ListOfExpenses().toJson()), 'ExpenseNote');
-
-    // String m = await Storage.getString('ExpenseNote');
-    // ListOfExpenses lx = ListOfExpenses.fromJson(jsonDecode(m));
-    // print(ListOfExpenses.list[0]);
-  }
-
   onCategoryTap(BuildContext context){
     Navigator.push(
         context,
         MaterialPageRoute<void>(
             builder: (BuildContext context){
-              return ListOfExpensesCategories(callback: stateFunc, cat: category);
+              return ListOfIncomeCategories(callback: updateData, cat: category);
             }
         )
     );
@@ -158,7 +175,7 @@ class _AddExpensesState extends State<AddExpenses> {
       firstDate: DateTime.now().subtract(Duration(days: 184)),
       builder:(BuildContext context, Widget child) {
         return theme(child);
-        },
+      },
     );
     setState(() {
       date = picked;
@@ -181,4 +198,3 @@ class _AddExpensesState extends State<AddExpenses> {
   }
 
 }
-

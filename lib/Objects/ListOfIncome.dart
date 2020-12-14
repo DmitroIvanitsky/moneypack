@@ -10,11 +10,11 @@ class ListOfIncome {
   }
 
   static double sum(){
-    double s = 0;
+    double sum = 0;
     for(int i = 0; i < list.length; i++){
-      s += list[i].sum;
+      sum += list[i].sum;
     }
-    return s;
+    return sum;
   }
 
   ListOfIncome.fromJson(Map<String, dynamic> json){

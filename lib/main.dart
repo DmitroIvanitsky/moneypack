@@ -68,18 +68,22 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
     setState(() {
       income = filterOnPeriod(ListOfIncome.list);
       expense = filterOnPeriod(ListOfExpenses.list);
-      balance = income - expense;
+      balance = balanceFunc();
     });
   }
 
+  double balanceFunc(){
+    return ListOfIncome.sum() - ListOfExpenses.sum();
+  }
+
   double filterOnPeriod(List list){
-    double v = 0;
+    double sum = 0;
     for (int i = 0; i < list.length; i++) {
       if (_isInFilter(list[i].date)) {
-        v += list[i].sum;
+        sum += list[i].sum;
       }
     }
-    return v;
+    return sum;
   }
 
   @override
@@ -180,7 +184,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
             ),
             height: size.height * 0.075,
             margin: EdgeInsets.only(left: 10, right: 10, top: 10),
-            child: Center(child: viewInfo(index: 'Баланс', category: balance)),
+            child: Center(child: viewInfo(index: 'Баланс общий', category: balance)),
           ),
 
           // low buttons to add notes
@@ -214,7 +218,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
       buttonColor = MyColors.incomeButton;
     return Container(
       height: 70,
-      width: width,
+      width: 200,
       decoration: BoxDecoration(
           color: buttonColor,
           //boxShadow: [BoxShadow(color: buttonColor, blurRadius: 10, spreadRadius: 1),],

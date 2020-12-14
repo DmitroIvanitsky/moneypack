@@ -1,10 +1,17 @@
-class IncomeNote{
-  final String category;
-  final double sum;
-  DateTime date;
-  final String comment;
+import 'package:flutter/material.dart';
 
-  IncomeNote({this.date, this.category, this.sum, this.comment});
+class IncomeNote{
+  String category;
+  double sum;
+  DateTime date;
+  String comment;
+
+  IncomeNote({
+    @required this.date,
+    @required this.category,
+    @required this.sum,
+    this.comment
+  });
 
   IncomeNote.fromJson(Map<String, dynamic> json)
       : category = json['category'],
