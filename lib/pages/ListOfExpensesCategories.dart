@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../Utility/Storage.dart';
 import '../setting/MyColors.dart';
-import '../setting/MyText.dart';
+import '../setting/MainText.dart';
 
 class ListOfExpensesCategories extends StatefulWidget{
   final Function callback;
@@ -42,11 +42,11 @@ class _ListOfExpensesCategoriesState extends State<ListOfExpensesCategories> {
 
   Widget buildAppBar() {
     return AppBar(
-      backgroundColor: MyColors.mainColor2,
+      backgroundColor: MyColors.mainColor,
       iconTheme: IconThemeData(
           color: MyColors.textColor
       ),
-      title: MyText('Категории расхода'),
+      title: MainText('Категории расхода'),
     );
   }
 
@@ -55,7 +55,7 @@ class _ListOfExpensesCategoriesState extends State<ListOfExpensesCategories> {
         children: [
           Expanded(
             child: list.isEmpty ?
-            MyText('Добавьте категорию') :
+            MainText('Добавьте категорию') :
             ListView.builder(
               itemCount: list.length,
               itemBuilder: (context, index){
@@ -67,7 +67,7 @@ class _ListOfExpensesCategoriesState extends State<ListOfExpensesCategories> {
                         Padding(
                           padding: EdgeInsets.only(left: 10),
                           child: GestureDetector(
-                            child: MyText(list[index], TextAlign.left),
+                            child: MainText(list[index], TextAlign.left),
                             onTap: (){
                               widget.callback(list[index]);
                               Navigator.pop(context);

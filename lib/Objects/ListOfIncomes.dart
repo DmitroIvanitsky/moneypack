@@ -1,9 +1,9 @@
 import 'package:flutter_tutorial/Objects/IncomeNote.dart';
 
-class ListOfIncome {
+class ListOfIncomes {
   static List<IncomeNote> list = List();
 
-  ListOfIncome();
+  ListOfIncomes();
 
   static add(IncomeNote item){
     list.add(item);
@@ -17,7 +17,7 @@ class ListOfIncome {
     return sum;
   }
 
-  ListOfIncome.fromJson(Map<String, dynamic> json){
+  ListOfIncomes.fromJson(Map<String, dynamic> json){
     if (json['list'] != null)
       list = List<IncomeNote>.from(json['list'].map((i) => IncomeNote.fromJson(i)));
   }

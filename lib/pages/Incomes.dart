@@ -1,17 +1,20 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_tutorial/setting/SecondaryText.dart';
+import 'package:flutter_tutorial/setting/ThirdText.dart';
 import '../pages/EditPageForIncomeCategory.dart';
 import '../Utility/appLocalizations.dart';
 import 'package:intl/intl.dart';
 import '../Objects/IncomeNote.dart';
-import '../Objects/ListOfIncome.dart';
+import '../Objects/ListOfIncomes.dart';
 import '../Utility/Storage.dart';
 import '../setting/MyColors.dart';
-import '../setting/MyText.dart';
+import '../setting/MainText.dart';
 
 class Incomes extends StatefulWidget{
-  final Function callback;
-  Incomes({this.callback});
+  final Function updateMainPage;
+
+  Incomes({this.updateMainPage});
 
   @override
   _IncomesState createState() => _IncomesState();
@@ -20,8 +23,9 @@ class Incomes extends StatefulWidget{
 class _IncomesState extends State<Incomes> {
   DateTime date = DateTime.now();
   DateTime oldDate;
-  String selMode = 'День';
+  String selectedMode = 'День';
 
+  @override
   void initState(){
     loadIncomeList();
     super.initState();
@@ -31,12 +35,12 @@ class _IncomesState extends State<Incomes> {
     String m = await Storage.getString('IncomeNote');
     if(m != null){
       setState(() {
-        ListOfIncome.fromJson(jsonDecode(m));
+        ListOfIncomes.fromJson(jsonDecode(m));
       });
     }
   }
 
-  void updateData(){
+  void updateIncomesPage(){
     setState(() {
     });
   }
@@ -61,7 +65,7 @@ class _IncomesState extends State<Incomes> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          MyText('Доход'),
+          MainText('Доход'),
           buildDropdownButton(),
         ],
       ),
@@ -76,7 +80,7 @@ class _IncomesState extends State<Incomes> {
         _getData(),
         categoriesList.isEmpty ?
         Align(
-          child: MyText('Доходов нет'),
+          child: MainText('Доходов нет'),
           alignment: Alignment.center,
         ) :
         Expanded(
@@ -96,8 +100,8 @@ class _IncomesState extends State<Incomes> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              MyText(categoriesList[index].category),
-                              MyText('${categoriesList[index].sum}'),
+                              MainText(categoriesList[index].category),
+                              MainText('${categoriesList[index].sum}'),
                             ],
                           ),
                         ),
@@ -125,9 +129,9 @@ class _IncomesState extends State<Incomes> {
 
   List filteredIncomes() {
     List middleList = List();
-    for (int i = 0; i < ListOfIncome.list.length; i++) {
-      if (_isInFilter(ListOfIncome.list[i].date))
-        middleList.add(ListOfIncome.list[i]);
+    for (int i = 0; i < ListOfIncomes.list.length; i++) {
+      if (_isInFilter(ListOfIncomes.list[i].date))
+        middleList.add(ListOfIncomes.list[i]);
     }
     List resultList = List();
     for(int i= 0; i < middleList.length; i++){
@@ -161,9 +165,9 @@ class _IncomesState extends State<Incomes> {
 
   List <IncomeNote> getFilteredChildrenCategory(IncomeNote incomeNote){
     List <IncomeNote> childrenList = [];
-    for (int i = 0; i < ListOfIncome.list.length; i++){
-      if (_isInFilter(ListOfIncome.list[i].date) && ListOfIncome.list[i].category == incomeNote.category)
-        childrenList.add(ListOfIncome.list[i]);
+    for (int i = 0; i < ListOfIncomes.list.length; i++){
+      if (_isInFilter(ListOfIncomes.list[i].date) && ListOfIncomes.list[i].category == incomeNote.category)
+        childrenList.add(ListOfIncomes.list[i]);
     }
     return childrenList;
   }
@@ -181,11 +185,10 @@ class _IncomesState extends State<Incomes> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  MyText(middleList[index].category),
-                  comment(middleList, index),
+                  boolComment(middleList, index),
                   Row(
                     children: [
-                      MyText("${middleList[index].sum}"),
+                      MainText("${middleList[index].sum}"),
                       IconButton(
                         icon: Icon(Icons.edit),
                         color: MyColors.textColor,
@@ -198,10 +201,10 @@ class _IncomesState extends State<Incomes> {
                         icon: Icon(Icons.delete),
                         color: MyColors.textColor,
                         onPressed: () async {
-                          ListOfIncome.list.removeAt(index);
+                          ListOfIncomes.list.remove(middleList[index]);
                           await Storage.saveString(jsonEncode(
-                            new ListOfIncome().toJson()), 'IncomeNote');
-                          widget.callback();
+                            new ListOfIncomes().toJson()), 'IncomeNote');
+                          widget.updateMainPage();
                           setState(() {});
                         },
                       ),
@@ -216,42 +219,61 @@ class _IncomesState extends State<Incomes> {
     );
   }
 
+  boolComment(middleList, index) {
+    if (middleList[index].comment == '' || middleList[index].comment == null){
+      return SecondaryText(middleList[index].date.toString().substring(0, 10));
+    }
+    else{
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SecondaryText(middleList[index].date.toString().substring(0, 10)),
+          comment(middleList, index),
+        ],
+      );
+    }
+  }
+
   goToEditPage(BuildContext context, IncomeNote incomeNote){
     Navigator.push(context,
-        MaterialPageRoute(builder: (BuildContext context){
-          return EditPage(callback: updateData, note: incomeNote);
-        }));
+      MaterialPageRoute(builder: (BuildContext context){
+        return EditPageForIncomeCategory(
+          updateIncomePage: updateIncomesPage,
+          updateMainPage: widget.updateMainPage,
+          note: incomeNote);
+      })
+    );
   }
 
   comment(middleList, index){
     if (middleList[index].comment == null)
-      return MyText('');
+      return ThirdText('');
     else
-      return MyText(middleList[index].comment);
+      return ThirdText(middleList[index].comment);
   }
 
   buildDropdownButton() {
     return DropdownButton(
-        hint: MyText(selMode),
+        hint: MainText(selectedMode),
         items: [
-          DropdownMenuItem(value: 'День', child: MyText('День')),
-          DropdownMenuItem(value: 'Неделя', child: MyText('Неделя')),
-          DropdownMenuItem(value: 'Месяц', child: MyText('Месяц')),
-          DropdownMenuItem(value: 'Год', child: MyText('Год')),
+          DropdownMenuItem(value: 'День', child: MainText('День')),
+          DropdownMenuItem(value: 'Неделя', child: MainText('Неделя')),
+          DropdownMenuItem(value: 'Месяц', child: MainText('Месяц')),
+          DropdownMenuItem(value: 'Год', child: MainText('Год')),
         ],
         onChanged: (String newValue) {
-          if (selMode != 'Неделя' && newValue == 'Неделя') {
+          if (selectedMode != 'Неделя' && newValue == 'Неделя') {
             // oldDate = date;
             date = date.subtract(Duration(days: date.weekday + 1)).add(Duration(days: 7));
           }
 
-          if (selMode == 'Неделя' && newValue != 'Неделя' && oldDate != null) {
+          if (selectedMode == 'Неделя' && newValue != 'Неделя' && oldDate != null) {
             //date = oldDate;
             date = DateTime.now();
           }
 
           setState(() {
-            selMode = newValue;
+            selectedMode = newValue;
           });
         }
     );
@@ -260,7 +282,7 @@ class _IncomesState extends State<Incomes> {
   _isInFilter(DateTime d){
     if (d == null) return false;
 
-    switch (selMode) {
+    switch (selectedMode) {
       case 'День' :
         return
           d.year == date.year &&
@@ -286,7 +308,7 @@ class _IncomesState extends State<Incomes> {
   }
 
   _getData(){
-    switch(selMode){
+    switch(selectedMode){
       case 'День':
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -299,7 +321,7 @@ class _IncomesState extends State<Incomes> {
                 });
               },
             ),
-            MyText(date.toString().substring(0, 10)),
+            MainText(date.toString().substring(0, 10)),
             IconButton(
               icon: Icon(Icons.arrow_right),
               onPressed: () {
@@ -324,8 +346,8 @@ class _IncomesState extends State<Incomes> {
             ),
             Row(
               children: [
-                MyText(date.subtract(Duration(days: 6)).toString().substring(0, 10) + ' - '),
-                MyText(date.toString().substring(0, 10)),
+                MainText(date.subtract(Duration(days: 6)).toString().substring(0, 10) + ' - '),
+                MainText(date.toString().substring(0, 10)),
               ],
             ),
             IconButton(
@@ -350,7 +372,7 @@ class _IncomesState extends State<Incomes> {
                 });
               },
             ),
-            MyText(AppLocalizations.of(context).translate(DateFormat.MMMM().format(date))+ ' '
+            MainText(AppLocalizations.of(context).translate(DateFormat.MMMM().format(date))+ ' '
                 + DateFormat.y().format(date)),
             IconButton(
               icon: Icon(Icons.arrow_right),
@@ -374,7 +396,7 @@ class _IncomesState extends State<Incomes> {
                 });
               },
             ),
-            MyText(date.year.toString()),
+            MainText(date.year.toString()),
             IconButton(
               icon: Icon(Icons.arrow_right),
               onPressed: () {

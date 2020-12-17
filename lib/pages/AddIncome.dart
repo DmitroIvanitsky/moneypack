@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_tutorial/Objects/IncomeNote.dart';
-import 'package:flutter_tutorial/Objects/ListOfIncome.dart';
+import 'package:flutter_tutorial/Objects/ListOfIncomes.dart';
 import 'package:flutter_tutorial/Utility/Storage.dart';
-import 'package:flutter_tutorial/setting/MyText.dart';
+import 'package:flutter_tutorial/setting/MainText.dart';
 import 'package:flutter_tutorial/setting/MyColors.dart';
-import 'package:flutter_tutorial/pages/ListOfIncomeCategories.dart';
+import 'package:flutter_tutorial/pages/ListOfIncomesCategories.dart';
 
 class AddIncome extends StatefulWidget{
   final Function callback;
@@ -61,7 +61,7 @@ class _AddIncomeState extends State<AddIncome> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children:[
-          MyText('Добавить доход'),
+          MainText('Добавить доход'),
           IconButton(
             iconSize: 35,
             icon: Icon(
@@ -91,7 +91,7 @@ class _AddIncomeState extends State<AddIncome> {
             getDateWidget(),
             Divider(),
             GestureDetector(
-              child: MyText(category),
+              child: MainText(category),
               onTap: () => _onCategoryTap(context),
             ),
             Divider(),
@@ -122,10 +122,10 @@ class _AddIncomeState extends State<AddIncome> {
   Widget getDateWidget(){
     return GestureDetector(
       onTap: _onDateTap,
-      child: (date != null)? MyText(
+      child: (date != null)? MainText(
         date.toString().substring(0, 10),
         TextAlign.left,
-      ) : MyText('Выберите дату'),
+      ) : MainText('Выберите дату'),
     );
   }
 
@@ -148,9 +148,9 @@ class _AddIncomeState extends State<AddIncome> {
     return Theme(
       data: ThemeData.dark().copyWith(
         colorScheme: ColorScheme.dark(
-          primary: MyColors.mainColor2,
+          primary: MyColors.mainColor,
           onPrimary: MyColors.textColor,
-          surface: MyColors.mainColor2,
+          surface: MyColors.mainColor,
           onSurface: MyColors.textColor,
         ),
         dialogBackgroundColor: MyColors.backGroundColor,
@@ -164,7 +164,7 @@ class _AddIncomeState extends State<AddIncome> {
         context,
         MaterialPageRoute<void>(
             builder: (BuildContext context){
-              return ListOfIncomeCategories(callback: stateFunc, cat: category);
+              return ListOfIncomesCategories(callback: stateFunc, cat: category);
             }
         )
     );
@@ -172,8 +172,8 @@ class _AddIncomeState extends State<AddIncome> {
 
   _createIncomeNote(DateTime date, String category, double sum, {String comment}) async{
     IncomeNote incomeNote = IncomeNote(date: date, category: category, sum: sum, comment: comment);
-    ListOfIncome.list.add(incomeNote);
-    await Storage.saveString(jsonEncode(ListOfIncome().toJson()), 'IncomeNote');
+    ListOfIncomes.list.add(incomeNote);
+    await Storage.saveString(jsonEncode(ListOfIncomes().toJson()), 'IncomeNote');
   }
 
 }

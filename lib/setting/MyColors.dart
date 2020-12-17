@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class MyColors{
 
-  static Color mainColor = Colors.lightGreen;
+  static Color mainColor = Colors.lightBlue[300];
   static Color expenseButton = Color(0xffe85b69);
   static Color incomeButton = Color(0xff69e85b);
   static Color backGroundColor = Colors.brown[50];

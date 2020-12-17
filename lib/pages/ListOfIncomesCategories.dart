@@ -2,18 +2,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tutorial/Utility/Storage.dart';
 import 'package:flutter_tutorial/setting/MyColors.dart';
-import 'package:flutter_tutorial/setting/MyText.dart';
+import 'package:flutter_tutorial/setting/MainText.dart';
 
-class ListOfIncomeCategories extends StatefulWidget{
+class ListOfIncomesCategories extends StatefulWidget{
   final Function callback;
   final String cat;
-  ListOfIncomeCategories({this.callback, this.cat});
+  ListOfIncomesCategories({this.callback, this.cat});
 
   @override
-  _ListOfIncomeCategoriesState createState() => _ListOfIncomeCategoriesState();
+  _ListOfIncomesCategoriesState createState() => _ListOfIncomesCategoriesState();
 }
 
-class _ListOfIncomeCategoriesState extends State<ListOfIncomeCategories> {
+class _ListOfIncomesCategoriesState extends State<ListOfIncomesCategories> {
   List<String> list = [];
   String tempField = '';
 
@@ -42,11 +42,11 @@ class _ListOfIncomeCategoriesState extends State<ListOfIncomeCategories> {
 
   Widget buildAppBar() {
     return AppBar(
-      backgroundColor: MyColors.mainColor2,
+      backgroundColor: MyColors.mainColor,
       iconTheme: IconThemeData(
           color: MyColors.textColor
       ),
-      title: MyText('Категории дохода'),
+      title: MainText('Категории дохода'),
     );
   }
 
@@ -54,7 +54,7 @@ class _ListOfIncomeCategoriesState extends State<ListOfIncomeCategories> {
     return Column(
       children: [
         Expanded(
-          child: list.isEmpty ? MyText('Добавьте категорию') :
+          child: list.isEmpty ? MainText('Добавьте категорию') :
           ListView.builder(
             itemCount: list.length,
             itemBuilder: (context, index){
@@ -66,7 +66,7 @@ class _ListOfIncomeCategoriesState extends State<ListOfIncomeCategories> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         GestureDetector(
-                          child: MyText(list[index]),
+                          child: MainText(list[index]),
                           onTap: (){
                             widget.callback(list[index]);
                             Navigator.pop(context);

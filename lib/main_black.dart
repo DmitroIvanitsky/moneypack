@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_tutorial/Objects/ListOfExpenses.dart';
-import 'package:flutter_tutorial/Objects/ListOfIncome.dart';
+import 'package:flutter_tutorial/Objects/ListOfIncomes.dart';
 import 'package:flutter_tutorial/Utility/Storage.dart';
 import 'package:flutter_tutorial/pages/AddExpense.dart';
 import 'package:flutter_tutorial/pages/AddIncome.dart';
@@ -9,7 +9,7 @@ import 'package:flutter_tutorial/pages/Expenses.dart';
 import 'package:flutter_tutorial/pages/Incomes.dart';
 import 'package:flutter_tutorial/pages/Balance.dart';
 import 'package:flutter_tutorial/setting/MyColors.dart';
-import 'package:flutter_tutorial/setting/MyText.dart';
+import 'package:flutter_tutorial/setting/MainText.dart';
 
 /// this is the file in which i try dark theme with neon light
 
@@ -45,7 +45,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
     if (expN != null && incN != null) {
       setState(() {
         ListOfExpenses.fromJson(jsonDecode(expN));
-        ListOfIncome.fromJson(jsonDecode(incN));
+        ListOfIncomes.fromJson(jsonDecode(incN));
       });
       stateFunc();
     }
@@ -53,7 +53,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
 
   void stateFunc() {
     setState(() {
-      income = filterOnPeriod(ListOfIncome.list);
+      income = filterOnPeriod(ListOfIncomes.list);
       expense = filterOnPeriod(ListOfExpenses.list);
       balance = income - expense;
     });
@@ -97,7 +97,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
             icon: Icon(Icons.list),
           ),
           // SizS
-          MyText('Finance'),
+          MainText('Finance'),
           buildDropdownButton(),
         ],
       ),
@@ -198,12 +198,12 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
 
   buildDropdownButton() {
     return DropdownButton(
-        hint: MyText(selMode),
+        hint: MainText(selMode),
         items: [
-          DropdownMenuItem(value: 'Day', child: MyText('Day')),
-          DropdownMenuItem(value: 'Week', child: MyText('Week')),
-          DropdownMenuItem(value: 'Month', child: MyText('Month')),
-          DropdownMenuItem(value: 'Year', child: MyText('Year')),
+          DropdownMenuItem(value: 'Day', child: MainText('Day')),
+          DropdownMenuItem(value: 'Week', child: MainText('Week')),
+          DropdownMenuItem(value: 'Month', child: MainText('Month')),
+          DropdownMenuItem(value: 'Year', child: MainText('Year')),
         ],
         onChanged: (String newValue) {
           if (selMode == 'Day' && newValue != 'Day') {
@@ -244,10 +244,10 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                 //boxShadow: [BoxShadow(color: MyColors.mainColor, blurRadius: 10, spreadRadius: 1),],
                 borderRadius: BorderRadius.all(Radius.circular(25))),
             child: GestureDetector(
-                child: MyText(index, TextAlign.left),
+                child: MainText(index, TextAlign.left),
                 onTap: () => _goTo(context, index)),
           ),
-          MyText('$category', TextAlign.right),
+          MainText('$category', TextAlign.right),
         ],
       ),
     );
@@ -276,13 +276,13 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
       case 'Incomes':
         Navigator.push(context,
             MaterialPageRoute<void>(builder: (BuildContext context) {
-              return Incomes(callback: stateFunc);
+              return Incomes(updateMainPage: stateFunc);
             }));
         break;
       case 'Expenses':
         Navigator.push(context,
             MaterialPageRoute<void>(builder: (BuildContext context) {
-              return Expenses(callback: stateFunc);
+              return Expenses(updateMainPage: stateFunc);
             }));
         break;
     }
@@ -332,7 +332,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
 
               },
             ),
-            MyText(date.toString().substring(0, 10)),
+            MainText(date.toString().substring(0, 10)),
             IconButton(
               icon: Icon(Icons.arrow_right),
               onPressed: () {
@@ -360,8 +360,8 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
             ),
             Row(
               children: [
-                MyText(lastWeekDay.subtract(Duration(days: 6)).toString().substring(0, 10) + ' - '),
-                MyText(lastWeekDay.toString().substring(0, 10)),
+                MainText(lastWeekDay.subtract(Duration(days: 6)).toString().substring(0, 10) + ' - '),
+                MainText(lastWeekDay.toString().substring(0, 10)),
               ],
             ),
             IconButton(
@@ -388,7 +388,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                 });
               },
             ),
-            MyText(date.month.toString()),
+            MainText(date.month.toString()),
             IconButton(
               icon: Icon(Icons.arrow_right),
               onPressed: () {
@@ -413,7 +413,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                 });
               },
             ),
-            MyText(date.year.toString()),
+            MainText(date.year.toString()),
             IconButton(
               icon: Icon(Icons.arrow_right),
               onPressed: () {

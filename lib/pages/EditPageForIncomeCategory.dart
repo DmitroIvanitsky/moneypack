@@ -1,54 +1,36 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../Objects/IncomeNote.dart';
-import '../Objects/ListOfIncome.dart';
+import '../Objects/ListOfIncomes.dart';
 import '../Utility/Storage.dart';
-import '../pages/ListOfIncomeCategories.dart';
+import '../pages/ListOfIncomesCategories.dart';
 import '../setting/MyColors.dart';
-import '../setting/MyText.dart';
+import '../setting/MainText.dart';
 
-class EditPage extends StatefulWidget {
-  final Function callback;
+class EditPageForIncomeCategory extends StatefulWidget {
+  final Function updateIncomePage;
+  final Function updateMainPage;
   final IncomeNote note;
 
-  EditPage({this.callback, this.note});
+  EditPageForIncomeCategory({
+    this.updateIncomePage,
+    this.updateMainPage,
+    this.note
+  });
 
   @override
-  _EditPageState createState() => _EditPageState();
+  _EditPageForIncomeCategoryState createState() =>
+      _EditPageForIncomeCategoryState(this.note);
 }
 
-class _EditPageState extends State<EditPage> {
-  DateTime date;
-  String category;
-  double sum;
-  String comment;
-  int oldIndex;
-  int newIndex;
+class _EditPageForIncomeCategoryState extends State<EditPageForIncomeCategory> {
+  IncomeNote currentNote;
 
-  @override
-  void initState() {
-    initData();
-    super.initState();
-  }
+  _EditPageForIncomeCategoryState(this.currentNote);
 
-  void initData(){
-    date = widget.note.date;
-    category = widget.note.category;
-    sum = widget.note.sum;
-    comment = widget.note.comment;
-    oldIndex = ListOfIncome.list.indexOf(widget.note);
-  }
-
-  void updateData(String cat){
-    if (category != cat)
-      setState(() {
-        category = cat;
-        newIndex = -1;
-      });
-    else
+  void updateCategory(String cat) {
     setState(() {
-      category = cat;
-      newIndex = oldIndex;
+      currentNote.category = cat;
     });
   }
 
@@ -58,12 +40,12 @@ class _EditPageState extends State<EditPage> {
       child: Scaffold(
         backgroundColor: MyColors.backGroundColor,
         appBar: buildAppBar(),
-        body: buildBody(),
+        body: buildBody()
       ),
     );
   }
 
-  Widget buildAppBar(){
+  Widget buildAppBar() {
     return AppBar(
       iconTheme: IconThemeData(
         color: MyColors.textColor,
@@ -72,13 +54,14 @@ class _EditPageState extends State<EditPage> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          MyText(widget.note.category),
+          MainText("Редактирование"),
           IconButton(
             iconSize: 35,
             icon: Icon(Icons.done, color: MyColors.textColor),
             onPressed: (){
-              editNote(oldIndex, newIndex, date, category, sum, comment: comment);
-              widget.callback();
+              updateListOfIncome();
+              widget.updateIncomePage();
+              widget.updateMainPage();
               Navigator.pop(context);
             }
           ),
@@ -87,87 +70,78 @@ class _EditPageState extends State<EditPage> {
     );
   }
 
-  editNote(int oldIndex, int newIndex, DateTime date, String category, double sum, {String comment}) async{
-    IncomeNote newIncomeNote = IncomeNote(date: date, category: category, sum: sum, comment: comment);
-    if (newIndex != -1) {
-      ListOfIncome.list.removeAt(oldIndex);
-      ListOfIncome.list.insert(oldIndex, newIncomeNote);
-      await Storage.saveString(
-          jsonEncode(ListOfIncome().toJson()), 'IncomeNote');
-    }
-    else{
-      ListOfIncome.list.removeAt(oldIndex);
-      ListOfIncome.list.add(newIncomeNote);
-      await Storage.saveString(jsonEncode(ListOfIncome().toJson()), 'IncomeNote');
-    }
-  }
-
   Widget buildBody() {
     return Padding(
-      padding: EdgeInsets.only(left: 10, right: 10),
-      child: Form(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 10),
-            // date widget row
-            getDateWidget(date),
-            Divider(),
-            // category row
-            GestureDetector(
-              child: MyText(category),
-              onTap: () => onCategoryTap(context),
-            ),
-            Divider(),
-            // sum row
-            TextFormField(
-              initialValue: sum.toString(),
-              decoration: const InputDecoration(
-                hintText: 'Введите сумму',
+        padding: EdgeInsets.only(left: 10, right: 10),
+        child: Form(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 10),
+              // date widget row
+              getDateWidget(currentNote.date),
+              Divider(),
+              // category row
+              GestureDetector(
+                child: MainText(currentNote.category),
+                onTap: () => onCategoryTap(context),
               ),
-              validator: (value) {
-                if (value.isEmpty) {
-                  return 'Пожалуйста введите сумму';
-                }
-                return null;
-              },
-              onChanged: (v) => sum = double.parse(v),
-            ),
-            TextFormField(
-              initialValue: comment,
-              decoration: const InputDecoration(
-                hintText: 'Введите коментарий',
+              Divider(),
+              // sum row
+              TextFormField(
+                initialValue: currentNote.sum.toString(),
+                decoration: const InputDecoration(
+                  hintText: 'Введите сумму',
+                ),
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Пожалуйста введите сумму';
+                  }
+                  return null;
+                },
+                onChanged: (v) => currentNote.sum = double.parse(v),
               ),
-              onChanged: (v) => comment = v,
-            ),
-          ],
+              TextFormField(
+                initialValue: currentNote.comment,
+                decoration: const InputDecoration(
+                  hintText: 'Введите коментарий',
+                ),
+                onChanged: (v) => currentNote.comment = v,
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
   }
 
-  Widget getDateWidget(DateTime date){
-    return GestureDetector(
-      onTap: onDateTap,
-      child: (date != null)? MyText(
-        date.toString().substring(0, 10),
-        TextAlign.left,
-      ) : MyText('Выберите дату'),
-    );
+  updateListOfIncome() async{
+    int index = ListOfIncomes.list.indexOf(widget.note);
+    ListOfIncomes.list[index] = currentNote;
+    await Storage.saveString(jsonEncode(ListOfIncomes().toJson()), 'IncomeNote');
   }
 
-  onCategoryTap(BuildContext context){
+  onCategoryTap(BuildContext context) {
     Navigator.push(
         context,
         MaterialPageRoute<void>(
             builder: (BuildContext context){
-              return ListOfIncomeCategories(callback: updateData, cat: category);
+              return ListOfIncomesCategories(callback: updateCategory, cat: currentNote.category);
             }
         )
     );
   }
 
-  onDateTap() async{
+  Widget getDateWidget(DateTime date) {
+    return GestureDetector(
+      onTap: onDateTap,
+      child: (date != null)? MainText(
+        date.toString().substring(0, 10),
+        TextAlign.left,
+      ) : MainText('Выберите дату'),
+    );
+  }
+
+  onDateTap() async {
     final DateTime picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -178,17 +152,17 @@ class _EditPageState extends State<EditPage> {
       },
     );
     setState(() {
-      date = picked;
+      currentNote.date = picked;
     });
   }
 
-  theme(Widget child){
+  theme(Widget child) {
     return Theme(
       data: ThemeData.dark().copyWith(
         colorScheme: ColorScheme.dark(
-          primary: MyColors.mainColor2,
+          primary: MyColors.mainColor,
           onPrimary: MyColors.textColor,
-          surface: MyColors.mainColor2,
+          surface: MyColors.mainColor,
           onSurface: MyColors.textColor,
         ),
         dialogBackgroundColor: MyColors.backGroundColor,

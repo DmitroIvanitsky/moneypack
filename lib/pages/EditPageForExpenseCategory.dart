@@ -1,43 +1,36 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_tutorial/Objects/ExpenseNote.dart';
-import 'package:flutter_tutorial/Objects/ListOfExpenses.dart';
-import 'package:flutter_tutorial/Utility/Storage.dart';
-import 'package:flutter_tutorial/pages/ListOfExpensesCategories.dart';
-import 'package:flutter_tutorial/setting/MyColors.dart';
-import 'package:flutter_tutorial/setting/MainText.dart';
+import '../Objects/ExpenseNote.dart';
+import '../Objects/ListOfExpenses.dart';
+import '../Utility/Storage.dart';
+import '../pages/ListOfExpensesCategories.dart';
+import '../setting/MyColors.dart';
+import '../setting/MainText.dart';
 
-class AddExpenses extends StatefulWidget{
-  final Function callBack;
-  AddExpenses({this.callBack});
+class EditPageForExpenseCategory extends StatefulWidget {
+  final Function updateExpensePage;
+  final Function updateMainPage;
+  final ExpenseNote note;
+
+  EditPageForExpenseCategory({
+    this.updateExpensePage,
+    this.updateMainPage,
+    this.note
+  });
 
   @override
-  _AddExpensesState createState() => _AddExpensesState();
+  _EditPageForExpenseCategoryState createState() =>
+      _EditPageForExpenseCategoryState(this.note);
 }
 
-class _AddExpensesState extends State<AddExpenses> {
+class _EditPageForExpenseCategoryState extends State<EditPageForExpenseCategory> {
+  ExpenseNote currentNote;
 
-  DateTime date = DateTime.now();
-  String category = '';
-  double sum;
-  String comment;
-  List<String> _list = [];
+  _EditPageForExpenseCategoryState(this.currentNote);
 
-  @override
-  void initState() {
-    initList();
-    super.initState();
-  }
-
-  initList() async{
-    _list = await Storage.getList('Expenses');
-    _list == null || _list.isEmpty ? category = 'Категория расхода' : category = _list[0];
-    setState(() {});
-  }
-
-  void stateFunc(String cat){
+  void updateCategory(String cat) {
     setState(() {
-      category = cat;
+      currentNote.category = cat;
     });
   }
 
@@ -45,9 +38,9 @@ class _AddExpensesState extends State<AddExpenses> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-          backgroundColor: MyColors.backGroundColor,
-          appBar: buildAppBar(),
-          body: buildBody(),
+        backgroundColor: MyColors.backGroundColor,
+        appBar: buildAppBar(),
+        body: buildBody(),
       ),
     );
   }
@@ -55,23 +48,23 @@ class _AddExpensesState extends State<AddExpenses> {
   Widget buildAppBar() {
     return AppBar(
       iconTheme: IconThemeData(
-          color: MyColors.textColor
+        color: MyColors.textColor,
       ),
       backgroundColor: MyColors.mainColor,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          MainText('Добавить расход'),
+          MainText("Редактирование"),
           IconButton(
             iconSize: 35,
             icon: Icon(Icons.done, color: MyColors.textColor),
             onPressed: (){
-              if (category == "category" || sum == null) return; // to not add empty sum note
-              createExpenseNote(date, category, sum, comment: comment); // function to create note object
-              widget.callBack();
+              updateListOfExpenses();
+              widget.updateExpensePage();
+              widget.updateMainPage();
               Navigator.pop(context);
-            },
-          )
+            }
+          ),
         ],
       ),
     );
@@ -86,16 +79,17 @@ class _AddExpensesState extends State<AddExpenses> {
           children: [
             SizedBox(height: 10),
             // date widget row
-            getDateWidget(),
+            getDateWidget(currentNote.date),
             Divider(),
             // category row
             GestureDetector(
-              child: MainText(category),
+              child: MainText(currentNote.category),
               onTap: () => onCategoryTap(context),
             ),
             Divider(),
             // sum row
             TextFormField(
+              initialValue: currentNote.sum.toString(),
               decoration: const InputDecoration(
                 hintText: 'Введите сумму',
               ),
@@ -105,13 +99,14 @@ class _AddExpensesState extends State<AddExpenses> {
                 }
                 return null;
               },
-              onChanged: (v) => sum = double.parse(v),
+              onChanged: (v) => currentNote.sum = double.parse(v),
             ),
             TextFormField(
+              initialValue: currentNote.comment,
               decoration: const InputDecoration(
                 hintText: 'Введите коментарий',
               ),
-              onChanged: (v) => comment = v,
+              onChanged: (v) => currentNote.comment = v,
             ),
           ],
         ),
@@ -119,7 +114,27 @@ class _AddExpensesState extends State<AddExpenses> {
     );
   }
 
-  Widget getDateWidget(){
+  updateListOfExpenses() async{
+    int index = ListOfExpenses.list.indexOf(widget.note);
+    ListOfExpenses.list[index] = currentNote;
+    await Storage.saveString(jsonEncode(ListOfExpenses().toJson()), 'ExpenseNote');
+  }
+
+  onCategoryTap(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute<void>(
+        builder: (BuildContext context){
+          return ListOfExpensesCategories(
+            callback: updateCategory, 
+            cat: currentNote.category
+          );
+        }
+      )
+    );
+  }
+
+  Widget getDateWidget(DateTime date) {
     return GestureDetector(
       onTap: onDateTap,
       child: (date != null)? MainText(
@@ -129,28 +144,7 @@ class _AddExpensesState extends State<AddExpenses> {
     );
   }
 
-  createExpenseNote(DateTime date, String category, double sum, {String comment}) async{
-    ExpenseNote expenseNote = ExpenseNote(date: date, category: category, sum: sum, comment: comment);
-    ListOfExpenses.list.add(expenseNote);
-    await Storage.saveString(jsonEncode(ListOfExpenses().toJson()), 'ExpenseNote');
-
-    // String m = await Storage.getString('ExpenseNote');
-    // ListOfExpenses lx = ListOfExpenses.fromJson(jsonDecode(m));
-    // print(ListOfExpenses.list[0]);
-  }
-
-  onCategoryTap(BuildContext context){
-    Navigator.push(
-        context,
-        MaterialPageRoute<void>(
-            builder: (BuildContext context){
-              return ListOfExpensesCategories(callback: stateFunc, cat: category);
-            }
-        )
-    );
-  }
-
-  onDateTap() async{
+  onDateTap() async {
     final DateTime picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -158,14 +152,14 @@ class _AddExpensesState extends State<AddExpenses> {
       firstDate: DateTime.now().subtract(Duration(days: 184)),
       builder:(BuildContext context, Widget child) {
         return theme(child);
-        },
+      },
     );
     setState(() {
-      date = picked;
+      currentNote.date = picked;
     });
   }
 
-  theme(Widget child){
+  theme(Widget child) {
     return Theme(
       data: ThemeData.dark().copyWith(
         colorScheme: ColorScheme.dark(
@@ -179,6 +173,5 @@ class _AddExpensesState extends State<AddExpenses> {
       child: child,
     );
   }
-
+  
 }
-

@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_tutorial/Objects/ListOfExpenses.dart';
-import 'package:flutter_tutorial/Objects/ListOfIncome.dart';
+import 'package:flutter_tutorial/Objects/ListOfIncomes.dart';
 import 'package:flutter_tutorial/Utility/Storage.dart';
 import 'package:flutter_tutorial/pages/AddExpense.dart';
 import 'package:flutter_tutorial/pages/AddIncome.dart';
@@ -11,7 +11,7 @@ import 'package:flutter_tutorial/pages/Expenses.dart';
 import 'package:flutter_tutorial/pages/Incomes.dart';
 import 'package:flutter_tutorial/pages/Balance.dart';
 import 'package:flutter_tutorial/setting/MyColors.dart';
-import 'package:flutter_tutorial/setting/MyText.dart';
+import 'package:flutter_tutorial/setting/MainText.dart';
 import 'package:intl/intl.dart';
 import 'Utility/appLocalizations.dart';
 
@@ -41,7 +41,7 @@ class FlutterTutorialApp extends StatefulWidget {
 class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
   DateTime date = DateTime.now();
   DateTime lastWeekDay = DateTime.now().subtract(Duration(days: DateTime.now().weekday)).add(Duration(days: 7));
-  String selMode = 'День';
+  String selectedMode = 'День';
   double income = 0;
   double expense = 0;
   double balance = 0;
@@ -58,25 +58,25 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
     String incN = await Storage.getString('IncomeNote');
     setState(() {
       if (expN != null) ListOfExpenses.fromJson(jsonDecode(expN));
-      if (incN != null) ListOfIncome.fromJson(jsonDecode(incN));
+      if (incN != null) ListOfIncomes.fromJson(jsonDecode(incN));
     });
 
-    updateData();
+    updateMainPage();
   }
 
-  void updateData() {
+  void updateMainPage() {
     setState(() {
-      income = filterOnPeriod(ListOfIncome.list);
-      expense = filterOnPeriod(ListOfExpenses.list);
+      income = filterSumByPeriod(ListOfIncomes.list);
+      expense = filterSumByPeriod(ListOfExpenses.list);
       balance = balanceFunc();
     });
   }
 
   double balanceFunc(){
-    return ListOfIncome.sum() - ListOfExpenses.sum();
+    return ListOfIncomes.sum() - ListOfExpenses.sum();
   }
 
-  double filterOnPeriod(List list){
+  double filterSumByPeriod(List list){
     double sum = 0;
     for (int i = 0; i < list.length; i++) {
       if (_isInFilter(list[i].date)) {
@@ -112,15 +112,15 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
           children: [
             Padding(
               padding: EdgeInsets.only(top: 25),
-              child: MyText('Настройки'),
+              child: MainText('Настройки'),
             ),
             Padding(
               padding: EdgeInsets.only(top: 25),
-              child: MyText('Тема'),
+              child: MainText('Тема'),
             ),
             Padding(
               padding: EdgeInsets.only(top: 25),
-              child: MyText('Язык'),
+              child: MainText('Язык'),
             ),
           ],
         ),
@@ -134,7 +134,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          MyText('Учёт'),
+          MainText('Учёт'),
           buildDropdownButton(),
         ],
       ),
@@ -160,7 +160,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
             ),
             height: size.height * 0.075,
             margin: EdgeInsets.only(left: 10, right: 10),
-            child: Center(child: viewInfo(index: 'Доход', category: income)),
+            child: Center(child: viewInfoButton(index: 'Доход', category: income)),
           ),
 
           // expense row
@@ -172,7 +172,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
             ),
             height: size.height * 0.075,
             margin: EdgeInsets.only(left: 10, right: 10, top: 10),
-            child: Center(child: viewInfo(index: 'Расход', category: expense)),
+            child: Center(child: viewInfoButton(index: 'Расход', category: expense)),
           ),
 
           // balance row
@@ -184,7 +184,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
             ),
             height: size.height * 0.075,
             margin: EdgeInsets.only(left: 10, right: 10, top: 10),
-            child: Center(child: viewInfo(index: 'Баланс общий', category: balance)),
+            child: Center(child: viewInfoButton(index: 'Баланс общий', category: balance)),
           ),
 
           // low buttons to add notes
@@ -227,44 +227,44 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
       ),
       child: FlatButton(
           onPressed: () => _goTo(context, index),
-          child: MyText(index)
+          child: MainText(index)
       ),
     );
   }
 
   buildDropdownButton() {
     return DropdownButton(
-        hint: MyText(selMode),
+        hint: MainText(selectedMode),
         items: [
-          DropdownMenuItem(value: 'День', child: MyText('День')),
-          DropdownMenuItem(value: 'Неделя', child: MyText('Неделя')),
-          DropdownMenuItem(value: 'Месяц', child: MyText('Месяц')),
-          DropdownMenuItem(value: 'Год', child: MyText('Год')),
+          DropdownMenuItem(value: 'День', child: MainText('День')),
+          DropdownMenuItem(value: 'Неделя', child: MainText('Неделя')),
+          DropdownMenuItem(value: 'Месяц', child: MainText('Месяц')),
+          DropdownMenuItem(value: 'Год', child: MainText('Год')),
         ],
         onChanged: (String newValue) {
-          if (selMode == 'День' && newValue != 'День') {
+          if (selectedMode == 'День' && newValue != 'День') {
             lastWeekDay = DateTime.now().subtract(Duration(days: DateTime.now().weekday)).add(Duration(days: 7));
           }
-          if (selMode == 'Неделя' && newValue != 'Неделя') {
+          if (selectedMode == 'Неделя' && newValue != 'Неделя') {
             date = DateTime.now();
           }
-          if (selMode == 'Месяц' && newValue != 'Месяц') {
+          if (selectedMode == 'Месяц' && newValue != 'Месяц') {
             date = DateTime.now();
             lastWeekDay = DateTime.now().subtract(Duration(days: DateTime.now().weekday)).add(Duration(days: 7));
           }
-          if (selMode == 'Год' && newValue != 'Год') {
+          if (selectedMode == 'Год' && newValue != 'Год') {
             date = DateTime.now();
             lastWeekDay = DateTime.now().subtract(Duration(days: DateTime.now().weekday)).add(Duration(days: 7));
           }
           setState(() {
-            selMode = newValue;
+            selectedMode = newValue;
           });
-          updateData();
+          updateMainPage();
         }
     );
   }
 
-  viewInfo({String index, double category}){
+  viewInfoButton({String index, double category}){
     return Container(
       width: double.infinity,
       padding: EdgeInsets.only(right: 30),
@@ -280,10 +280,10 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                 //boxShadow: [BoxShadow(color: MyColors.mainColor, blurRadius: 10, spreadRadius: 1),],
                 borderRadius: BorderRadius.all(Radius.circular(25))),
             child: GestureDetector(
-                child: MyText(index, TextAlign.left),
+                child: MainText(index, TextAlign.left),
                 onTap: () => _goTo(context, index)),
           ),
-          MyText('$category', TextAlign.right),
+          MainText('$category', TextAlign.right),
         ],
       ),
     );
@@ -294,16 +294,16 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
       case 'Добавить расход':
         Navigator.push(context,
             MaterialPageRoute<void>(builder: (BuildContext context) {
-              return AddExpenses(callBack: updateData);
+              return AddExpenses(callBack: updateMainPage);
             }));
         break;
       case 'Добавить доход':
         Navigator.push(context,
             MaterialPageRoute<void>(builder: (BuildContext context) {
-              return AddIncome(callback: updateData);
+              return AddIncome(callback: updateMainPage);
             }));
         break;
-      case 'Баланс':
+      case 'Баланс общий':
         Navigator.push(context,
             MaterialPageRoute<void>(builder: (BuildContext context) {
               return ShowBalance();
@@ -312,13 +312,13 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
       case 'Доход':
         Navigator.push(context,
             MaterialPageRoute<void>(builder: (BuildContext context) {
-              return Incomes(callback: updateData);
+              return Incomes(updateMainPage: updateMainPage);
             }));
         break;
       case 'Расход':
         Navigator.push(context,
             MaterialPageRoute<void>(builder: (BuildContext context) {
-              return Expenses(callback: updateData);
+              return Expenses(updateMainPage: updateMainPage);
             }));
         break;
     }
@@ -327,7 +327,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
   _isInFilter(DateTime d) {
     if (d == null) return false;
 
-    switch (selMode) {
+    switch (selectedMode) {
       case 'День' :
         return
           d.year == date.year &&
@@ -353,7 +353,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
   }
 
   _getData(){
-    switch(selMode){
+    switch(selectedMode){
       case 'День':
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -363,18 +363,24 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
               onPressed: () {
                 setState(() {
                   date = date.subtract(Duration(days: 1));
-                  updateData();
+                  updateMainPage();
                 });
 
               },
             ),
-            MyText(date.toString().substring(0, 10)),
+            //MyText(date.toString().substring(0, 10)),
+            MainText(
+              AppLocalizations.of(context).translate(DateFormat.E().format(date)) +
+              ', ' + DateFormat.d().format(date) +
+              ' ' + AppLocalizations.of(context).translate(DateFormat.MMMM().format(date)) +
+              ' ' + DateFormat.y().format(date),
+            ),
             IconButton(
               icon: Icon(Icons.arrow_right),
               onPressed: () {
                 setState(() {
                   date = date.add(Duration(days: 1));
-                  updateData();
+                  updateMainPage();
                 });
 
               },
@@ -390,14 +396,14 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
               onPressed: () {
                 setState(() {
                   lastWeekDay = lastWeekDay.subtract(Duration(days: 7));
-                  updateData();
+                  updateMainPage();
                 });
               },
             ),
             Row(
               children: [
-                MyText(lastWeekDay.subtract(Duration(days: 6)).toString().substring(0, 10) + ' - '),
-                MyText(lastWeekDay.toString().substring(0, 10)),
+                MainText(lastWeekDay.subtract(Duration(days: 6)).toString().substring(0, 10) + ' - '),
+                MainText(lastWeekDay.toString().substring(0, 10)),
               ],
             ),
             IconButton(
@@ -405,7 +411,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
               onPressed: () {
                 setState(() {
                   lastWeekDay = lastWeekDay.add(Duration(days: 7));
-                  updateData();
+                  updateMainPage();
                 });
               },
             ),
@@ -420,18 +426,18 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
               onPressed: () {
                 setState(() {
                   date = new DateTime(date.year, date.month - 1, date.day);
-                  updateData();
+                  updateMainPage();
                 });
               },
             ),
-            MyText(AppLocalizations.of(context).translate(DateFormat.MMMM().format(date))+ ' '
+            MainText(AppLocalizations.of(context).translate(DateFormat.MMMM().format(date))+ ' '
                 + DateFormat.y().format(date)),
             IconButton(
               icon: Icon(Icons.arrow_right),
               onPressed: () {
                 setState(() {
                   date = DateTime(date.year, date.month + 1, date.day);
-                  updateData();
+                  updateMainPage();
                 });
               },
             ),
@@ -446,17 +452,17 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
               onPressed: () {
                 setState(() {
                   date = new DateTime(date.year - 1, date.month, date.day);
-                  updateData();
+                  updateMainPage();
                 });
               },
             ),
-            MyText(date.year.toString()),
+            MainText(date.year.toString()),
             IconButton(
               icon: Icon(Icons.arrow_right),
               onPressed: () {
                 setState(() {
                   date = DateTime(date.year + 1, date.month, date.day);
-                  updateData();
+                  updateMainPage();
                 });
               },
             ),

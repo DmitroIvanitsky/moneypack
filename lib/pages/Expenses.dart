@@ -1,16 +1,20 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_tutorial/setting/ThirdText.dart';
+import '../pages/EditPageForExpenseCategory.dart';
 import '../Utility/appLocalizations.dart';
 import 'package:intl/intl.dart';
 import '../Objects/ExpenseNote.dart';
 import '../Objects/ListOfExpenses.dart';
 import '../Utility/Storage.dart';
 import '../setting/MyColors.dart';
-import '../setting/MyText.dart';
+import '../setting/MainText.dart';
+import '../setting/SecondaryText.dart';
 
 class Expenses extends StatefulWidget{
-  final Function callback;
-  Expenses({this.callback});
+  final Function updateMainPage;
+
+  Expenses({this.updateMainPage});
 
   @override
   _ExpensesState createState() => _ExpensesState();
@@ -19,7 +23,7 @@ class Expenses extends StatefulWidget{
 class _ExpensesState extends State<Expenses> {
   DateTime date = DateTime.now();
   DateTime oldDate;
-  String selMode = 'День';
+  String selectedMode = 'День';
 
   @override
   void initState() {
@@ -36,7 +40,7 @@ class _ExpensesState extends State<Expenses> {
     }
   }
 
-  void stateFunc(){
+  void updateExpensesPage(){
     setState(() {
     });
   }
@@ -61,7 +65,7 @@ class _ExpensesState extends State<Expenses> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          MyText('Расход'),
+          MainText('Расход'),
           _buildDropdownButton()
         ],
       ), // dropdown menu button
@@ -76,7 +80,7 @@ class _ExpensesState extends State<Expenses> {
         _getData(),
         categoriesList.isEmpty ?
         Align(
-          child: MyText('Расходов нет'),
+          child: MainText('Расходов нет'),
           alignment: Alignment.center,
         ) :
         Expanded(
@@ -92,8 +96,8 @@ class _ExpensesState extends State<Expenses> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      MyText(singleCategory.category),
-                      MyText('${singleCategory.sum}'),
+                      MainText(singleCategory.category),
+                      MainText('${singleCategory.sum}'),
                     ],
                   ),
                 ),
@@ -172,19 +176,26 @@ class _ExpensesState extends State<Expenses> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  MyText(middleList[index].category),
-                  comment(middleList, index),
+                  boolComment(middleList, index),
                   Row(
                     children: [
-                      MyText('${middleList[index].sum}'),
+                      MainText('${middleList[index].sum}'),
+                      IconButton(
+                        icon: Icon(Icons.edit),
+                        color: MyColors.textColor,
+                        onPressed: () => goToEditPage(
+                          context,
+                          middleList[index],
+                        ),
+                      ),
                       IconButton(
                         icon: Icon(Icons.delete),
                         color: MyColors.textColor,
                         onPressed: () async {
-                          ListOfExpenses.list.removeAt(index);
+                          ListOfExpenses.list.remove(middleList[index]);
                           await Storage.saveString(jsonEncode(
                             new ListOfExpenses().toJson()), 'ExpenseNote');
-                          widget.callback();
+                          widget.updateMainPage();
                           setState(() {});
                         }
                       ),
@@ -199,36 +210,63 @@ class _ExpensesState extends State<Expenses> {
     );
   }
 
+  boolComment(middleList, index) {
+    if (middleList[index].comment == '' || middleList[index].comment == null){
+      return SecondaryText(middleList[index].date.toString().substring(0, 10));
+    }
+    else{
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SecondaryText(middleList[index].date.toString().substring(0, 10)),
+          comment(middleList, index),
+        ],
+      );
+    }
+  }
+
+  goToEditPage(BuildContext context, ExpenseNote expenseNote){
+    Navigator.push(context,
+        MaterialPageRoute(builder: (BuildContext context){
+          return EditPageForExpenseCategory(
+              updateExpensePage: updateExpensesPage,
+              updateMainPage: widget.updateMainPage,
+              note: expenseNote
+          );
+        })
+    );
+  }
+
   comment(List middleList, int index) {
       if (middleList[index].comment == null)
-        return MyText('');
+        return ThirdText('');
       else
-        return MyText(middleList[index].comment);
+        return ThirdText(middleList[index].comment);
   }
 
   // dropdown menu button
   _buildDropdownButton() {
         return DropdownButton(
-            hint: MyText(selMode),
+            hint: MainText(selectedMode),
             items: [
-              DropdownMenuItem(value: 'День', child: MyText('День')),
-              DropdownMenuItem(value: 'Неделя', child: MyText('Неделя')),
-              DropdownMenuItem(value: 'Месяц', child: MyText('Месяц')),
-              DropdownMenuItem(value: 'Год', child: MyText('Год')),
+              DropdownMenuItem(value: 'День', child: MainText('День')),
+              DropdownMenuItem(value: 'Неделя', child: MainText('Неделя')),
+              DropdownMenuItem(value: 'Месяц', child: MainText('Месяц')),
+              DropdownMenuItem(value: 'Год', child: MainText('Год')),
             ],
             onChanged: (String newValue) {
-              if (selMode != 'Неделя' && newValue == 'Неделя') {
+              if (selectedMode != 'Неделя' && newValue == 'Неделя') {
                 // oldDate = date;
                 date = date.subtract(Duration(days: date.weekday + 1)).add(Duration(days: 7));
               }
 
-              if (selMode == 'Неделя' && newValue != 'Неделя' && oldDate != null) {
+              if (selectedMode == 'Неделя' && newValue != 'Неделя' && oldDate != null) {
                 //date = oldDate;
                 date = DateTime.now();
               }
 
               setState(() {
-                selMode = newValue;
+                selectedMode = newValue;
               });
             }
         );
@@ -238,7 +276,7 @@ class _ExpensesState extends State<Expenses> {
   _isInFilter(DateTime d){
     if (d == null) return false;
 
-    switch (selMode) {
+    switch (selectedMode) {
       case 'День' :
         return
           d.year == date.year &&
@@ -265,7 +303,7 @@ class _ExpensesState extends State<Expenses> {
 
   // function return date with buttons
   _getData(){
-    switch(selMode){
+    switch(selectedMode){
       case 'День':
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -278,7 +316,7 @@ class _ExpensesState extends State<Expenses> {
                 });
               },
             ),
-            MyText(date.toString().substring(0, 10)),
+            MainText(date.toString().substring(0, 10)),
             IconButton(
               icon: Icon(Icons.arrow_right),
               onPressed: () {
@@ -303,8 +341,8 @@ class _ExpensesState extends State<Expenses> {
             ),
             Row(
               children: [
-                MyText(date.subtract(Duration(days: 6)).toString().substring(0, 10) + ' - '),
-                MyText(date.toString().substring(0, 10)),
+                MainText(date.subtract(Duration(days: 6)).toString().substring(0, 10) + ' - '),
+                MainText(date.toString().substring(0, 10)),
               ],
             ),
             IconButton(
@@ -329,7 +367,7 @@ class _ExpensesState extends State<Expenses> {
                 });
               },
             ),
-            MyText(AppLocalizations.of(context).translate(DateFormat.MMMM().format(date))+ ' '
+            MainText(AppLocalizations.of(context).translate(DateFormat.MMMM().format(date))+ ' '
                 + DateFormat.y().format(date)),
             IconButton(
               icon: Icon(Icons.arrow_right),
@@ -353,7 +391,7 @@ class _ExpensesState extends State<Expenses> {
                 });
               },
             ),
-            MyText(date.year.toString()),
+            MainText(date.year.toString()),
             IconButton(
               icon: Icon(Icons.arrow_right),
               onPressed: () {

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class MyText extends StatelessWidget{
+class SecondaryText extends StatelessWidget{
   final String text;
   final TextAlign align;
 
-  MyText(this.text, [this.align]);
+  SecondaryText(this.text, [this.align]);
 
   @override
   Widget build(BuildContext context) {
@@ -13,8 +13,7 @@ class MyText extends StatelessWidget{
       textAlign: align,
       style: TextStyle(
         color: Colors.black,
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
+        fontSize: 17,
       ),
     );
   }
