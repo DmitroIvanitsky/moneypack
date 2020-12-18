@@ -23,8 +23,8 @@ class _AddExpensesState extends State<AddExpenses> {
   String category = '';
   double sum;
   String comment;
-  List<String> _list = [];
   List lastCategories = [];
+  TextEditingController calcController = TextEditingController();
 
   @override
   void initState() {
@@ -33,9 +33,8 @@ class _AddExpensesState extends State<AddExpenses> {
   }
 
   initList() async{
-    _list = await Storage.getList('Expenses');
-    _list == null || _list.isEmpty ? category = 'Категория расхода' : category = _list.last;
     lastCategories = await Storage.getExpenseCategories();
+    lastCategories == null || lastCategories.isEmpty ? category = 'Категория расхода' : category = lastCategories.last;
     setState(() {});
   }
 
@@ -47,6 +46,7 @@ class _AddExpensesState extends State<AddExpenses> {
 
   void updateSum(double result){
     setState(() {
+      if (calcController != null) calcController.text = result.toString();
       sum = result;
     });
   }
@@ -57,7 +57,71 @@ class _AddExpensesState extends State<AddExpenses> {
       child: Scaffold(
           backgroundColor: MyColors.backGroundColor,
           appBar: buildAppBar(),
-          body: buildBody(),
+          body: Padding(
+            padding: EdgeInsets.only(left: 10, right: 10),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 25),
+                  // date widget row
+                  getDateWidget(),
+                  Divider(),
+                  // category row
+                  Container(
+                    height: 75,
+                    child: GestureDetector(
+                      child: Row(
+                        children: [
+                          MainText(category),
+                          Icon(Icons.arrow_drop_down, color: MyColors.textColor)
+                        ],
+                      ),
+                      onTap: () => onCategoryTap(context),
+                    ),
+                  ),
+                  Container(
+                    height: 175,
+                    child: ListView(
+                      children: getLastCategories(),
+                    ),
+                  ),
+                  Container(
+                    height: 75,
+                    child: IconButton(
+                        icon: Icon(
+                            Icons.call_to_action,
+                            color: MyColors.textColor,
+                            size: 40
+                        ),
+                        onPressed: () => goToCalculator(context)
+                    ),
+                  ),
+                  // sum row
+                  Container(
+                    height: 75,
+                    child: TextFormField(
+                      controller: calcController,
+                      decoration: const InputDecoration(
+                        hintText: 'Введите сумму',
+                      ),
+                      onChanged: (v) => sum = double.parse(v),
+                    ),
+                  ),
+                  Container(
+                    height: 75,
+                    child: TextFormField(
+                      decoration: const InputDecoration(
+                        hintText: 'Введите коментарий',
+                      ),
+                      onChanged: (v) => comment = v,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          )
       ),
     );
   }
@@ -113,73 +177,6 @@ class _AddExpensesState extends State<AddExpenses> {
     );
   }
 
-  Widget buildBody() {
-    return Padding(
-      padding: EdgeInsets.only(left: 10, right: 10),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 25),
-            // date widget row
-            getDateWidget(),
-            Divider(),
-            // category row
-            Container(
-              height: 75,
-              child: GestureDetector(
-                child: Row(
-                  children: [
-                    MainText(category),
-                    Icon(Icons.arrow_drop_down, color: MyColors.textColor)
-                  ],
-                ),
-                onTap: () => onCategoryTap(context),
-              ),
-            ),
-            Container(
-              height: 175,
-              child: ListView(
-                  children: getLastCategories(),
-              ),
-            ),
-            Container(
-              height: 75,
-              child: IconButton(
-                  icon: Icon(
-                      Icons.calculate_outlined,
-                      color: MyColors.textColor,
-                      size: 40
-                  ),
-                  onPressed: () => goToCalculator(context)
-              ),
-            ),
-            // sum row
-            Container(
-              height: 75,
-              child: TextFormField(
-                initialValue: initialValue(),
-                decoration: const InputDecoration(
-                  hintText: 'Введите сумму',
-                ),
-                onChanged: (v) => sum = double.parse(v),
-              ),
-            ),
-            Container(
-              height: 75,
-              child: TextFormField(
-                decoration: const InputDecoration(
-                  hintText: 'Введите коментарий',
-                ),
-                onChanged: (v) => comment = v,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   initialValue(){
     if(sum != null)

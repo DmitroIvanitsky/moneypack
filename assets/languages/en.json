@@ -1,3 +1,22 @@
 {
-  "test" : "test"
+  "test" : "test",
+  "December" : "December",
+  "November" : "November",
+  "October" : "October",
+  "September" : "September",
+  "August" : "August",
+  "July" : "July",
+  "June" : "June",
+  "May" : "May",
+  "April" : "April",
+  "March" : "March",
+  "February" : "February",
+  "January" : "January",
+  "Mon" : "Mon",
+  "Tue" : "Tue",
+  "Wed" : "Wed",
+  "Thu" : "Thu",
+  "Fri" : "Fri",
+  "Sat" : "Sat",
+  "Sun" : "Sun"
 }

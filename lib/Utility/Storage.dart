@@ -44,7 +44,7 @@ class Storage{
     if (categories == null) categories = [];
     if (categories.contains(category)) return;
 
-    if (categories.length > 0) categories.removeAt(0);
+    if (categories.length > 2) categories.removeAt(0);
     categories.add(category);
     await saveList(categories, 'categories');
   }

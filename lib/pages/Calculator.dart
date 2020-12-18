@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_calculator/flutter_simple_calculator.dart';
+import 'package:flutter_tutorial/setting/MainText.dart';
+import 'package:flutter_tutorial/setting/MyColors.dart';
 
 class Calculator extends StatefulWidget {
   final Function updateSum;
@@ -24,25 +26,39 @@ class _CalculatorState extends State<Calculator> {
         onChanged: (key, value, expression) {
           setState(() {
             _currentValue = value;
-
           });
-          //print("$key\t$value\t$expression");
         },
-        onTappedDisplay: (value, details) {
-          Navigator.pop(context);
-          widget.updateSum(_currentValue);
-        },
+      theme: CalculatorThemeData(
+        operatorColor: MyColors.mainColor,
+      ),
     );
     return MaterialApp(
       home: SafeArea(
         child: Scaffold(
-          // appBar: AppBar(
-          //   title: Text('SimpleCalculator'),
-          // ),
+          appBar: AppBar(
+            backgroundColor: MyColors.mainColor,
+             title: Row(
+               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+               children: [
+                 MainText('Calculator'),
+                 IconButton(
+                   iconSize: 35,
+                   icon: Icon(Icons.done, color: MyColors.textColor),
+                   onPressed: (){
+                     // if (category == "category" || sum == null) return; // to not add empty sum note
+                     // Storage.saveExpenseNote(ExpenseNote(date: date, category: category, sum: sum, comment: comment), category); // function to create note object
+                     // widget.callBack();
+                     Navigator.pop(context);
+                     widget.updateSum(_currentValue);
+                   },
+                 )
+               ],
+             )
+          ),
           body: Align(
             alignment: Alignment.bottomCenter,
             child: Container(
-                height: MediaQuery.of(context).size.height * 0.8,
+                height: MediaQuery.of(context).size.height * 0.75,
                 child: calc),
           ),
         ),
