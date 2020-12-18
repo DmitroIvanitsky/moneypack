@@ -14,7 +14,8 @@ class AppLocalizations {
   Map<String, String> _localizedStrings;
 
   static AppLocalizations of(BuildContext context) {
-    return Localizations.of<AppLocalizations>(context, AppLocalizations);
+    return Localizations.of<AppLocalizations>(context, AppLocalizations) != null?
+    Localizations.of<AppLocalizations>(context, AppLocalizations) : "";
   }
 
 
@@ -32,7 +33,7 @@ class AppLocalizations {
 
   // This method will be called from every widget which needs a localized text
   String translate(String key) {
-    return _localizedStrings[key];
+    return _localizedStrings[key] != null ? _localizedStrings[key] : "NL::" + key;
   }
 }
 
@@ -60,4 +61,5 @@ class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
   @override
   bool shouldReload(AppLocalizationsDelegate old) => false;
 }
+
 

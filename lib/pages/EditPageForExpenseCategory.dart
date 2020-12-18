@@ -117,7 +117,7 @@ class _EditPageForExpenseCategoryState extends State<EditPageForExpenseCategory>
   updateListOfExpenses() async{
     int index = ListOfExpenses.list.indexOf(widget.note);
     ListOfExpenses.list[index] = currentNote;
-    await Storage.saveString(jsonEncode(ListOfExpenses().toJson()), 'ExpenseNote');
+    await Storage.saveExpenseNote(null, currentNote.category);
   }
 
   onCategoryTap(BuildContext context) {

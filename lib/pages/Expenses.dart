@@ -105,7 +105,7 @@ class _ExpensesState extends State<Expenses> {
                 onExpansionChanged: (e) {},
                 children: [
                   Container(
-                    height: childrenList.length * 50.0,
+                    height: 250,
                     //height: 200, // how to optimize height to max needed
                     child: getExpandedChildrenForCategory(childrenList),
                   )
@@ -176,7 +176,9 @@ class _ExpensesState extends State<Expenses> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  boolComment(middleList, index),
+                  Expanded(
+                    child: boolComment(middleList, index),
+                  ),
                   Row(
                     children: [
                       MainText('${middleList[index].sum}'),
@@ -241,7 +243,10 @@ class _ExpensesState extends State<Expenses> {
       if (middleList[index].comment == null)
         return ThirdText('');
       else
-        return ThirdText(middleList[index].comment);
+        return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: ThirdText(middleList[index].comment)
+        );
   }
 
   // dropdown menu button

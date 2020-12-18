@@ -22,6 +22,7 @@ class _AddExpensesState extends State<AddExpenses> {
   double sum;
   String comment;
   List<String> _list = [];
+  List lastCategories = [];
 
   @override
   void initState() {
@@ -31,7 +32,8 @@ class _AddExpensesState extends State<AddExpenses> {
 
   initList() async{
     _list = await Storage.getList('Expenses');
-    _list == null || _list.isEmpty ? category = 'Категория расхода' : category = _list[0];
+    _list == null || _list.isEmpty ? category = 'Категория расхода' : category = _list.last;
+    lastCategories = await Storage.getExpenseCategories();
     setState(() {});
   }
 
@@ -52,6 +54,27 @@ class _AddExpensesState extends State<AddExpenses> {
     );
   }
 
+  List<Widget> getLastCategories(){
+    if (lastCategories.length == null) return [Text('')];
+    List<Widget> result = [];
+    for (String catName in lastCategories) {
+      result.add(
+        RadioListTile<String>(
+          title: Text(catName, style: TextStyle(color: catName == category? Colors.red : Colors.black),),
+          groupValue: category,
+          value: catName,
+          onChanged: (String value) {
+            setState(() {
+              category = value;
+            });
+          },
+        ),
+      );
+    }
+
+    return result;
+  }
+
   Widget buildAppBar() {
     return AppBar(
       iconTheme: IconThemeData(
@@ -67,7 +90,7 @@ class _AddExpensesState extends State<AddExpenses> {
             icon: Icon(Icons.done, color: MyColors.textColor),
             onPressed: (){
               if (category == "category" || sum == null) return; // to not add empty sum note
-              createExpenseNote(date, category, sum, comment: comment); // function to create note object
+              Storage.saveExpenseNote(ExpenseNote(date: date, category: category, sum: sum, comment: comment), category); // function to create note object
               widget.callBack();
               Navigator.pop(context);
             },
@@ -93,6 +116,23 @@ class _AddExpensesState extends State<AddExpenses> {
               child: MainText(category),
               onTap: () => onCategoryTap(context),
             ),
+            Expanded(
+              child: ListView(
+                children: getLastCategories(),
+              ),
+            ),
+            // RadioListTile<lastCategories>(
+            //   title: const Text('Lafayette'),
+            //   groupValue: category,
+            //   value: 't',
+            //   onChanged: (value) { setState(() { category = value; }); },
+            // ),
+            // RadioListTile<lastCategories>(
+            //   title: const Text('Thomas Jefferson'),
+            //   value: SingingCharacter.jefferson,
+            //   groupValue: _character,
+            //   onChanged: (String value) { setState(() { _character = value; }); },
+            // ),
             Divider(),
             // sum row
             TextFormField(
@@ -127,16 +167,6 @@ class _AddExpensesState extends State<AddExpenses> {
         TextAlign.left,
       ) : MainText('Выберите дату'),
     );
-  }
-
-  createExpenseNote(DateTime date, String category, double sum, {String comment}) async{
-    ExpenseNote expenseNote = ExpenseNote(date: date, category: category, sum: sum, comment: comment);
-    ListOfExpenses.list.add(expenseNote);
-    await Storage.saveString(jsonEncode(ListOfExpenses().toJson()), 'ExpenseNote');
-
-    // String m = await Storage.getString('ExpenseNote');
-    // ListOfExpenses lx = ListOfExpenses.fromJson(jsonDecode(m));
-    // print(ListOfExpenses.list[0]);
   }
 
   onCategoryTap(BuildContext context){

@@ -64,7 +64,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
     updateMainPage();
   }
 
-  void updateMainPage() {
+  void updateMainPage() async {
     setState(() {
       income = filterSumByPeriod(ListOfIncomes.list);
       expense = filterSumByPeriod(ListOfExpenses.list);

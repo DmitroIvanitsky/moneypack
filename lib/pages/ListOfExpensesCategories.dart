@@ -20,6 +20,7 @@ class _ListOfExpensesCategoriesState extends State<ListOfExpensesCategories> {
   initList() async{
     list = await Storage.getList('Expenses');
     if(list == null) list = [];
+    list.sort();
     setState(() {});
   }
 
