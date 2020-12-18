@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:flutter_tutorial/setting/ThirdText.dart';
 import '../pages/EditPageForExpenseCategory.dart';
@@ -105,7 +106,7 @@ class _ExpensesState extends State<Expenses> {
                 onExpansionChanged: (e) {},
                 children: [
                   Container(
-                    height: 250,
+                    height: _childrenListLength(childrenList),
                     //height: 200, // how to optimize height to max needed
                     child: getExpandedChildrenForCategory(childrenList),
                   )
@@ -116,6 +117,17 @@ class _ExpensesState extends State<Expenses> {
         )
       ],
     );
+  }
+
+  double _childrenListLength(List list){
+    double height;
+    if (list.length >= 5){
+      height = 250;
+    }
+    else{
+      height = list.length.toDouble() * 50;
+    }
+    return height;
   }
 
   List filteredExpenses() {

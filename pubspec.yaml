@@ -28,6 +28,7 @@ dependencies:
 
   shared_preferences:
   intl:
+  flutter_simple_calculator:
 
 
   # The following adds the Cupertino Icons font to your application.

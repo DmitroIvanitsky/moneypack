@@ -21,13 +21,19 @@ class _ListOfExpensesCategoriesState extends State<ListOfExpensesCategories> {
     list = await Storage.getList('Expenses');
     if(list == null) list = [];
     list.sort();
-    setState(() {});
+    updateList();
   }
 
   @override
   void initState() {
     initList();
     super.initState();
+  }
+
+  void updateList(){
+    setState(() {
+      list.sort();
+    });
   }
 
   @override
@@ -83,7 +89,7 @@ class _ListOfExpensesCategoriesState extends State<ListOfExpensesCategories> {
                           onPressed: () async{
                             list.removeAt(index);
                             await Storage.saveList(list, 'Expenses');
-                            setState(() {});
+                            updateList();
                           }
                         )
                       ]
@@ -116,7 +122,7 @@ class _ListOfExpensesCategoriesState extends State<ListOfExpensesCategories> {
                         tempField = '';
                         TextEditingController().clear();
                         await Storage.saveList(list, "Expenses");
-                        setState(() {});
+                        updateList();
                       },
                     )
                   ]

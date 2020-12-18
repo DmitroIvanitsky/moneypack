@@ -1,11 +1,13 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_tutorial/Objects/ExpenseNote.dart';
-import 'package:flutter_tutorial/Objects/ListOfExpenses.dart';
-import 'package:flutter_tutorial/Utility/Storage.dart';
-import 'package:flutter_tutorial/pages/ListOfExpensesCategories.dart';
-import 'package:flutter_tutorial/setting/MyColors.dart';
-import 'package:flutter_tutorial/setting/MainText.dart';
+import '../Objects/ExpenseNote.dart';
+import '../Objects/ListOfExpenses.dart';
+import '../Utility/Storage.dart';
+import '../pages/Calculator.dart';
+import '../pages/ListOfExpensesCategories.dart';
+import '../setting/MyColors.dart';
+import '../setting/MainText.dart';
 
 class AddExpenses extends StatefulWidget{
   final Function callBack;
@@ -37,9 +39,15 @@ class _AddExpensesState extends State<AddExpenses> {
     setState(() {});
   }
 
-  void stateFunc(String cat){
+  void updateCategory(String cat){
     setState(() {
       category = cat;
+    });
+  }
+
+  void updateSum(double result){
+    setState(() {
+      sum = result;
     });
   }
 
@@ -55,12 +63,17 @@ class _AddExpensesState extends State<AddExpenses> {
   }
 
   List<Widget> getLastCategories(){
-    if (lastCategories.length == null) return [Text('')];
+    if (lastCategories == null || lastCategories.length == 0) return [Text('')]; // TO DEBUG null in process
     List<Widget> result = [];
     for (String catName in lastCategories) {
       result.add(
         RadioListTile<String>(
-          title: Text(catName, style: TextStyle(color: catName == category? Colors.red : Colors.black),),
+          title: Text(
+            catName,
+            style: TextStyle(
+                fontWeight: catName == category? FontWeight.bold : FontWeight.normal
+            ),
+          ),
           groupValue: category,
           value: catName,
           onChanged: (String value) {
@@ -103,59 +116,86 @@ class _AddExpensesState extends State<AddExpenses> {
   Widget buildBody() {
     return Padding(
       padding: EdgeInsets.only(left: 10, right: 10),
-      child: Form(
+      child: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 10),
+            SizedBox(height: 25),
             // date widget row
             getDateWidget(),
             Divider(),
             // category row
-            GestureDetector(
-              child: MainText(category),
-              onTap: () => onCategoryTap(context),
+            Container(
+              height: 75,
+              child: GestureDetector(
+                child: Row(
+                  children: [
+                    MainText(category),
+                    Icon(Icons.arrow_drop_down, color: MyColors.textColor)
+                  ],
+                ),
+                onTap: () => onCategoryTap(context),
+              ),
             ),
-            Expanded(
+            Container(
+              height: 175,
               child: ListView(
-                children: getLastCategories(),
+                  children: getLastCategories(),
               ),
             ),
-            // RadioListTile<lastCategories>(
-            //   title: const Text('Lafayette'),
-            //   groupValue: category,
-            //   value: 't',
-            //   onChanged: (value) { setState(() { category = value; }); },
-            // ),
-            // RadioListTile<lastCategories>(
-            //   title: const Text('Thomas Jefferson'),
-            //   value: SingingCharacter.jefferson,
-            //   groupValue: _character,
-            //   onChanged: (String value) { setState(() { _character = value; }); },
-            // ),
-            Divider(),
+            Container(
+              height: 75,
+              child: IconButton(
+                  icon: Icon(
+                      Icons.calculate_outlined,
+                      color: MyColors.textColor,
+                      size: 40
+                  ),
+                  onPressed: () => goToCalculator(context)
+              ),
+            ),
             // sum row
-            TextFormField(
-              decoration: const InputDecoration(
-                hintText: 'Введите сумму',
+            Container(
+              height: 75,
+              child: TextFormField(
+                initialValue: initialValue(),
+                decoration: const InputDecoration(
+                  hintText: 'Введите сумму',
+                ),
+                onChanged: (v) => sum = double.parse(v),
               ),
-              validator: (value) {
-                if (value.isEmpty) {
-                  return 'Пожалуйста введите сумму';
-                }
-                return null;
-              },
-              onChanged: (v) => sum = double.parse(v),
             ),
-            TextFormField(
-              decoration: const InputDecoration(
-                hintText: 'Введите коментарий',
+            Container(
+              height: 75,
+              child: TextFormField(
+                decoration: const InputDecoration(
+                  hintText: 'Введите коментарий',
+                ),
+                onChanged: (v) => comment = v,
               ),
-              onChanged: (v) => comment = v,
             ),
           ],
         ),
       ),
+    );
+  }
+
+  initialValue(){
+    if(sum != null)
+      return sum.toString();
+    else
+      return;
+  }
+
+  goToCalculator(BuildContext context){
+    Navigator.push(
+        context,
+        MaterialPageRoute <void>(
+            builder: (BuildContext context) {
+              return Calculator(updateSum: updateSum, result: sum);
+            }
+        )
     );
   }
 
@@ -174,7 +214,7 @@ class _AddExpensesState extends State<AddExpenses> {
         context,
         MaterialPageRoute<void>(
             builder: (BuildContext context){
-              return ListOfExpensesCategories(callback: stateFunc, cat: category);
+              return ListOfExpensesCategories(callback: updateCategory, cat: category);
             }
         )
     );
