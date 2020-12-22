@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../setting/DateFormatText.dart';
 import '../Objects/ExpenseNote.dart';
 import '../Utility/Storage.dart';
 import '../pages/Calculator.dart';
@@ -63,7 +64,10 @@ class _AddExpensesState extends State<AddExpenses> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   SizedBox(height: 15),
-                  getDateWidget(),
+                  Row(children: [
+                    getDateWidget(),
+                    Icon(Icons.arrow_drop_down, color: MyColors.textColor)
+                  ],),
                   Divider(),
                   FlatButton(
                     height: 50,
@@ -97,6 +101,7 @@ class _AddExpensesState extends State<AddExpenses> {
                   Container(
                     height: 75,
                     child: TextFormField(
+                      keyboardType: TextInputType.number,
                       controller: calcController,
                       decoration: const InputDecoration(
                         hintText: 'Введите сумму',
@@ -200,10 +205,8 @@ class _AddExpensesState extends State<AddExpenses> {
   Widget getDateWidget(){
     return FlatButton(
       onPressed: onDateTap,
-      child: (date != null)? MainRowText(
-        date.toString().substring(0, 10),
-        TextAlign.left,
-      ) : MainRowText('Выберите дату'),
+      child: (date != null)? DateFormatText(dateTime: date, mode: 'День')
+          : MainRowText('Выберите дату'),
     );
   }
 

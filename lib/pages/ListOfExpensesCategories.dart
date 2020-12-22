@@ -111,7 +111,7 @@ class _ListOfExpensesCategoriesState extends State<ListOfExpensesCategories> {
                     Expanded(
                       child: TextFormField(
                         controller: TextEditingController(),
-                      onChanged: (v) => tempField = v,
+                        onChanged: (v) => tempField = v,
                       ),
                     ),
                     IconButton(

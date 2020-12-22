@@ -117,6 +117,7 @@ class _EditPageForExpenseCategoryState extends State<EditPageForExpenseCategory>
             Container(
               height: 75,
               child: TextFormField(
+                keyboardType: TextInputType.number,
                 initialValue: currentNote.sum.toString(),
                 decoration: const InputDecoration(
                   hintText: 'Введите сумму',

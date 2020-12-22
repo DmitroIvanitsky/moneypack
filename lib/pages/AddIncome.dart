@@ -1,8 +1,7 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
+import '../setting/DateFormatText.dart';
 import '../pages/Calculator.dart';
 import '../Objects/IncomeNote.dart';
-import '../Objects/ListOfIncomes.dart';
 import '../Utility/Storage.dart';
 import '../setting/MainRowText.dart';
 import '../setting/MyColors.dart';
@@ -65,7 +64,10 @@ class _AddIncomeState extends State<AddIncome> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 SizedBox(height: 15),
-                getDateWidget(),
+                Row(children: [
+                  getDateWidget(),
+                  Icon(Icons.arrow_drop_down, color: MyColors.textColor)
+                ],),
                 Divider(),
                 FlatButton(
                   height: 50,
@@ -98,6 +100,7 @@ class _AddIncomeState extends State<AddIncome> {
                 Container(
                   height: 75,
                   child: TextFormField(
+                    keyboardType: TextInputType.number,
                     controller: calcController,
                     decoration: const InputDecoration(
                       hintText: 'Введите сумму',
@@ -190,10 +193,8 @@ class _AddIncomeState extends State<AddIncome> {
   Widget getDateWidget(){
     return FlatButton(
       onPressed: _onDateTap,
-      child: (date != null)? MainRowText(
-        date.toString().substring(0, 10),
-        TextAlign.left,
-      ) : MainRowText('Выберите дату'),
+      child: (date != null)? DateFormatText(dateTime: date, mode: 'День')
+          : MainRowText('Выберите дату'),
     );
   }
 

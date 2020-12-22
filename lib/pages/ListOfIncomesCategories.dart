@@ -26,6 +26,7 @@ class _ListOfIncomesCategoriesState extends State<ListOfIncomesCategories> {
   initList() async{
     list = await Storage.getList('Income');
     if(list == null) list = [];
+    list.sort();
     setState(() {});
   }
 

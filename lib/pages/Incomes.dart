@@ -1,10 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_tutorial/setting/SecondaryText.dart';
-import 'package:flutter_tutorial/setting/ThirdText.dart';
+import '../setting/DateFormatText.dart';
+import '../setting/SecondaryText.dart';
+import '../setting/ThirdText.dart';
 import '../pages/EditPageForIncomeCategory.dart';
-import '../Utility/appLocalizations.dart';
-import 'package:intl/intl.dart';
 import '../Objects/IncomeNote.dart';
 import '../Objects/ListOfIncomes.dart';
 import '../Utility/Storage.dart';
@@ -22,7 +21,6 @@ class Incomes extends StatefulWidget{
 
 class _IncomesState extends State<Incomes> {
   DateTime date = DateTime.now();
-  DateTime oldDate;
   String selectedMode = 'День';
 
   @override
@@ -221,13 +219,13 @@ class _IncomesState extends State<Incomes> {
 
   boolComment(middleList, index) {
     if (middleList[index].comment == '' || middleList[index].comment == null){
-      return SecondaryText(middleList[index].date.toString().substring(0, 10));
+      return DateFormatText(dateTime: date, mode: 'Дата в строке');
     }
     else{
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SecondaryText(middleList[index].date.toString().substring(0, 10)),
+          DateFormatText(dateTime: date, mode: 'Дата в строке'),
           comment(middleList, index),
         ],
       );
@@ -263,12 +261,10 @@ class _IncomesState extends State<Incomes> {
         ],
         onChanged: (String newValue) {
           if (selectedMode != 'Неделя' && newValue == 'Неделя') {
-            // oldDate = date;
             date = date.subtract(Duration(days: date.weekday + 1)).add(Duration(days: 7));
           }
 
-          if (selectedMode == 'Неделя' && newValue != 'Неделя' && oldDate != null) {
-            //date = oldDate;
+          if (selectedMode == 'Неделя' && newValue != 'Неделя') {
             date = DateTime.now();
           }
 
@@ -321,7 +317,7 @@ class _IncomesState extends State<Incomes> {
                 });
               },
             ),
-            MainRowText(date.toString().substring(0, 10)),
+            DateFormatText(dateTime: date, mode: selectedMode),
             IconButton(
               icon: Icon(Icons.arrow_right),
               onPressed: () {
@@ -344,12 +340,7 @@ class _IncomesState extends State<Incomes> {
                 });
               },
             ),
-            Row(
-              children: [
-                MainRowText(date.subtract(Duration(days: 6)).toString().substring(0, 10) + ' - '),
-                MainRowText(date.toString().substring(0, 10)),
-              ],
-            ),
+            DateFormatText(dateTime: date, mode: selectedMode),
             IconButton(
               icon: Icon(Icons.arrow_right),
               onPressed: () {
@@ -372,8 +363,7 @@ class _IncomesState extends State<Incomes> {
                 });
               },
             ),
-            MainRowText(AppLocalizations.of(context).translate(DateFormat.MMMM().format(date))+ ' '
-                + DateFormat.y().format(date)),
+            DateFormatText(dateTime: date, mode: selectedMode),
             IconButton(
               icon: Icon(Icons.arrow_right),
               onPressed: () {
@@ -396,7 +386,7 @@ class _IncomesState extends State<Incomes> {
                 });
               },
             ),
-            MainRowText(date.year.toString()),
+            DateFormatText(dateTime: date, mode: selectedMode),
             IconButton(
               icon: Icon(Icons.arrow_right),
               onPressed: () {

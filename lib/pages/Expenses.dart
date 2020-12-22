@@ -1,10 +1,8 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'package:flutter/material.dart';
-import 'package:flutter_tutorial/setting/ThirdText.dart';
+import '../setting/DateFormatText.dart';
+import '../setting/ThirdText.dart';
 import '../pages/EditPageForExpenseCategory.dart';
-import '../Utility/appLocalizations.dart';
-import 'package:intl/intl.dart';
 import '../Objects/ExpenseNote.dart';
 import '../Objects/ListOfExpenses.dart';
 import '../Utility/Storage.dart';
@@ -23,7 +21,6 @@ class Expenses extends StatefulWidget{
 
 class _ExpensesState extends State<Expenses> {
   DateTime date = DateTime.now();
-  DateTime oldDate;
   String selectedMode = 'День';
 
   @override
@@ -226,13 +223,13 @@ class _ExpensesState extends State<Expenses> {
 
   boolComment(middleList, index) {
     if (middleList[index].comment == '' || middleList[index].comment == null){
-      return SecondaryText(middleList[index].date.toString().substring(0, 10));
+      return DateFormatText(dateTime: date, mode: 'Дата в строке');
     }
     else{
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SecondaryText(middleList[index].date.toString().substring(0, 10)),
+          DateFormatText(dateTime: date, mode: 'Дата в строке'),
           comment(middleList, index),
         ],
       );
@@ -273,12 +270,10 @@ class _ExpensesState extends State<Expenses> {
             ],
             onChanged: (String newValue) {
               if (selectedMode != 'Неделя' && newValue == 'Неделя') {
-                // oldDate = date;
                 date = date.subtract(Duration(days: date.weekday + 1)).add(Duration(days: 7));
               }
 
-              if (selectedMode == 'Неделя' && newValue != 'Неделя' && oldDate != null) {
-                //date = oldDate;
+              if (selectedMode == 'Неделя' && newValue != 'Неделя') {
                 date = DateTime.now();
               }
 
@@ -333,7 +328,7 @@ class _ExpensesState extends State<Expenses> {
                 });
               },
             ),
-            MainRowText(date.toString().substring(0, 10)),
+            DateFormatText(dateTime: date, mode: selectedMode),
             IconButton(
               icon: Icon(Icons.arrow_right),
               onPressed: () {
@@ -356,12 +351,7 @@ class _ExpensesState extends State<Expenses> {
                 });
               },
             ),
-            Row(
-              children: [
-                MainRowText(date.subtract(Duration(days: 6)).toString().substring(0, 10) + ' - '),
-                MainRowText(date.toString().substring(0, 10)),
-              ],
-            ),
+            DateFormatText(dateTime: date, mode: selectedMode),
             IconButton(
               icon: Icon(Icons.arrow_right),
               onPressed: () {
@@ -384,8 +374,7 @@ class _ExpensesState extends State<Expenses> {
                 });
               },
             ),
-            MainRowText(AppLocalizations.of(context).translate(DateFormat.MMMM().format(date))+ ' '
-                + DateFormat.y().format(date)),
+            DateFormatText(dateTime: date, mode: selectedMode),
             IconButton(
               icon: Icon(Icons.arrow_right),
               onPressed: () {
@@ -408,7 +397,7 @@ class _ExpensesState extends State<Expenses> {
                 });
               },
             ),
-            MainRowText(date.year.toString()),
+            DateFormatText(dateTime: date, mode: selectedMode),
             IconButton(
               icon: Icon(Icons.arrow_right),
               onPressed: () {

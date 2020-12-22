@@ -10,10 +10,10 @@ import 'package:flutter_tutorial/pages/AddIncome.dart';
 import 'package:flutter_tutorial/pages/Expenses.dart';
 import 'package:flutter_tutorial/pages/Incomes.dart';
 import 'package:flutter_tutorial/pages/Balance.dart';
+import 'package:flutter_tutorial/setting/DateFormatText.dart';
 import 'package:flutter_tutorial/setting/MainLocalText.dart';
 import 'package:flutter_tutorial/setting/MyColors.dart';
 import 'package:flutter_tutorial/setting/MainRowText.dart';
-import 'package:intl/intl.dart';
 import 'Utility/appLocalizations.dart';
 
 void main() => runApp(MaterialApp(
@@ -41,7 +41,6 @@ class FlutterTutorialApp extends StatefulWidget {
 
 class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
   DateTime date = DateTime.now();
-  DateTime lastWeekDay = DateTime.now().subtract(Duration(days: DateTime.now().weekday)).add(Duration(days: 7));
   String selectedMode = 'День';
   double income = 0;
   double expense = 0;
@@ -260,28 +259,22 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
 
   buildDropdownButton() {
     return DropdownButton(
-        hint: MainLocalText(selectedMode),
+        hint: MainRowText(selectedMode),
         items: [
-          DropdownMenuItem(value: 'День', child: MainLocalText('День')),
-          DropdownMenuItem(value: 'Неделя', child: MainLocalText('Неделя')),
-          DropdownMenuItem(value: 'Месяц', child: MainLocalText('Месяц')),
-          DropdownMenuItem(value: 'Год', child: MainLocalText('Год')),
+          DropdownMenuItem(value: 'День', child: MainRowText('День')),
+          DropdownMenuItem(value: 'Неделя', child: MainRowText('Неделя')),
+          DropdownMenuItem(value: 'Месяц', child: MainRowText('Месяц')),
+          DropdownMenuItem(value: 'Год', child: MainRowText('Год')),
         ],
         onChanged: (String newValue) {
-          if (selectedMode == 'День' && newValue != 'День') {
-            lastWeekDay = DateTime.now().subtract(Duration(days: DateTime.now().weekday)).add(Duration(days: 7));
+          if (selectedMode != 'Неделя' && newValue == 'Неделя') {
+            date = date.subtract(Duration(days: date.weekday + 1)).add(Duration(days: 7));
           }
+
           if (selectedMode == 'Неделя' && newValue != 'Неделя') {
             date = DateTime.now();
           }
-          if (selectedMode == 'Месяц' && newValue != 'Месяц') {
-            date = DateTime.now();
-            lastWeekDay = DateTime.now().subtract(Duration(days: DateTime.now().weekday)).add(Duration(days: 7));
-          }
-          if (selectedMode == 'Год' && newValue != 'Год') {
-            date = DateTime.now();
-            lastWeekDay = DateTime.now().subtract(Duration(days: DateTime.now().weekday)).add(Duration(days: 7));
-          }
+
           setState(() {
             selectedMode = newValue;
           });
@@ -343,7 +336,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
     }
   }
 
-  _isInFilter(DateTime d) {
+  _isInFilter(DateTime d){
     if (d == null) return false;
 
     switch (selectedMode) {
@@ -355,9 +348,9 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
         break;
       case 'Неделя':
         return
-          d.year == lastWeekDay.year &&
-              //d.month == lastWeekDay.month &&
-              d.isBefore(lastWeekDay) && d.isAfter(lastWeekDay.subtract(Duration(days: 7)));
+          d.year == date.year &&
+              d.month == date.month &&
+              d.isBefore(date) && d.isAfter(date.subtract(Duration(days: 7)));
         break;
       case 'Месяц' :
         return
@@ -384,16 +377,9 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                   date = date.subtract(Duration(days: 1));
                   updateMainPage();
                 });
-
               },
             ),
-            //MyText(date.toString().substring(0, 10)),
-            MainRowText(
-              AppLocalizations.of(context).translate(DateFormat.E().format(date)) +
-              ', ' + DateFormat.d().format(date) +
-              ' ' + AppLocalizations.of(context).translate(DateFormat.MMMM().format(date)) +
-              ' ' + DateFormat.y().format(date),
-            ),
+            DateFormatText(dateTime: date, mode: selectedMode),
             IconButton(
               icon: Icon(Icons.arrow_right),
               onPressed: () {
@@ -401,7 +387,6 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                   date = date.add(Duration(days: 1));
                   updateMainPage();
                 });
-
               },
             ),
           ],
@@ -414,22 +399,17 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
               icon: Icon(Icons.arrow_left),
               onPressed: () {
                 setState(() {
-                  lastWeekDay = lastWeekDay.subtract(Duration(days: 7));
+                  date = date.subtract(Duration(days: 7));
                   updateMainPage();
                 });
               },
             ),
-            Row(
-              children: [
-                MainRowText(lastWeekDay.subtract(Duration(days: 6)).toString().substring(0, 10) + ' - '),
-                MainRowText(lastWeekDay.toString().substring(0, 10)),
-              ],
-            ),
+            DateFormatText(dateTime: date, mode: selectedMode),
             IconButton(
               icon: Icon(Icons.arrow_right),
               onPressed: () {
                 setState(() {
-                  lastWeekDay = lastWeekDay.add(Duration(days: 7));
+                  date = date.add(Duration(days: 7));
                   updateMainPage();
                 });
               },
@@ -449,8 +429,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                 });
               },
             ),
-            MainRowText(AppLocalizations.of(context).translate(DateFormat.MMMM().format(date))+ ' '
-                + DateFormat.y().format(date)),
+            DateFormatText(dateTime: date, mode: selectedMode),
             IconButton(
               icon: Icon(Icons.arrow_right),
               onPressed: () {
@@ -475,7 +454,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                 });
               },
             ),
-            MainRowText(date.year.toString()),
+            DateFormatText(dateTime: date, mode: selectedMode),
             IconButton(
               icon: Icon(Icons.arrow_right),
               onPressed: () {
