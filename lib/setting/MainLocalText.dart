@@ -9,13 +9,16 @@ class MainLocalText extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      AppLocalizations.of(context).translate(text),
-      textAlign: align,
-      style: TextStyle(
-        color: Colors.black,
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Text(
+        AppLocalizations.of(context).translate(text),
+        textAlign: align,
+        style: TextStyle(
+          color: Colors.black,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }

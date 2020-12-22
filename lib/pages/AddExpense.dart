@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tutorial/widgets/rowWithButton.dart';
 import '../setting/DateFormatText.dart';
 import '../Objects/ExpenseNote.dart';
 import '../Utility/Storage.dart';
@@ -69,6 +70,11 @@ class _AddExpensesState extends State<AddExpenses> {
                     Icon(Icons.arrow_drop_down, color: MyColors.textColor)
                   ],),
                   Divider(),
+                  RowWithButton(
+                    leftText: 'Выбрано:',
+                    rightText: category,
+                    onTap: onCategoryTap(context),
+                  ),
                   FlatButton(
                     height: 50,
                       child: Row(

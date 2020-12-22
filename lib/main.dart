@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_tutorial/Objects/ListOfExpenses.dart';
 import 'package:flutter_tutorial/Objects/ListOfIncomes.dart';
@@ -14,6 +15,7 @@ import 'package:flutter_tutorial/setting/DateFormatText.dart';
 import 'package:flutter_tutorial/setting/MainLocalText.dart';
 import 'package:flutter_tutorial/setting/MyColors.dart';
 import 'package:flutter_tutorial/setting/MainRowText.dart';
+import 'package:flutter_tutorial/widgets/rowWithButton.dart';
 import 'Utility/appLocalizations.dart';
 
 void main() => runApp(MaterialApp(
@@ -46,10 +48,12 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
   double expense = 0;
   double balance = 0;
   double remain = 0;
-  Size size;
 
   @override
   void initState() {
+    SystemChrome.setPreferredOrientations([ //Lock orientation
+      DeviceOrientation.portraitUp,
+    ]);
     loadList();
     super.initState();
   }
@@ -90,11 +94,6 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
 
   @override
   Widget build(BuildContext context) {
-    if (size == null) {
-      size = MediaQuery.of(context).size;
-      print(size);
-    }
-
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: false,
@@ -149,48 +148,22 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
     return Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-
-          // date row
           _getData(),
-
-          // income row
-          Container(
-            color: MyColors.rowColor,
-            height: size.height * 0.075,
-            margin: EdgeInsets.only(left: 15, right: 15),
-            child: Padding(
-              padding: EdgeInsets.only(right: 25),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  viewInfoButton(index: 'Доход'),
-                  MainRowText(income.toString(), TextAlign.right),
-                ],
-              ),
-            ),
+          RowWithButton(
+            leftText: 'Доход',
+            rightText: income.toString(),
+            onTap: navigateTo,
           ),
-
-          // expense row
-          Container(
-            color: MyColors.rowColor,
-            height: size.height * 0.075,
-            margin: EdgeInsets.only(left: 15, right: 15, top: 10),
-            child: Padding(
-              padding: EdgeInsets.only(right: 25),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  viewInfoButton(index: 'Расход'),
-                  MainRowText(expense.toString(), TextAlign.right),
-                ],
-              ),
-            ),
+          RowWithButton(
+            leftText: 'Расход',
+            rightText: expense.toString(),
+            onTap: navigateTo,
           ),
 
           // balance row
           Container(
             color: MyColors.rowColor,
-            height: size.height * 0.1,
+            height: 68,
             margin: EdgeInsets.only(left: 15, right: 15, top: 10),
             child: Padding(
               padding: EdgeInsets.only(left: 20, right: 25),
@@ -219,8 +192,6 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
 
           // low buttons to add notes
           Container(
-            //height: size.height * 0.35,
-            //color: Colors.yellow,
             alignment: Alignment.center,
             margin: EdgeInsets.symmetric(vertical: 25),
             child: Column(
@@ -228,10 +199,10 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
               children: [
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 15),
-                  child: myFlatButton(index: 'Добавить расход'),
+                  child: bigButton(buttonName: 'Добавить расход'),
                 ),
                 Padding(padding: EdgeInsets.symmetric(vertical: 15),
-                  child: myFlatButton(index: 'Добавить доход'),
+                  child: bigButton(buttonName: 'Добавить доход'),
                 )
               ],
             ),
@@ -240,24 +211,24 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
       );
   }
 
-  myFlatButton({String index}){
-    Color buttonColor;
-    if (index == 'Добавить расход')
+  Widget bigButton({String buttonName}){
+    Color buttonColor = Colors.black;
+    if (buttonName == 'Добавить расход')
       buttonColor = MyColors.expenseButton;
-    if (index == 'Добавить доход')
+    if (buttonName == 'Добавить доход')
       buttonColor = MyColors.incomeButton;
     return Container(
       height: 70,
       width: 200,
       color: buttonColor,
       child: FlatButton(
-          onPressed: () => _goTo(context, index),
-          child: MainLocalText(index)
+          onPressed: () => navigateTo(buttonName),
+          child: MainLocalText(buttonName)
       ),
     );
   }
 
-  buildDropdownButton() {
+  Widget buildDropdownButton() {
     return DropdownButton(
         hint: MainRowText(selectedMode),
         items: [
@@ -283,25 +254,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
     );
   }
 
-  viewInfoButton({String index}){
-    return Container(
-      height: size.height * 0.075,
-      width: size.width * 0.31,
-      color: MyColors.mainColor,
-      child: FlatButton(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            MainLocalText(index),
-            Icon(Icons.arrow_drop_down, color: MyColors.textColor)
-          ],
-        ),
-        onPressed: () => _goTo(context, index)
-      ),
-    );
-  }
-
-  _goTo(BuildContext context, String index) {
+  void navigateTo(String index) {
     switch (index) {
       case 'Добавить расход':
         Navigator.push(context,
