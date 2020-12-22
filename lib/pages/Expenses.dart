@@ -9,7 +9,7 @@ import '../Objects/ExpenseNote.dart';
 import '../Objects/ListOfExpenses.dart';
 import '../Utility/Storage.dart';
 import '../setting/MyColors.dart';
-import '../setting/MainText.dart';
+import '../setting/MainRowText.dart';
 import '../setting/SecondaryText.dart';
 
 class Expenses extends StatefulWidget{
@@ -66,7 +66,7 @@ class _ExpensesState extends State<Expenses> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          MainText('Расход'),
+          MainRowText('Расход'),
           _buildDropdownButton()
         ],
       ), // dropdown menu button
@@ -81,7 +81,7 @@ class _ExpensesState extends State<Expenses> {
         _getData(),
         categoriesList.isEmpty ?
         Align(
-          child: MainText('Расходов нет'),
+          child: MainRowText('Расходов нет'),
           alignment: Alignment.center,
         ) :
         Expanded(
@@ -97,8 +97,8 @@ class _ExpensesState extends State<Expenses> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      MainText(singleCategory.category),
-                      MainText('${singleCategory.sum}'),
+                      MainRowText(singleCategory.category),
+                      MainRowText('${singleCategory.sum}'),
                     ],
                   ),
                 ),
@@ -193,7 +193,7 @@ class _ExpensesState extends State<Expenses> {
                   ),
                   Row(
                     children: [
-                      MainText('${middleList[index].sum}'),
+                      MainRowText('${middleList[index].sum}'),
                       IconButton(
                         icon: Icon(Icons.edit),
                         color: MyColors.textColor,
@@ -264,12 +264,12 @@ class _ExpensesState extends State<Expenses> {
   // dropdown menu button
   _buildDropdownButton() {
         return DropdownButton(
-            hint: MainText(selectedMode),
+            hint: MainRowText(selectedMode),
             items: [
-              DropdownMenuItem(value: 'День', child: MainText('День')),
-              DropdownMenuItem(value: 'Неделя', child: MainText('Неделя')),
-              DropdownMenuItem(value: 'Месяц', child: MainText('Месяц')),
-              DropdownMenuItem(value: 'Год', child: MainText('Год')),
+              DropdownMenuItem(value: 'День', child: MainRowText('День')),
+              DropdownMenuItem(value: 'Неделя', child: MainRowText('Неделя')),
+              DropdownMenuItem(value: 'Месяц', child: MainRowText('Месяц')),
+              DropdownMenuItem(value: 'Год', child: MainRowText('Год')),
             ],
             onChanged: (String newValue) {
               if (selectedMode != 'Неделя' && newValue == 'Неделя') {
@@ -333,7 +333,7 @@ class _ExpensesState extends State<Expenses> {
                 });
               },
             ),
-            MainText(date.toString().substring(0, 10)),
+            MainRowText(date.toString().substring(0, 10)),
             IconButton(
               icon: Icon(Icons.arrow_right),
               onPressed: () {
@@ -358,8 +358,8 @@ class _ExpensesState extends State<Expenses> {
             ),
             Row(
               children: [
-                MainText(date.subtract(Duration(days: 6)).toString().substring(0, 10) + ' - '),
-                MainText(date.toString().substring(0, 10)),
+                MainRowText(date.subtract(Duration(days: 6)).toString().substring(0, 10) + ' - '),
+                MainRowText(date.toString().substring(0, 10)),
               ],
             ),
             IconButton(
@@ -384,7 +384,7 @@ class _ExpensesState extends State<Expenses> {
                 });
               },
             ),
-            MainText(AppLocalizations.of(context).translate(DateFormat.MMMM().format(date))+ ' '
+            MainRowText(AppLocalizations.of(context).translate(DateFormat.MMMM().format(date))+ ' '
                 + DateFormat.y().format(date)),
             IconButton(
               icon: Icon(Icons.arrow_right),
@@ -408,7 +408,7 @@ class _ExpensesState extends State<Expenses> {
                 });
               },
             ),
-            MainText(date.year.toString()),
+            MainRowText(date.year.toString()),
             IconButton(
               icon: Icon(Icons.arrow_right),
               onPressed: () {

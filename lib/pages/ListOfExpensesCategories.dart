@@ -1,8 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../Utility/Storage.dart';
 import '../setting/MyColors.dart';
-import '../setting/MainText.dart';
+import '../setting/MainRowText.dart';
 
 class ListOfExpensesCategories extends StatefulWidget{
   final Function callback;
@@ -53,7 +52,7 @@ class _ListOfExpensesCategoriesState extends State<ListOfExpensesCategories> {
       iconTheme: IconThemeData(
           color: MyColors.textColor
       ),
-      title: MainText('Категории расхода'),
+      title: MainRowText('Категории расхода'),
     );
   }
 
@@ -62,7 +61,7 @@ class _ListOfExpensesCategoriesState extends State<ListOfExpensesCategories> {
         children: [
           Expanded(
             child: list.isEmpty ?
-            MainText('Добавьте категорию') :
+            MainRowText('Добавьте категорию') :
             ListView.builder(
               itemCount: list.length,
               itemBuilder: (context, index){
@@ -73,9 +72,10 @@ class _ListOfExpensesCategoriesState extends State<ListOfExpensesCategories> {
                       children: [
                         Padding(
                           padding: EdgeInsets.only(left: 10),
-                          child: GestureDetector(
-                            child: MainText(list[index], TextAlign.left),
-                            onTap: (){
+                          child: FlatButton(
+                            height: 50,
+                            child: MainRowText(list[index], TextAlign.left),
+                            onPressed: (){
                               widget.callback(list[index]);
                               Navigator.pop(context);
                             },

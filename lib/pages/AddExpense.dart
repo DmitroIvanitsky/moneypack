@@ -1,13 +1,10 @@
-import 'dart:convert';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../Objects/ExpenseNote.dart';
-import '../Objects/ListOfExpenses.dart';
 import '../Utility/Storage.dart';
 import '../pages/Calculator.dart';
 import '../pages/ListOfExpensesCategories.dart';
 import '../setting/MyColors.dart';
-import '../setting/MainText.dart';
+import '../setting/MainRowText.dart';
 
 class AddExpenses extends StatefulWidget{
   final Function callBack;
@@ -34,7 +31,8 @@ class _AddExpensesState extends State<AddExpenses> {
 
   initList() async{
     lastCategories = await Storage.getExpenseCategories();
-    lastCategories == null || lastCategories.isEmpty ? category = 'Категория расхода' : category = lastCategories.last;
+    lastCategories == null || lastCategories.isEmpty ?
+      category = 'Выбирите категорию' : category = lastCategories.last;
     setState(() {});
   }
 
@@ -63,35 +61,32 @@ class _AddExpensesState extends State<AddExpenses> {
               scrollDirection: Axis.vertical,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 25),
-                  // date widget row
+                children: <Widget>[
+                  SizedBox(height: 15),
                   getDateWidget(),
                   Divider(),
-                  // category row
-                  Container(
-                    height: 75,
-                    child: GestureDetector(
+                  FlatButton(
+                    height: 50,
                       child: Row(
                         children: [
-                          MainText(category),
+                          MainRowText(category),
                           Icon(Icons.arrow_drop_down, color: MyColors.textColor)
                         ],
                       ),
-                      onTap: () => onCategoryTap(context),
-                    ),
+                      onPressed: () => onCategoryTap(context),
                   ),
                   Container(
                     height: 175,
                     child: ListView(
+                      physics: NeverScrollableScrollPhysics(),
                       children: getLastCategories(),
                     ),
                   ),
                   Container(
-                    height: 75,
+                    height: 100,
                     child: IconButton(
                         icon: Icon(
-                            Icons.call_to_action,
+                            Icons.calculate_outlined,
                             color: MyColors.textColor,
                             size: 40
                         ),
@@ -161,13 +156,20 @@ class _AddExpensesState extends State<AddExpenses> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          MainText('Добавить расход'),
+          MainRowText('Добавить расход'),
           IconButton(
             iconSize: 35,
             icon: Icon(Icons.done, color: MyColors.textColor),
             onPressed: (){
-              if (category == "category" || sum == null) return; // to not add empty sum note
-              Storage.saveExpenseNote(ExpenseNote(date: date, category: category, sum: sum, comment: comment), category); // function to create note object
+              if (category == 'Выбирите категорию' || sum == null) return; // to not add empty sum note
+              Storage.saveExpenseNote(
+                  ExpenseNote(
+                      date: date,
+                      category: category,
+                      sum: sum,
+                      comment: comment),
+                  category
+              ); // function to create note object
               widget.callBack();
               Navigator.pop(context);
             },
@@ -176,7 +178,6 @@ class _AddExpensesState extends State<AddExpenses> {
       ),
     );
   }
-
 
   initialValue(){
     if(sum != null)
@@ -197,12 +198,12 @@ class _AddExpensesState extends State<AddExpenses> {
   }
 
   Widget getDateWidget(){
-    return GestureDetector(
-      onTap: onDateTap,
-      child: (date != null)? MainText(
+    return FlatButton(
+      onPressed: onDateTap,
+      child: (date != null)? MainRowText(
         date.toString().substring(0, 10),
         TextAlign.left,
-      ) : MainText('Выберите дату'),
+      ) : MainRowText('Выберите дату'),
     );
   }
 

@@ -10,8 +10,9 @@ import 'package:flutter_tutorial/pages/AddIncome.dart';
 import 'package:flutter_tutorial/pages/Expenses.dart';
 import 'package:flutter_tutorial/pages/Incomes.dart';
 import 'package:flutter_tutorial/pages/Balance.dart';
+import 'package:flutter_tutorial/setting/MainLocalText.dart';
 import 'package:flutter_tutorial/setting/MyColors.dart';
-import 'package:flutter_tutorial/setting/MainText.dart';
+import 'package:flutter_tutorial/setting/MainRowText.dart';
 import 'package:intl/intl.dart';
 import 'Utility/appLocalizations.dart';
 
@@ -45,6 +46,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
   double income = 0;
   double expense = 0;
   double balance = 0;
+  double remain = 0;
   Size size;
 
   @override
@@ -68,11 +70,12 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
     setState(() {
       income = filterSumByPeriod(ListOfIncomes.list);
       expense = filterSumByPeriod(ListOfExpenses.list);
-      balance = balanceFunc();
+      balance = income - expense;
+      remain = remainFunc();
     });
   }
 
-  double balanceFunc(){
+  double remainFunc(){
     return ListOfIncomes.sum() - ListOfExpenses.sum();
   }
 
@@ -112,15 +115,15 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
           children: [
             Padding(
               padding: EdgeInsets.only(top: 25),
-              child: MainText('Настройки'),
+              child: MainRowText('Настройки'),
             ),
             Padding(
               padding: EdgeInsets.only(top: 25),
-              child: MainText('Тема'),
+              child: MainRowText('Тема'),
             ),
             Padding(
               padding: EdgeInsets.only(top: 25),
-              child: MainText('Язык'),
+              child: MainRowText('Язык'),
             ),
           ],
         ),
@@ -134,7 +137,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          MainText('Учёт'),
+          MainLocalText('Учёт'),
           buildDropdownButton(),
         ],
       ),
@@ -153,38 +156,66 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
 
           // income row
           Container(
-            decoration: BoxDecoration(
-                color: MyColors.rowColor,
-                borderRadius: BorderRadius.all(Radius.circular(25)
-                )
-            ),
+            color: MyColors.rowColor,
             height: size.height * 0.075,
-            margin: EdgeInsets.only(left: 10, right: 10),
-            child: Center(child: viewInfoButton(index: 'Доход', category: income)),
+            margin: EdgeInsets.only(left: 15, right: 15),
+            child: Padding(
+              padding: EdgeInsets.only(right: 25),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  viewInfoButton(index: 'Доход'),
+                  MainRowText(income.toString(), TextAlign.right),
+                ],
+              ),
+            ),
           ),
 
           // expense row
           Container(
-            decoration: BoxDecoration(
-                color: MyColors.rowColor,
-                borderRadius: BorderRadius.all(Radius.circular(25)
-                )
-            ),
+            color: MyColors.rowColor,
             height: size.height * 0.075,
-            margin: EdgeInsets.only(left: 10, right: 10, top: 10),
-            child: Center(child: viewInfoButton(index: 'Расход', category: expense)),
+            margin: EdgeInsets.only(left: 15, right: 15, top: 10),
+            child: Padding(
+              padding: EdgeInsets.only(right: 25),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  viewInfoButton(index: 'Расход'),
+                  MainRowText(expense.toString(), TextAlign.right),
+                ],
+              ),
+            ),
           ),
 
           // balance row
           Container(
-            decoration: BoxDecoration(
-                color: MyColors.rowColor,
-                borderRadius: BorderRadius.all(Radius.circular(25)
-                )
-            ),
-            height: size.height * 0.075,
-            margin: EdgeInsets.only(left: 10, right: 10, top: 10),
-            child: Center(child: viewInfoButton(index: 'Баланс общий', category: balance)),
+            color: MyColors.rowColor,
+            height: size.height * 0.1,
+            margin: EdgeInsets.only(left: 15, right: 15, top: 10),
+            child: Padding(
+              padding: EdgeInsets.only(left: 20, right: 25),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                      Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        MainLocalText('Баланс'),
+                        MainRowText(balance.toString(), TextAlign.right),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        MainLocalText('Общий остаток'),
+                        MainRowText(remain.toString(), TextAlign.right),
+                      ],
+                    ),
+
+                ],
+              ),
+            )
           ),
 
           // low buttons to add notes
@@ -198,10 +229,10 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
               children: [
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 15),
-                  child: myFlatButton(index: 'Добавить расход', width: size.width/1.3),
+                  child: myFlatButton(index: 'Добавить расход'),
                 ),
                 Padding(padding: EdgeInsets.symmetric(vertical: 15),
-                  child: myFlatButton(index: 'Добавить доход', width: size.width/1.3),
+                  child: myFlatButton(index: 'Добавить доход'),
                 )
               ],
             ),
@@ -210,7 +241,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
       );
   }
 
-  myFlatButton({String index, double width = 200}){
+  myFlatButton({String index}){
     Color buttonColor;
     if (index == 'Добавить расход')
       buttonColor = MyColors.expenseButton;
@@ -219,27 +250,22 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
     return Container(
       height: 70,
       width: 200,
-      decoration: BoxDecoration(
-          color: buttonColor,
-          //boxShadow: [BoxShadow(color: buttonColor, blurRadius: 10, spreadRadius: 1),],
-          borderRadius: BorderRadius.all(Radius.circular(25),
-          )
-      ),
+      color: buttonColor,
       child: FlatButton(
           onPressed: () => _goTo(context, index),
-          child: MainText(index)
+          child: MainLocalText(index)
       ),
     );
   }
 
   buildDropdownButton() {
     return DropdownButton(
-        hint: MainText(selectedMode),
+        hint: MainLocalText(selectedMode),
         items: [
-          DropdownMenuItem(value: 'День', child: MainText('День')),
-          DropdownMenuItem(value: 'Неделя', child: MainText('Неделя')),
-          DropdownMenuItem(value: 'Месяц', child: MainText('Месяц')),
-          DropdownMenuItem(value: 'Год', child: MainText('Год')),
+          DropdownMenuItem(value: 'День', child: MainLocalText('День')),
+          DropdownMenuItem(value: 'Неделя', child: MainLocalText('Неделя')),
+          DropdownMenuItem(value: 'Месяц', child: MainLocalText('Месяц')),
+          DropdownMenuItem(value: 'Год', child: MainLocalText('Год')),
         ],
         onChanged: (String newValue) {
           if (selectedMode == 'День' && newValue != 'День') {
@@ -264,27 +290,20 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
     );
   }
 
-  viewInfoButton({String index, double category}){
+  viewInfoButton({String index}){
     return Container(
-      width: double.infinity,
-      padding: EdgeInsets.only(right: 30),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Container(
-            alignment: Alignment.center,
-            height: size.height * 0.075,
-            width: size.width * 0.35,
-            decoration: BoxDecoration(
-                color: MyColors.mainColor,
-                //boxShadow: [BoxShadow(color: MyColors.mainColor, blurRadius: 10, spreadRadius: 1),],
-                borderRadius: BorderRadius.all(Radius.circular(25))),
-            child: GestureDetector(
-                child: MainText(index, TextAlign.left),
-                onTap: () => _goTo(context, index)),
-          ),
-          MainText('$category', TextAlign.right),
-        ],
+      height: size.height * 0.075,
+      width: size.width * 0.31,
+      color: MyColors.mainColor,
+      child: FlatButton(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            MainLocalText(index),
+            Icon(Icons.arrow_drop_down, color: MyColors.textColor)
+          ],
+        ),
+        onPressed: () => _goTo(context, index)
       ),
     );
   }
@@ -369,7 +388,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
               },
             ),
             //MyText(date.toString().substring(0, 10)),
-            MainText(
+            MainRowText(
               AppLocalizations.of(context).translate(DateFormat.E().format(date)) +
               ', ' + DateFormat.d().format(date) +
               ' ' + AppLocalizations.of(context).translate(DateFormat.MMMM().format(date)) +
@@ -402,8 +421,8 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
             ),
             Row(
               children: [
-                MainText(lastWeekDay.subtract(Duration(days: 6)).toString().substring(0, 10) + ' - '),
-                MainText(lastWeekDay.toString().substring(0, 10)),
+                MainRowText(lastWeekDay.subtract(Duration(days: 6)).toString().substring(0, 10) + ' - '),
+                MainRowText(lastWeekDay.toString().substring(0, 10)),
               ],
             ),
             IconButton(
@@ -430,7 +449,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                 });
               },
             ),
-            MainText(AppLocalizations.of(context).translate(DateFormat.MMMM().format(date))+ ' '
+            MainRowText(AppLocalizations.of(context).translate(DateFormat.MMMM().format(date))+ ' '
                 + DateFormat.y().format(date)),
             IconButton(
               icon: Icon(Icons.arrow_right),
@@ -456,7 +475,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                 });
               },
             ),
-            MainText(date.year.toString()),
+            MainRowText(date.year.toString()),
             IconButton(
               icon: Icon(Icons.arrow_right),
               onPressed: () {

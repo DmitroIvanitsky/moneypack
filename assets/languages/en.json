@@ -18,5 +18,16 @@
   "Thu" : "Thu",
   "Fri" : "Fri",
   "Sat" : "Sat",
-  "Sun" : "Sun"
+  "Sun" : "Sun",
+  "Доход" : "Income",
+  "Расход" : "Expense",
+  "Баланс" : "Balance",
+  "Общий остаток" : "Remain",
+  "Учёт" : "Accounting",
+  "Добавить расход" : "Add Expense",
+  "Добавить доход" : "Add Income",
+  "День" : "Day",
+  "Неделя" : "Week",
+  "Месяц" : "Month",
+  "Год" : "Year"
 }

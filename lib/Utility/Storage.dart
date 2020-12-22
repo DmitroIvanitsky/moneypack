@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:flutter_tutorial/Objects/IncomeNote.dart';
 import 'package:flutter_tutorial/Objects/ListOfExpenses.dart';
+import 'package:flutter_tutorial/Objects/ListOfIncomes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_tutorial/Objects/ExpenseNote.dart';
 import 'package:flutter_tutorial/Objects/ListOfExpenses.dart';
@@ -35,22 +37,46 @@ class Storage{
       ListOfExpenses.list.add(expenseNote);
     }
     await Storage.saveString(jsonEncode(ListOfExpenses().toJson()), 'ExpenseNote');
-    savExpenseCategory(category);
+    saveExpenseCategory(category);
+    return true;
+  }
+
+  static Future<bool> saveIncomeNote(IncomeNote incomeNote, String category) async {
+    if (incomeNote != null) {
+      ListOfIncomes.list.add(incomeNote);
+    }
+    await Storage.saveString(jsonEncode(ListOfIncomes().toJson()), 'IncomeNote');
+    saveIncomeCategory(category);
     return true;
   }
   
-  static savExpenseCategory(String category) async {
-    List <String> categories = await getExpenseCategories();
-    if (categories == null) categories = [];
-    if (categories.contains(category)) return;
+  static saveExpenseCategory(String category) async {
+    List <String> expCategories = await getExpenseCategories();
+    if (expCategories == null) expCategories = [];
+    if (expCategories.contains(category)) return;
 
-    if (categories.length > 2) categories.removeAt(0);
-    categories.add(category);
-    await saveList(categories, 'categories');
+    if (expCategories.length > 2) expCategories.removeAt(0);
+    expCategories.add(category);
+    await saveList(expCategories, 'expCategories');
+  }
+
+  static saveIncomeCategory(String category) async {
+    List <String> incCategories = await getIncomeCategories();
+    if (incCategories == null) incCategories = [];
+    if (incCategories.contains(category)) return;
+
+    if (incCategories.length > 2) incCategories.removeAt(0);
+    incCategories.add(category);
+    await saveList(incCategories, 'incCategories');
   }
   
   static getExpenseCategories() async {
-    List l = await getList('categories');
-    return l;
+    List eL = await getList('expCategories');
+    return eL;
+  }
+
+  static getIncomeCategories() async {
+    List iL = await getList('incCategories');
+    return iL;
   }
 }

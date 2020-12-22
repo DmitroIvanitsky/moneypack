@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_calculator/flutter_simple_calculator.dart';
-import 'package:flutter_tutorial/setting/MainText.dart';
+import 'package:flutter_tutorial/setting/MainRowText.dart';
 import 'package:flutter_tutorial/setting/MyColors.dart';
 
 class Calculator extends StatefulWidget {
@@ -30,6 +30,10 @@ class _CalculatorState extends State<Calculator> {
         },
       theme: CalculatorThemeData(
         operatorColor: MyColors.mainColor,
+        numColor: MyColors.backGroundColor,
+        // displayColor: MyColors.backGroundColor,
+        // expressionColor: MyColors.backGroundColor,
+        commandColor: Colors.grey[500],
       ),
     );
     return MaterialApp(
@@ -40,14 +44,11 @@ class _CalculatorState extends State<Calculator> {
              title: Row(
                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                children: [
-                 MainText('Calculator'),
+                 MainRowText('Calculator'),
                  IconButton(
                    iconSize: 35,
                    icon: Icon(Icons.done, color: MyColors.textColor),
                    onPressed: (){
-                     // if (category == "category" || sum == null) return; // to not add empty sum note
-                     // Storage.saveExpenseNote(ExpenseNote(date: date, category: category, sum: sum, comment: comment), category); // function to create note object
-                     // widget.callBack();
                      Navigator.pop(context);
                      widget.updateSum(_currentValue);
                    },

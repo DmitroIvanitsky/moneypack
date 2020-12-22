@@ -9,7 +9,7 @@ import 'package:flutter_tutorial/pages/Expenses.dart';
 import 'package:flutter_tutorial/pages/Incomes.dart';
 import 'package:flutter_tutorial/pages/Balance.dart';
 import 'package:flutter_tutorial/setting/MyColors.dart';
-import 'package:flutter_tutorial/setting/MainText.dart';
+import 'package:flutter_tutorial/setting/MainRowText.dart';
 
 /// this is the file in which i try dark theme with neon light
 
@@ -97,7 +97,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
             icon: Icon(Icons.list),
           ),
           // SizS
-          MainText('Finance'),
+          MainRowText('Finance'),
           buildDropdownButton(),
         ],
       ),
@@ -198,12 +198,12 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
 
   buildDropdownButton() {
     return DropdownButton(
-        hint: MainText(selMode),
+        hint: MainRowText(selMode),
         items: [
-          DropdownMenuItem(value: 'Day', child: MainText('Day')),
-          DropdownMenuItem(value: 'Week', child: MainText('Week')),
-          DropdownMenuItem(value: 'Month', child: MainText('Month')),
-          DropdownMenuItem(value: 'Year', child: MainText('Year')),
+          DropdownMenuItem(value: 'Day', child: MainRowText('Day')),
+          DropdownMenuItem(value: 'Week', child: MainRowText('Week')),
+          DropdownMenuItem(value: 'Month', child: MainRowText('Month')),
+          DropdownMenuItem(value: 'Year', child: MainRowText('Year')),
         ],
         onChanged: (String newValue) {
           if (selMode == 'Day' && newValue != 'Day') {
@@ -244,10 +244,10 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                 //boxShadow: [BoxShadow(color: MyColors.mainColor, blurRadius: 10, spreadRadius: 1),],
                 borderRadius: BorderRadius.all(Radius.circular(25))),
             child: GestureDetector(
-                child: MainText(index, TextAlign.left),
+                child: MainRowText(index, TextAlign.left),
                 onTap: () => _goTo(context, index)),
           ),
-          MainText('$category', TextAlign.right),
+          MainRowText('$category', TextAlign.right),
         ],
       ),
     );
@@ -332,7 +332,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
 
               },
             ),
-            MainText(date.toString().substring(0, 10)),
+            MainRowText(date.toString().substring(0, 10)),
             IconButton(
               icon: Icon(Icons.arrow_right),
               onPressed: () {
@@ -360,8 +360,8 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
             ),
             Row(
               children: [
-                MainText(lastWeekDay.subtract(Duration(days: 6)).toString().substring(0, 10) + ' - '),
-                MainText(lastWeekDay.toString().substring(0, 10)),
+                MainRowText(lastWeekDay.subtract(Duration(days: 6)).toString().substring(0, 10) + ' - '),
+                MainRowText(lastWeekDay.toString().substring(0, 10)),
               ],
             ),
             IconButton(
@@ -388,7 +388,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                 });
               },
             ),
-            MainText(date.month.toString()),
+            MainRowText(date.month.toString()),
             IconButton(
               icon: Icon(Icons.arrow_right),
               onPressed: () {
@@ -413,7 +413,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                 });
               },
             ),
-            MainText(date.year.toString()),
+            MainRowText(date.year.toString()),
             IconButton(
               icon: Icon(Icons.arrow_right),
               onPressed: () {

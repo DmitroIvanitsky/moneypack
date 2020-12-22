@@ -1,11 +1,12 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_tutorial/Objects/IncomeNote.dart';
-import 'package:flutter_tutorial/Objects/ListOfIncomes.dart';
-import 'package:flutter_tutorial/Utility/Storage.dart';
-import 'package:flutter_tutorial/setting/MainText.dart';
-import 'package:flutter_tutorial/setting/MyColors.dart';
-import 'package:flutter_tutorial/pages/ListOfIncomesCategories.dart';
+import '../pages/Calculator.dart';
+import '../Objects/IncomeNote.dart';
+import '../Objects/ListOfIncomes.dart';
+import '../Utility/Storage.dart';
+import '../setting/MainRowText.dart';
+import '../setting/MyColors.dart';
+import '../pages/ListOfIncomesCategories.dart';
 
 class AddIncome extends StatefulWidget{
   final Function callback;
@@ -21,7 +22,8 @@ class _AddIncomeState extends State<AddIncome> {
   String category = '';
   double sum;
   String comment;
-  List<String> _list = [];
+  List lastCategories = [];
+  TextEditingController calcController = TextEditingController();
 
   @override
   void initState() {
@@ -30,14 +32,22 @@ class _AddIncomeState extends State<AddIncome> {
   }
 
   initList() async{
-    _list = await Storage.getList('Income');
-    _list == null || _list.isEmpty ? category = 'Категория дохода' : category = _list[0];
+    lastCategories = await Storage.getIncomeCategories();
+    lastCategories == null || lastCategories.isEmpty ?
+      category = 'Выбирите категорию' : category = lastCategories.last;
     setState(() {});
   }
 
-  void stateFunc(String cat){
+  void updateCategory(String cat){
     setState(() {
       category = cat;
+    });
+  }
+
+  void updateSum(double result){
+    setState(() {
+      if (calcController != null) calcController.text = result.toString();
+      sum = result;
     });
   }
 
@@ -47,7 +57,67 @@ class _AddIncomeState extends State<AddIncome> {
       child: Scaffold(
         backgroundColor: MyColors.backGroundColor,
         appBar: buildAppBar(),
-        body: buildBody(),
+        body: Padding(
+          padding: EdgeInsets.only(left: 10, right: 10),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                SizedBox(height: 15),
+                getDateWidget(),
+                Divider(),
+                FlatButton(
+                  height: 50,
+                  child: Row(
+                    children: [
+                      MainRowText(category),
+                      Icon(Icons.arrow_drop_down, color: MyColors.textColor)
+                    ],
+                  ),
+                  onPressed: () => onCategoryTap(context),
+                ),
+                Container(
+                  height: 175,
+                  child: ListView(
+                    physics: NeverScrollableScrollPhysics(),
+                    children: getLastCategories(),
+                  ),
+                ),
+                Container(
+                  height: 100,
+                  child: IconButton(
+                      icon: Icon(
+                          Icons.calculate_outlined,
+                          color: MyColors.textColor,
+                          size: 40
+                      ),
+                      onPressed: () => goToCalculator(context)
+                  ),
+                ),
+                Container(
+                  height: 75,
+                  child: TextFormField(
+                    controller: calcController,
+                    decoration: const InputDecoration(
+                      hintText: 'Введите сумму',
+                    ),
+                    onChanged: (v) => sum = double.parse(v),
+                  ),
+                ),
+                Container(
+                  height: 75,
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                      hintText: 'Введите коментарий',
+                    ),
+                    onChanged: (v) => comment = v,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -61,7 +131,7 @@ class _AddIncomeState extends State<AddIncome> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children:[
-          MainText('Добавить доход'),
+          MainRowText('Добавить доход'),
           IconButton(
             iconSize: 35,
             icon: Icon(
@@ -69,8 +139,8 @@ class _AddIncomeState extends State<AddIncome> {
               color: MyColors.textColor,
             ),
             onPressed: (){
-              if (category == "category" || sum == null) return;
-              _createIncomeNote(date, category, sum, comment: comment);
+              if (category == 'Выбирите категорию' || sum == null) return;
+              Storage.saveIncomeNote(IncomeNote(date: date, category: category, sum: sum, comment: comment), category); // function to create note object
               widget.callback();
               Navigator.pop(context);
             },
@@ -80,52 +150,50 @@ class _AddIncomeState extends State<AddIncome> {
     );
   }
 
-  Widget buildBody() {
-    return Padding(
-      padding: EdgeInsets.only(left: 10, right: 10),
-      child: Form(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            SizedBox(height: 10),
-            getDateWidget(),
-            Divider(),
-            GestureDetector(
-              child: MainText(category),
-              onTap: () => _onCategoryTap(context),
+  List<Widget> getLastCategories(){
+    if (lastCategories == null || lastCategories.length == 0) return [Text('')]; // TO DEBUG null in process
+    List<Widget> result = [];
+    for (String catName in lastCategories) {
+      result.add(
+        RadioListTile<String>(
+          title: Text(
+            catName,
+            style: TextStyle(
+                fontWeight: catName == category? FontWeight.bold : FontWeight.normal
             ),
-            Divider(),
-            TextFormField(
-              decoration: const InputDecoration(
-                hintText: 'Введите сумму',
-              ),
-              validator: (value) {
-                if (value.isEmpty) {
-                  return 'Пожалуйста введите сумму';
-                }
-                return null;
-              },
-              onChanged: (v) => sum = double.parse(v),
-            ),
-            TextFormField(
-              decoration: const InputDecoration(
-                hintText: 'Введите коментарий',
-              ),
-              onChanged: (v) => comment = v,
-            ),
-          ],
+          ),
+          groupValue: category,
+          value: catName,
+          onChanged: (String value) {
+            setState(() {
+              category = value;
+            });
+          },
         ),
-      ),
+      );
+    }
+
+    return result;
+  }
+
+  goToCalculator(BuildContext context){
+    Navigator.push(
+        context,
+        MaterialPageRoute <void>(
+            builder: (BuildContext context) {
+              return Calculator(updateSum: updateSum, result: sum);
+            }
+        )
     );
   }
 
   Widget getDateWidget(){
-    return GestureDetector(
-      onTap: _onDateTap,
-      child: (date != null)? MainText(
+    return FlatButton(
+      onPressed: _onDateTap,
+      child: (date != null)? MainRowText(
         date.toString().substring(0, 10),
         TextAlign.left,
-      ) : MainText('Выберите дату'),
+      ) : MainRowText('Выберите дату'),
     );
   }
 
@@ -159,21 +227,15 @@ class _AddIncomeState extends State<AddIncome> {
     );
   }
 
-  _onCategoryTap(BuildContext context){
+  onCategoryTap(BuildContext context){
     Navigator.push(
         context,
         MaterialPageRoute<void>(
             builder: (BuildContext context){
-              return ListOfIncomesCategories(callback: stateFunc, cat: category);
+              return ListOfIncomesCategories(callback: updateCategory, cat: category);
             }
         )
     );
-  }
-
-  _createIncomeNote(DateTime date, String category, double sum, {String comment}) async{
-    IncomeNote incomeNote = IncomeNote(date: date, category: category, sum: sum, comment: comment);
-    ListOfIncomes.list.add(incomeNote);
-    await Storage.saveString(jsonEncode(ListOfIncomes().toJson()), 'IncomeNote');
   }
 
 }

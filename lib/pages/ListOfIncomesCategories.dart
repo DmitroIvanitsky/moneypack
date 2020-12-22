@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tutorial/Utility/Storage.dart';
 import 'package:flutter_tutorial/setting/MyColors.dart';
-import 'package:flutter_tutorial/setting/MainText.dart';
+import 'package:flutter_tutorial/setting/MainRowText.dart';
 
 class ListOfIncomesCategories extends StatefulWidget{
   final Function callback;
@@ -46,7 +46,7 @@ class _ListOfIncomesCategoriesState extends State<ListOfIncomesCategories> {
       iconTheme: IconThemeData(
           color: MyColors.textColor
       ),
-      title: MainText('Категории дохода'),
+      title: MainRowText('Категории дохода'),
     );
   }
 
@@ -54,7 +54,7 @@ class _ListOfIncomesCategoriesState extends State<ListOfIncomesCategories> {
     return Column(
       children: [
         Expanded(
-          child: list.isEmpty ? MainText('Добавьте категорию') :
+          child: list.isEmpty ? MainRowText('Добавьте категорию') :
           ListView.builder(
             itemCount: list.length,
             itemBuilder: (context, index){
@@ -65,9 +65,10 @@ class _ListOfIncomesCategoriesState extends State<ListOfIncomesCategories> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        GestureDetector(
-                          child: MainText(list[index]),
-                          onTap: (){
+                        FlatButton(
+                          height: 50,
+                          child: MainRowText(list[index]),
+                          onPressed: (){
                             widget.callback(list[index]);
                             Navigator.pop(context);
                           },

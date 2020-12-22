@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
+import '../Utility/appLocalizations.dart';
 
-class MainText extends StatelessWidget{
+class MainLocalText extends StatelessWidget{
   final String text;
   final TextAlign align;
 
-  MainText(this.text, [this.align]);
+  MainLocalText(this.text, [this.align]);
 
   @override
   Widget build(BuildContext context) {
     return Text(
-      text,
+      AppLocalizations.of(context).translate(text),
       textAlign: align,
       style: TextStyle(
         color: Colors.black,

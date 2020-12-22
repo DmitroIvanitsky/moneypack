@@ -1,11 +1,12 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_tutorial/pages/Calculator.dart';
 import '../Objects/ExpenseNote.dart';
 import '../Objects/ListOfExpenses.dart';
 import '../Utility/Storage.dart';
 import '../pages/ListOfExpensesCategories.dart';
 import '../setting/MyColors.dart';
-import '../setting/MainText.dart';
+import '../setting/MainRowText.dart';
 
 class EditPageForExpenseCategory extends StatefulWidget {
   final Function updateExpensePage;
@@ -25,12 +26,20 @@ class EditPageForExpenseCategory extends StatefulWidget {
 
 class _EditPageForExpenseCategoryState extends State<EditPageForExpenseCategory> {
   ExpenseNote currentNote;
+  TextEditingController calcController = TextEditingController();
 
   _EditPageForExpenseCategoryState(this.currentNote);
 
   void updateCategory(String cat) {
     setState(() {
       currentNote.category = cat;
+    });
+  }
+
+  void updateSum(double result){
+    setState(() {
+      //if (currentNote.sum != result) calcController.text = result.toString();
+      currentNote.sum = result;
     });
   }
 
@@ -54,7 +63,7 @@ class _EditPageForExpenseCategoryState extends State<EditPageForExpenseCategory>
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          MainText("Редактирование"),
+          MainRowText("Редактирование"),
           IconButton(
             iconSize: 35,
             icon: Icon(Icons.done, color: MyColors.textColor),
@@ -73,7 +82,8 @@ class _EditPageForExpenseCategoryState extends State<EditPageForExpenseCategory>
   Widget buildBody() {
     return Padding(
       padding: EdgeInsets.only(left: 10, right: 10),
-      child: Form(
+      child: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -82,35 +92,62 @@ class _EditPageForExpenseCategoryState extends State<EditPageForExpenseCategory>
             getDateWidget(currentNote.date),
             Divider(),
             // category row
-            GestureDetector(
-              child: MainText(currentNote.category),
-              onTap: () => onCategoryTap(context),
+            FlatButton(
+              child: Row(
+                children: [
+                  MainRowText(currentNote.category),
+                  Icon(Icons.arrow_drop_down, color: MyColors.textColor)
+                ],
+              ),
+              onPressed: () => onCategoryTap(context),
             ),
             Divider(),
-            // sum row
-            TextFormField(
-              initialValue: currentNote.sum.toString(),
-              decoration: const InputDecoration(
-                hintText: 'Введите сумму',
+            Container(
+              height: 100,
+              child: IconButton(
+                  icon: Icon(
+                      Icons.calculate_outlined,
+                      color: MyColors.textColor,
+                      size: 40
+                  ),
+                  onPressed: () => goToCalculator(context)
               ),
-              validator: (value) {
-                if (value.isEmpty) {
-                  return 'Пожалуйста введите сумму';
-                }
-                return null;
-              },
-              onChanged: (v) => currentNote.sum = double.parse(v),
             ),
-            TextFormField(
-              initialValue: currentNote.comment,
-              decoration: const InputDecoration(
-                hintText: 'Введите коментарий',
+            // sum row
+            Container(
+              height: 75,
+              child: TextFormField(
+                initialValue: currentNote.sum.toString(),
+                decoration: const InputDecoration(
+                  hintText: 'Введите сумму',
+                ),
+                onChanged: (v) => currentNote.sum = double.parse(v),
               ),
-              onChanged: (v) => currentNote.comment = v,
+            ),
+            Container(
+              height: 75,
+              child: TextFormField(
+                initialValue: currentNote.comment,
+                decoration: const InputDecoration(
+                  hintText: 'Введите коментарий',
+                ),
+                onChanged: (v) => currentNote.comment = v,
+              ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  goToCalculator(BuildContext context){
+    Navigator.push(
+        context,
+        MaterialPageRoute <void>(
+            builder: (BuildContext context) {
+              return Calculator(updateSum: updateSum, result: currentNote.sum);
+            }
+        )
     );
   }
 
@@ -135,12 +172,12 @@ class _EditPageForExpenseCategoryState extends State<EditPageForExpenseCategory>
   }
 
   Widget getDateWidget(DateTime date) {
-    return GestureDetector(
-      onTap: onDateTap,
-      child: (date != null)? MainText(
+    return FlatButton(
+      onPressed: onDateTap,
+      child: (date != null)? MainRowText(
         date.toString().substring(0, 10),
         TextAlign.left,
-      ) : MainText('Выберите дату'),
+      ) : MainRowText('Выберите дату'),
     );
   }
 
