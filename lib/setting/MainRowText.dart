@@ -8,13 +8,16 @@ class MainRowText extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      text,
-      textAlign: align,
-      style: TextStyle(
-        color: Colors.black,
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Text(
+        text,
+        textAlign: align,
+        style: TextStyle(
+          color: Colors.black,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }

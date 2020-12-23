@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_tutorial/pages/Calculator.dart';
 import '../Objects/ExpenseNote.dart';
 import '../Objects/ListOfExpenses.dart';
@@ -38,7 +39,7 @@ class _EditPageForExpenseCategoryState extends State<EditPageForExpenseCategory>
 
   void updateSum(double result){
     setState(() {
-      //if (currentNote.sum != result) calcController.text = result.toString();
+      if (currentNote.sum != result) calcController.text = result.toString();
       currentNote.sum = result;
     });
   }
@@ -117,8 +118,9 @@ class _EditPageForExpenseCategoryState extends State<EditPageForExpenseCategory>
             Container(
               height: 75,
               child: TextFormField(
+                controller: calcController,
                 keyboardType: TextInputType.number,
-                initialValue: currentNote.sum.toString(),
+                //initialValue: currentNote.sum,
                 decoration: const InputDecoration(
                   hintText: 'Введите сумму',
                 ),
@@ -210,6 +212,11 @@ class _EditPageForExpenseCategoryState extends State<EditPageForExpenseCategory>
       ),
       child: child,
     );
+  }
+
+  void dispose() {
+    calcController.dispose();
+    super.dispose();
   }
   
 }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tutorial/setting/SecondaryText.dart';
+import 'package:flutter_tutorial/widgets/rowWithButton.dart';
 import '../setting/DateFormatText.dart';
 import '../Objects/ExpenseNote.dart';
 import '../Utility/Storage.dart';
@@ -54,74 +56,131 @@ class _AddExpensesState extends State<AddExpenses> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-          backgroundColor: MyColors.backGroundColor,
-          appBar: buildAppBar(),
-          body: Padding(
-            padding: EdgeInsets.only(left: 10, right: 10),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  SizedBox(height: 15),
-                  Row(children: [
-                    getDateWidget(),
-                    Icon(Icons.arrow_drop_down, color: MyColors.textColor)
-                  ],),
-                  Divider(),
-                  FlatButton(
-                    height: 50,
-                      child: Row(
-                        children: [
-                          MainRowText(category),
-                          Icon(Icons.arrow_drop_down, color: MyColors.textColor)
-                        ],
-                      ),
-                      onPressed: () => onCategoryTap(context),
+        backgroundColor: MyColors.backGroundColor,
+          bottomNavigationBar: BottomAppBar(
+            child: Container(
+              decoration: BoxDecoration(
+                  color: MyColors.mainColor,
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black,
+                        blurRadius: 5
+                    )
+                  ]
+              ),
+              height: 60,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.arrow_back, color: Colors.black),
+                    onPressed: () => Navigator.pop(context)
                   ),
-                  Container(
-                    height: 175,
-                    child: ListView(
-                      physics: NeverScrollableScrollPhysics(),
-                      children: getLastCategories(),
-                    ),
-                  ),
-                  Container(
-                    height: 100,
-                    child: IconButton(
-                        icon: Icon(
-                            Icons.calculate_outlined,
-                            color: MyColors.textColor,
-                            size: 40
-                        ),
-                        onPressed: () => goToCalculator(context)
-                    ),
-                  ),
-                  // sum row
-                  Container(
-                    height: 75,
-                    child: TextFormField(
-                      keyboardType: TextInputType.number,
-                      controller: calcController,
-                      decoration: const InputDecoration(
-                        hintText: 'Введите сумму',
-                      ),
-                      onChanged: (v) => sum = double.parse(v),
-                    ),
-                  ),
-                  Container(
-                    height: 75,
-                    child: TextFormField(
-                      decoration: const InputDecoration(
-                        hintText: 'Введите коментарий',
-                      ),
-                      onChanged: (v) => comment = v,
-                    ),
-                  ),
+                  MainRowText('Добавить расход'),
+                  IconButton(
+                    iconSize: 35,
+                    icon: Icon(Icons.done, color: MyColors.textColor),
+                    onPressed: (){
+                      if (category == 'Выбирите категорию' || sum == null) return; // to not add empty sum note
+                      Storage.saveExpenseNote(
+                          ExpenseNote(
+                              date: date,
+                              category: category,
+                              sum: sum,
+                              comment: comment),
+                          category
+                      ); // function to create note object
+                      widget.callBack();
+                      Navigator.pop(context);
+                    },
+                  )
                 ],
               ),
             ),
-          )
+          ),
+        //appBar: buildAppBar(),
+        body: Padding(
+          padding: EdgeInsets.only(left: 10, right: 10),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                SizedBox(height: 15),
+                Row(children: [
+                  getDateWidget(),
+                  Icon(Icons.arrow_drop_down, color: MyColors.textColor)
+                ],),
+                Divider(color: MyColors.backGroundColor),
+                Container(
+                  decoration: BoxDecoration(
+                    color: MyColors.backGroundColor,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey,
+                        spreadRadius: 1
+                      )
+                    ]
+                  ),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: 15,
+                      ),
+                      RowWithButton(
+                        leftText: 'Категория',
+                        rightText: category,
+                        onTap: () =>
+                            Navigator.push(context,
+                              MaterialPageRoute(builder: (context) => ListOfExpensesCategories(callback: updateCategory, cat: category)),
+                            ),
+                      ),
+                      Container(
+                        height: 175,
+                        child: ListView(
+                          physics: NeverScrollableScrollPhysics(),
+                          children: getLastCategories(),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  height: 100,
+                  child: IconButton(
+                      icon: Icon(
+                          Icons.calculate_outlined,
+                          color: MyColors.textColor,
+                          size: 40
+                      ),
+                      onPressed: () => goToCalculator(context)
+                  ),
+                ),
+                // sum row
+                Container(
+                  height: 75,
+                  child: TextFormField(
+                    keyboardType: TextInputType.number,
+                    controller: calcController,
+                    decoration: const InputDecoration(
+                      hintText: 'Введите сумму',
+                    ),
+                    onChanged: (v) => sum = double.parse(v),
+                  ),
+                ),
+                Container(
+                  height: 75,
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                      hintText: 'Введите коментарий',
+                    ),
+                    onChanged: (v) => comment = v,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        )
       ),
     );
   }
@@ -205,19 +264,8 @@ class _AddExpensesState extends State<AddExpenses> {
   Widget getDateWidget(){
     return FlatButton(
       onPressed: onDateTap,
-      child: (date != null)? DateFormatText(dateTime: date, mode: 'День')
-          : MainRowText('Выберите дату'),
-    );
-  }
-
-  onCategoryTap(BuildContext context){
-    Navigator.push(
-        context,
-        MaterialPageRoute<void>(
-            builder: (BuildContext context){
-              return ListOfExpensesCategories(callback: updateCategory, cat: category);
-            }
-        )
+      child: (date != null)? DateFormatText(dateTime: date, mode: 'Дата в строке')
+          : SecondaryText('Выберите дату'),
     );
   }
 

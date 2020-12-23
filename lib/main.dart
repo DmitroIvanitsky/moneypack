@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_tutorial/Objects/ListOfExpenses.dart';
 import 'package:flutter_tutorial/Objects/ListOfIncomes.dart';
@@ -14,6 +15,8 @@ import 'package:flutter_tutorial/setting/DateFormatText.dart';
 import 'package:flutter_tutorial/setting/MainLocalText.dart';
 import 'package:flutter_tutorial/setting/MyColors.dart';
 import 'package:flutter_tutorial/setting/MainRowText.dart';
+import 'package:flutter_tutorial/setting/SecondaryText.dart';
+import 'package:flutter_tutorial/widgets/rowWithButton.dart';
 import 'Utility/appLocalizations.dart';
 
 void main() => runApp(MaterialApp(
@@ -46,10 +49,12 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
   double expense = 0;
   double balance = 0;
   double remain = 0;
-  Size size;
 
   @override
   void initState() {
+    SystemChrome.setPreferredOrientations([ //Lock orientation
+      DeviceOrientation.portraitUp,
+    ]);
     loadList();
     super.initState();
   }
@@ -90,281 +95,165 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
 
   @override
   Widget build(BuildContext context) {
-    if (size == null) {
-      size = MediaQuery.of(context).size;
-      print(size);
-    }
+    print(MediaQuery.of(context).size);
 
     return SafeArea(
       child: Scaffold(
+        endDrawerEnableOpenDragGesture: true,
         resizeToAvoidBottomInset: false,
         backgroundColor: MyColors.backGroundColor,
         drawer: buildDrawer(),
-        appBar: buildAppBar(),
-        body: buildBody(),
+        bottomNavigationBar: BottomAppBar(
+          child: Container(
+            decoration: BoxDecoration(
+              color: MyColors.mainColor,
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.black,
+                    blurRadius: 5
+                )
+              ]
+            ),
+            height: 60,
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(icon: Icon(Icons.menu, color: Colors.black),
+                      onPressed: () {
+                    Scaffold.of(context).openDrawer();
+                  }),
+                  buildDropdownButton(),
+                ],
+            ),
+          ),
+        ),
+        //appBar: buildAppBar(),
+        body: Container(
+          height: MediaQuery.of(context).size.height,
+          child:  Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              getDate(),
+              RowWithButton(
+                leftText: 'Доход',
+                rightText: income.toString(),
+                onTap: () =>
+                  Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => Incomes(updateMainPage: updateMainPage)),
+                  ),
+              ),
+              RowWithButton(
+                leftText: 'Расход',
+                rightText: expense.toString(),
+                  onTap: () =>
+                    Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Expenses(updateMainPage: updateMainPage)),
+                    ),
+              ),
+              // balance row
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                  color: MyColors.rowColor,
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.black,
+                          blurRadius: 5
+                      )
+                    ]
+                ),
+                height: 70,
+                margin: EdgeInsets.only(left: 10, right: 10, top: 10),
+                child: Padding(
+                  padding: EdgeInsets.only(left: 15, right: 10),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          MainLocalText('Баланс'),
+                          SecondaryText(balance.toString(), TextAlign.right),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          MainLocalText('Общий остаток'),
+                          SecondaryText(remain.toString(), TextAlign.right),
+                        ],
+                      ),
+                    ],
+                  ),
+                )
+              ),
+              // low buttons to add notes
+              Container(
+                alignment: Alignment.center,
+                margin: EdgeInsets.symmetric(vertical: 25),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Padding(padding: EdgeInsets.symmetric(vertical: 15),
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: MyColors.incomeButton,
+                            borderRadius: BorderRadius.circular(5),
+                            boxShadow: [
+                              BoxShadow(
+                                  color: Colors.black,
+                                  blurRadius: 5
+                              )
+                            ]
+                        ),
+                        height: 70,
+                        width: 200,
+
+                        child: FlatButton(
+                          child: MainLocalText('Добавить доход'),
+                          onPressed: () =>
+                              Navigator.push(context,
+                                MaterialPageRoute(builder: (context) => AddIncome(callback: updateMainPage)),
+                              ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 15),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: MyColors.expenseButton,
+                          borderRadius: BorderRadius.circular(5),
+                            boxShadow: [
+                              BoxShadow(
+                                  color: Colors.black,
+                                  blurRadius: 5
+                              )
+                            ]
+                        ),
+                        height: 70,
+                        width: 200,
+                        
+                        child: FlatButton(
+                          child: MainLocalText('Добавить расход'),
+                          onPressed: () =>
+                            Navigator.push(context,
+                              MaterialPageRoute(builder: (context) => AddExpenses(callBack: updateMainPage)),
+                            ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        )
       )
     );
   }
 
-  Widget buildDrawer(){
-    return Drawer(
-      child: Container(
-        color: MyColors.backGroundColor,
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(top: 25),
-              child: MainRowText('Настройки'),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 25),
-              child: MainRowText('Тема'),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 25),
-              child: MainRowText('Язык'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget buildAppBar() {
-    return AppBar(
-      iconTheme: IconThemeData(color: MyColors.textColor),
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          MainLocalText('Учёт'),
-          buildDropdownButton(),
-        ],
-      ),
-      centerTitle: true,
-      backgroundColor: MyColors.mainColor,
-    );
-  }
-
-  Widget buildBody() {
-    return Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-
-          // date row
-          _getData(),
-
-          // income row
-          Container(
-            color: MyColors.rowColor,
-            height: size.height * 0.075,
-            margin: EdgeInsets.only(left: 15, right: 15),
-            child: Padding(
-              padding: EdgeInsets.only(right: 25),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  viewInfoButton(index: 'Доход'),
-                  MainRowText(income.toString(), TextAlign.right),
-                ],
-              ),
-            ),
-          ),
-
-          // expense row
-          Container(
-            color: MyColors.rowColor,
-            height: size.height * 0.075,
-            margin: EdgeInsets.only(left: 15, right: 15, top: 10),
-            child: Padding(
-              padding: EdgeInsets.only(right: 25),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  viewInfoButton(index: 'Расход'),
-                  MainRowText(expense.toString(), TextAlign.right),
-                ],
-              ),
-            ),
-          ),
-
-          // balance row
-          Container(
-            color: MyColors.rowColor,
-            height: size.height * 0.1,
-            margin: EdgeInsets.only(left: 15, right: 15, top: 10),
-            child: Padding(
-              padding: EdgeInsets.only(left: 20, right: 25),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                      Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        MainLocalText('Баланс'),
-                        MainRowText(balance.toString(), TextAlign.right),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        MainLocalText('Общий остаток'),
-                        MainRowText(remain.toString(), TextAlign.right),
-                      ],
-                    ),
-
-                ],
-              ),
-            )
-          ),
-
-          // low buttons to add notes
-          Container(
-            //height: size.height * 0.35,
-            //color: Colors.yellow,
-            alignment: Alignment.center,
-            margin: EdgeInsets.symmetric(vertical: 25),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 15),
-                  child: myFlatButton(index: 'Добавить расход'),
-                ),
-                Padding(padding: EdgeInsets.symmetric(vertical: 15),
-                  child: myFlatButton(index: 'Добавить доход'),
-                )
-              ],
-            ),
-          ),
-        ],
-      );
-  }
-
-  myFlatButton({String index}){
-    Color buttonColor;
-    if (index == 'Добавить расход')
-      buttonColor = MyColors.expenseButton;
-    if (index == 'Добавить доход')
-      buttonColor = MyColors.incomeButton;
-    return Container(
-      height: 70,
-      width: 200,
-      color: buttonColor,
-      child: FlatButton(
-          onPressed: () => _goTo(context, index),
-          child: MainLocalText(index)
-      ),
-    );
-  }
-
-  buildDropdownButton() {
-    return DropdownButton(
-        hint: MainRowText(selectedMode),
-        items: [
-          DropdownMenuItem(value: 'День', child: MainRowText('День')),
-          DropdownMenuItem(value: 'Неделя', child: MainRowText('Неделя')),
-          DropdownMenuItem(value: 'Месяц', child: MainRowText('Месяц')),
-          DropdownMenuItem(value: 'Год', child: MainRowText('Год')),
-        ],
-        onChanged: (String newValue) {
-          if (selectedMode != 'Неделя' && newValue == 'Неделя') {
-            date = date.subtract(Duration(days: date.weekday + 1)).add(Duration(days: 7));
-          }
-
-          if (selectedMode == 'Неделя' && newValue != 'Неделя') {
-            date = DateTime.now();
-          }
-
-          setState(() {
-            selectedMode = newValue;
-          });
-          updateMainPage();
-        }
-    );
-  }
-
-  viewInfoButton({String index}){
-    return Container(
-      height: size.height * 0.075,
-      width: size.width * 0.31,
-      color: MyColors.mainColor,
-      child: FlatButton(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            MainLocalText(index),
-            Icon(Icons.arrow_drop_down, color: MyColors.textColor)
-          ],
-        ),
-        onPressed: () => _goTo(context, index)
-      ),
-    );
-  }
-
-  _goTo(BuildContext context, String index) {
-    switch (index) {
-      case 'Добавить расход':
-        Navigator.push(context,
-            MaterialPageRoute<void>(builder: (BuildContext context) {
-              return AddExpenses(callBack: updateMainPage);
-            }));
-        break;
-      case 'Добавить доход':
-        Navigator.push(context,
-            MaterialPageRoute<void>(builder: (BuildContext context) {
-              return AddIncome(callback: updateMainPage);
-            }));
-        break;
-      case 'Баланс общий':
-        Navigator.push(context,
-            MaterialPageRoute<void>(builder: (BuildContext context) {
-              return ShowBalance();
-            }));
-        break;
-      case 'Доход':
-        Navigator.push(context,
-            MaterialPageRoute<void>(builder: (BuildContext context) {
-              return Incomes(updateMainPage: updateMainPage);
-            }));
-        break;
-      case 'Расход':
-        Navigator.push(context,
-            MaterialPageRoute<void>(builder: (BuildContext context) {
-              return Expenses(updateMainPage: updateMainPage);
-            }));
-        break;
-    }
-  }
-
-  _isInFilter(DateTime d){
-    if (d == null) return false;
-
-    switch (selectedMode) {
-      case 'День' :
-        return
-          d.year == date.year &&
-              d.month == date.month &&
-              d.day == date.day;
-        break;
-      case 'Неделя':
-        return
-          d.year == date.year &&
-              d.month == date.month &&
-              d.isBefore(date) && d.isAfter(date.subtract(Duration(days: 7)));
-        break;
-      case 'Месяц' :
-        return
-          d.year == date.year &&
-              d.month == date.month;
-        break;
-      case 'Год' :
-        return
-          d.year == date.year;
-        break;
-    }
-  }
-
-  _getData(){
+  getDate(){
     switch(selectedMode){
       case 'День':
         return Row(
@@ -469,4 +358,96 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
     }
   }
 
+  buildDrawer(){
+    return Drawer(
+      child: Container(
+        color: MyColors.backGroundColor,
+        child: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(top: 25),
+              child: MainRowText('Настройки'),
+            ),
+            Padding(
+              padding: EdgeInsets.only(top: 25),
+              child: MainRowText('Тема'),
+            ),
+            Padding(
+              padding: EdgeInsets.only(top: 25),
+              child: MainRowText('Язык'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildAppBar() {
+    return AppBar(
+      iconTheme: IconThemeData(color: MyColors.textColor),
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          MainLocalText('Учёт'),
+          buildDropdownButton(),
+        ],
+      ),
+      centerTitle: true,
+      backgroundColor: MyColors.mainColor,
+    );
+  }
+
+  Widget buildDropdownButton() {
+    return DropdownButton(
+        hint: MainRowText(selectedMode),
+        items: [
+          DropdownMenuItem(value: 'День', child: MainRowText('День')),
+          DropdownMenuItem(value: 'Неделя', child: MainRowText('Неделя')),
+          DropdownMenuItem(value: 'Месяц', child: MainRowText('Месяц')),
+          DropdownMenuItem(value: 'Год', child: MainRowText('Год')),
+        ],
+        onChanged: (String newValue) {
+          if (selectedMode != 'Неделя' && newValue == 'Неделя') {
+            date = date.subtract(Duration(days: date.weekday + 1)).add(Duration(days: 7));
+          }
+
+          if (selectedMode == 'Неделя' && newValue != 'Неделя') {
+            date = DateTime.now();
+          }
+
+          setState(() {
+            selectedMode = newValue;
+          });
+          updateMainPage();
+        }
+    );
+  }
+
+  _isInFilter(DateTime d){
+    if (d == null) return false;
+
+    switch (selectedMode) {
+      case 'День' :
+        return
+          d.year == date.year &&
+              d.month == date.month &&
+              d.day == date.day;
+        break;
+      case 'Неделя':
+        return
+          d.year == date.year &&
+              d.month == date.month &&
+              d.isBefore(date) && d.isAfter(date.subtract(Duration(days: 7)));
+        break;
+      case 'Месяц' :
+        return
+          d.year == date.year &&
+              d.month == date.month;
+        break;
+      case 'Год' :
+        return
+          d.year == date.year;
+        break;
+    }
+  }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tutorial/widgets/rowWithButton.dart';
 import '../setting/DateFormatText.dart';
 import '../pages/Calculator.dart';
 import '../Objects/IncomeNote.dart';
@@ -68,22 +69,43 @@ class _AddIncomeState extends State<AddIncome> {
                   getDateWidget(),
                   Icon(Icons.arrow_drop_down, color: MyColors.textColor)
                 ],),
-                Divider(),
-                FlatButton(
-                  height: 50,
-                  child: Row(
-                    children: [
-                      MainRowText(category),
-                      Icon(Icons.arrow_drop_down, color: MyColors.textColor)
-                    ],
-                  ),
-                  onPressed: () => onCategoryTap(context),
-                ),
+                Divider(color: MyColors.backGroundColor),
                 Container(
-                  height: 175,
-                  child: ListView(
-                    physics: NeverScrollableScrollPhysics(),
-                    children: getLastCategories(),
+                  decoration: BoxDecoration(
+                      color: MyColors.backGroundColor,
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.grey,
+                            spreadRadius: 1
+                        )
+                      ]
+                  ),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: 15,
+                      ),
+                      RowWithButton(
+                        leftText: 'Категория',
+                        rightText: category,
+                        onTap: () =>
+                            Navigator.push(context,
+                              MaterialPageRoute(
+                                  builder: (context) => ListOfIncomesCategories(
+                                      callback: updateCategory,
+                                      cat: category
+                                  )
+                              ),
+                            ),
+                      ),
+                      Container(
+                        height: 175,
+                        child: ListView(
+                          physics: NeverScrollableScrollPhysics(),
+                          children: getLastCategories(),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 Container(
@@ -193,7 +215,7 @@ class _AddIncomeState extends State<AddIncome> {
   Widget getDateWidget(){
     return FlatButton(
       onPressed: _onDateTap,
-      child: (date != null)? DateFormatText(dateTime: date, mode: 'День')
+      child: (date != null)? DateFormatText(dateTime: date, mode: 'Дата в строке')
           : MainRowText('Выберите дату'),
     );
   }
@@ -225,17 +247,6 @@ class _AddIncomeState extends State<AddIncome> {
         dialogBackgroundColor: MyColors.backGroundColor,
       ),
       child: child,
-    );
-  }
-
-  onCategoryTap(BuildContext context){
-    Navigator.push(
-        context,
-        MaterialPageRoute<void>(
-            builder: (BuildContext context){
-              return ListOfIncomesCategories(callback: updateCategory, cat: category);
-            }
-        )
     );
   }
 

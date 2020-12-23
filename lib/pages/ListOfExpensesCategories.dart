@@ -40,7 +40,34 @@ class _ListOfExpensesCategoriesState extends State<ListOfExpensesCategories> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: MyColors.backGroundColor,
-        appBar: buildAppBar(),
+        bottomNavigationBar: BottomAppBar(
+          child: Container(
+            decoration: BoxDecoration(
+                color: MyColors.mainColor,
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.black,
+                      blurRadius: 5
+                  )
+                ]
+            ),
+            height: 60,
+            child: Padding(
+              padding: EdgeInsets.only(right: 15),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                      icon: Icon(Icons.arrow_back, color: Colors.black),
+                      onPressed: () => Navigator.pop(context)
+                  ),
+                  MainRowText('Категории расхода'),
+                ],
+              ),
+            ),
+          ),
+        ),
+        //appBar: buildAppBar(),
         body: buildBody(),
       ),
     );

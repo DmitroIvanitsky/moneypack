@@ -4,7 +4,7 @@ import 'package:flutter_tutorial/setting/MainRowText.dart';
 import 'package:flutter_tutorial/setting/MyColors.dart';
 
 class Calculator extends StatefulWidget {
-  final Function updateSum;
+  final Function (double) updateSum;
   final double result;
 
 
@@ -49,8 +49,8 @@ class _CalculatorState extends State<Calculator> {
                    iconSize: 35,
                    icon: Icon(Icons.done, color: MyColors.textColor),
                    onPressed: (){
-                     Navigator.pop(context);
                      widget.updateSum(_currentValue);
+                     Navigator.pop(context);
                    },
                  )
                ],
