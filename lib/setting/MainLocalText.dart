@@ -5,7 +5,7 @@ class MainLocalText extends StatelessWidget{
   final String text;
   final TextAlign align;
 
-  MainLocalText(this.text, [this.align]);
+  MainLocalText({this.text, this.align});
 
   @override
   Widget build(BuildContext context) {

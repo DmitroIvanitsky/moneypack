@@ -150,14 +150,14 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          MainLocalText('Баланс'),
+                          MainLocalText(text: 'Баланс'),
                           SecondaryText(text: balance.toString()),
                         ],
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          MainLocalText('Общий остаток'),
+                          MainLocalText(text: 'Общий остаток'),
                           SecondaryText(text: remain.toString()),
                         ],
                       ),
@@ -188,7 +188,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                         width: 200,
 
                         child: FlatButton(
-                          child: MainLocalText('Добавить доход'),
+                          child: MainLocalText(text: 'Добавить доход'),
                           onPressed: () =>
                               Navigator.push(context,
                                 MaterialPageRoute(builder: (context) => AddIncome(callback: updateMainPage)),
@@ -213,7 +213,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                         width: 200,
                         
                         child: FlatButton(
-                          child: MainLocalText('Добавить расход'),
+                          child: MainLocalText(text: 'Добавить расход'),
                           onPressed: () =>
                             Navigator.push(context,
                               MaterialPageRoute(builder: (context) => AddExpenses(callBack: updateMainPage)),
@@ -253,7 +253,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                   //     onPressed: () {
                   //       scaffoldKey.currentState.openDrawer();
                   // }),
-                  MainLocalText('Учёт'),
+                  MainLocalText(text: 'Учёт'),
                   buildDropdownButton(),
                 ],
             ),
@@ -375,15 +375,15 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
           children: [
             Padding(
               padding: EdgeInsets.only(top: 25),
-              child: MainRowText('Настройки'),
+              child: MainRowText(text: 'Настройки'),
             ),
             Padding(
               padding: EdgeInsets.only(top: 25),
-              child: MainRowText('Тема'),
+              child: MainRowText(text: 'Тема'),
             ),
             Padding(
               padding: EdgeInsets.only(top: 25),
-              child: MainRowText('Язык'),
+              child: MainRowText(text: 'Язык'),
             ),
           ],
         ),
@@ -397,7 +397,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          MainLocalText('Учёт'),
+          MainLocalText(text: 'Учёт'),
           buildDropdownButton(),
         ],
       ),
@@ -408,12 +408,12 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
 
   Widget buildDropdownButton() {
     return DropdownButton(
-        hint: MainLocalText(selectedMode),
+        hint: MainLocalText(text: selectedMode),
         items: [
-          DropdownMenuItem(value: 'День', child: MainLocalText('День')),
-          DropdownMenuItem(value: 'Неделя', child: MainLocalText('Неделя')),
-          DropdownMenuItem(value: 'Месяц', child: MainLocalText('Месяц')),
-          DropdownMenuItem(value: 'Год', child: MainLocalText('Год')),
+          DropdownMenuItem(value: 'День', child: MainLocalText(text: 'День')),
+          DropdownMenuItem(value: 'Неделя', child: MainLocalText(text: 'Неделя')),
+          DropdownMenuItem(value: 'Месяц', child: MainLocalText(text: 'Месяц')),
+          DropdownMenuItem(value: 'Год', child: MainLocalText(text: 'Год')),
         ],
         onChanged: (String newValue) {
           if (selectedMode != 'Неделя' && newValue == 'Неделя') {

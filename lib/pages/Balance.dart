@@ -18,7 +18,7 @@ class ShowBalance extends StatelessWidget{
     return AppBar(
         iconTheme: IconThemeData(color: MyColors.textColor),
         backgroundColor: MyColors.mainColor,
-        title: MainRowText('Баланс'),
+        title: MainRowText(text: 'Баланс'),
       );
   }
 }

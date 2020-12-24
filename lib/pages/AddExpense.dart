@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tutorial/Utility/appLocalizations.dart';
-import 'package:flutter_tutorial/setting/MainLocalText.dart';
-import 'package:flutter_tutorial/setting/SecondaryText.dart';
-import 'package:flutter_tutorial/widgets/rowWithButton.dart';
+import '../Utility/appLocalizations.dart';
+import '../setting/MainLocalText.dart';
+import '../setting/SecondaryLocalText.dart';
+import '../widgets/rowWithButton.dart';
+import '../widgets/rowWithWidgets.dart';
 import '../setting/DateFormatText.dart';
 import '../Objects/ExpenseNote.dart';
 import '../Utility/Storage.dart';
@@ -27,17 +28,28 @@ class _AddExpensesState extends State<AddExpenses> {
   String comment;
   List lastCategories = [];
   TextEditingController calcController = TextEditingController();
+  FocusNode sumFocusNode;
+  FocusNode commentFocusNode;
 
   @override
   void initState() {
+    sumFocusNode = FocusNode();
+    commentFocusNode = FocusNode();
     initList();
     super.initState();
+  }
+
+  void dispose() {
+    calcController.dispose();
+    sumFocusNode.dispose();
+    commentFocusNode.dispose();
+    super.dispose();
   }
 
   initList() async{
     lastCategories = await Storage.getExpenseCategories();
     lastCategories == null || lastCategories.isEmpty ?
-      category = 'Выбирите категорию'
+      category = AppLocalizations.of(context).translate('Выбирите категорию')
         : category = lastCategories.last;
     setState(() {});
   }
@@ -69,18 +81,18 @@ class _AddExpensesState extends State<AddExpenses> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                SizedBox(height: 15),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    getDateWidget(),
-                    Icon(Icons.arrow_drop_down, color: MyColors.textColor)
-                  ],
+                SizedBox(height: 35),
+                RowWithWidgets(
+                    leftWidget: MainLocalText(text: 'Дата'),
+                    rightWidget: (date != null)? DateFormatText(dateTime: date, mode: 'Дата в строке')
+                        : SecondaryLocalText(text: 'Выбирите дату'),
+                    onTap: onDateTap
                 ),
                 Divider(color: MyColors.backGroundColor),
                 Container(
                   decoration: BoxDecoration(
                     color: MyColors.backGroundColor,
+                    borderRadius: BorderRadius.circular(5),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.grey,
@@ -91,11 +103,11 @@ class _AddExpensesState extends State<AddExpenses> {
                   child: Column(
                     children: [
                       SizedBox(
-                        height: 15,
+                        height: 10,
                       ),
                       RowWithButton(
                         leftText: 'Категория',
-                        rightText: AppLocalizations.of(context).translate(category),
+                        rightText: category,
                         onTap: () =>
                             Navigator.push(context,
                               MaterialPageRoute(builder: (context) => ListOfExpensesCategories(callback: updateCategory, cat: category)),
@@ -111,23 +123,53 @@ class _AddExpensesState extends State<AddExpenses> {
                     ],
                   ),
                 ),
+                SizedBox(height: 20),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
-                      child: Container(
-                        height: 75,
-                        child: TextFormField(
-                          keyboardType: TextInputType.number,
-                          controller: calcController,
-                          decoration: const InputDecoration(
-                            hintText: ('Введите сумму'),
-                          ),
-                          onChanged: (v) => sum = double.parse(v),
+                     Container(
+                       height: 60,
+                       decoration: BoxDecoration(
+                           border: Border.all(
+                             color: Colors.grey,
+                           ),
+                           borderRadius: BorderRadius.all(Radius.circular(5))
+                       ),
+                       child: Row(
+                         children: [
+                           GestureDetector(
+                             onTap: () => sumFocusNode.requestFocus(),
+                             child: Container(
+                               width: MediaQuery.of(context).size.width - 100,
+                               child:  TextFormField(
+                                 focusNode: sumFocusNode,
+                                 keyboardType: TextInputType.number,
+                                 controller: calcController,
+                                 decoration: InputDecoration(
+                                     hintText: '   Введите сумму',
+                                     border: sumFocusNode.hasFocus
+                                         ? OutlineInputBorder(
+                                         borderRadius: BorderRadius.all(Radius.circular(5)),
+                                         borderSide: BorderSide(color: Colors.blue)
+                                     ) : InputBorder.none
+                                 ),
+                                 onChanged: (v) => sum = double.parse(v),
+                               ),
+                             ),
+                           ),
+                         ],
                         ),
-                      ),
-                    ),
+                     ),
+
                     Container(
-                      height: 100,
+                      height: 60,
+                      width: 60,
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.grey,
+                          ),
+                          borderRadius: BorderRadius.all(Radius.circular(5))
+                      ),
                       child: IconButton(
                           icon: Icon(
                               Icons.calculate_outlined,
@@ -139,14 +181,23 @@ class _AddExpensesState extends State<AddExpenses> {
                     ),
                   ],
                 ),
-                Container(
-                  height: 75,
-                  child: TextFormField(
-                    decoration: const InputDecoration(
-                      hintText: 'Введите коментарий',
-                    ),
-                    onChanged: (v) => comment = v,
+                SizedBox(height: 20),
+                TextFormField(
+                  focusNode: commentFocusNode,
+                  maxLines: 3,
+                  decoration: InputDecoration(
+                    hintText: 'Введите коментарий',
+                    fillColor: Colors.white,
+                    border: commentFocusNode.hasFocus
+                        ? OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                        borderSide: BorderSide(color: Colors.blue)
+                    ) : OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                        borderSide: BorderSide(color: Colors.grey)
+                    )
                   ),
+                  onChanged: (v) => comment = v,
                 ),
               ],
             ),
@@ -176,7 +227,7 @@ class _AddExpensesState extends State<AddExpenses> {
                   icon: Icon(Icons.arrow_back, color: Colors.black),
                   onPressed: () => Navigator.pop(context)
                 ),
-                MainLocalText('Добавить расход'),
+                MainLocalText(text: 'Добавить расход'),
                 IconButton(
                   iconSize: 35,
                   icon: Icon(Icons.done, color: MyColors.textColor),
@@ -235,7 +286,7 @@ class _AddExpensesState extends State<AddExpenses> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          MainRowText('Добавить расход'),
+          MainRowText(text: 'Добавить расход'),
           IconButton(
             iconSize: 35,
             icon: Icon(Icons.done, color: MyColors.textColor),
@@ -273,14 +324,6 @@ class _AddExpensesState extends State<AddExpenses> {
               return Calculator(updateSum: updateSum, result: sum);
             }
         )
-    );
-  }
-
-  Widget getDateWidget(){
-    return FlatButton(
-      onPressed: onDateTap,
-      child: (date != null)? DateFormatText(dateTime: date, mode: 'Дата в строке')
-          : SecondaryText(text: 'Выберите дату'),
     );
   }
 

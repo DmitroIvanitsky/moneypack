@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_tutorial/Utility/Storage.dart';
-import 'package:flutter_tutorial/setting/MyColors.dart';
-import 'package:flutter_tutorial/setting/MainRowText.dart';
+import '../Utility/Storage.dart';
+import '../setting/MainLocalText.dart';
+import '../setting/MyColors.dart';
+import '../setting/MainRowText.dart';
 
 class ListOfIncomesCategories extends StatefulWidget{
   final Function callback;
@@ -35,7 +36,34 @@ class _ListOfIncomesCategoriesState extends State<ListOfIncomesCategories> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: MyColors.backGroundColor,
-        appBar: buildAppBar(),
+        bottomNavigationBar: BottomAppBar(
+          child: Container(
+            decoration: BoxDecoration(
+                color: MyColors.mainColor,
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.black,
+                      blurRadius: 5
+                  )
+                ]
+            ),
+            height: 60,
+            child: Padding(
+              padding: EdgeInsets.only(right: 15),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                      icon: Icon(Icons.arrow_back, color: Colors.black),
+                      onPressed: () => Navigator.pop(context)
+                  ),
+                  MainLocalText(text: 'Категории дохода'),
+                ],
+              ),
+            ),
+          ),
+        ),
+        //appBar: buildAppBar(),
         body: buildBody(),
       ),
     );
@@ -47,7 +75,7 @@ class _ListOfIncomesCategoriesState extends State<ListOfIncomesCategories> {
       iconTheme: IconThemeData(
           color: MyColors.textColor
       ),
-      title: MainRowText('Категории дохода'),
+      title: MainRowText(text: 'Категории дохода'),
     );
   }
 
@@ -55,7 +83,8 @@ class _ListOfIncomesCategoriesState extends State<ListOfIncomesCategories> {
     return Column(
       children: [
         Expanded(
-          child: list.isEmpty ? MainRowText('Добавьте категорию') :
+          child: list.isEmpty ?
+          Center(child: MainLocalText(text: 'Добавьте категорию')) :
           ListView.builder(
             itemCount: list.length,
             itemBuilder: (context, index){
@@ -68,7 +97,7 @@ class _ListOfIncomesCategoriesState extends State<ListOfIncomesCategories> {
                       children: [
                         FlatButton(
                           height: 50,
-                          child: MainRowText(list[index]),
+                          child: MainRowText(text: list[index]),
                           onPressed: (){
                             widget.callback(list[index]);
                             Navigator.pop(context);

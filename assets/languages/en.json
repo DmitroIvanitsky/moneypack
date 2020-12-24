@@ -32,6 +32,14 @@
   "Год" : "Year",
   "Категория" : "Category",
   "Выбирите категорию" : "Choose category",
+  "Выбирите дату" : "Choose date",
   "Период" : "Период",
-  "Дата" : "Date"
+  "Дата" : "Date",
+  "Категории расхода" : "Expense categories",
+  "Категории дохода" : "Income categories",
+  "Добавьте категорию" : "Add category",
+  "Расходов нет" : "No expenses",
+  "Доходов нет" : "No incomes",
+  "Calculator" : "Calculator",
+  "Редактирование" : "Edit"
 }

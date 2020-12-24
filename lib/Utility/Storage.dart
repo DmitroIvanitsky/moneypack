@@ -1,13 +1,10 @@
 import 'dart:convert';
 
-import 'package:flutter_tutorial/Objects/IncomeNote.dart';
-import 'package:flutter_tutorial/Objects/ListOfExpenses.dart';
-import 'package:flutter_tutorial/Objects/ListOfIncomes.dart';
+import '../Objects/IncomeNote.dart';
+import '../Objects/ListOfExpenses.dart';
+import '../Objects/ListOfIncomes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_tutorial/Objects/ExpenseNote.dart';
-import 'package:flutter_tutorial/Objects/ListOfExpenses.dart';
-import 'package:flutter_tutorial/Utility/Storage.dart';
-import 'package:flutter_tutorial/pages/ListOfExpensesCategories.dart';
+import '../Objects/ExpenseNote.dart';
 
 class Storage{
 

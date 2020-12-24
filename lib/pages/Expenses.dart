@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import '../setting/MainLocalText.dart';
 import '../setting/DateFormatText.dart';
 import '../setting/ThirdText.dart';
 import '../pages/EditPageForExpenseCategory.dart';
@@ -8,7 +9,6 @@ import '../Objects/ListOfExpenses.dart';
 import '../Utility/Storage.dart';
 import '../setting/MyColors.dart';
 import '../setting/MainRowText.dart';
-import '../setting/SecondaryText.dart';
 
 class Expenses extends StatefulWidget{
   final Function updateMainPage;
@@ -48,7 +48,8 @@ class _ExpensesState extends State<Expenses> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: MyColors.backGroundColor,
-        appBar: buildAppBar(),
+        bottomNavigationBar: buildBottomAppBar(),
+        //appBar: buildAppBar(),
         body: buildBody(),
       ),
     );
@@ -63,8 +64,8 @@ class _ExpensesState extends State<Expenses> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          MainRowText('Расход'),
-          _buildDropdownButton()
+          MainRowText(text: 'Расход'),
+          buildDropdownButton()
         ],
       ), // dropdown menu button
     );
@@ -76,11 +77,9 @@ class _ExpensesState extends State<Expenses> {
     return Column(
       children: [
         _getData(),
+        Divider(),
         categoriesList.isEmpty ?
-        Align(
-          child: MainRowText('Расходов нет'),
-          alignment: Alignment.center,
-        ) :
+        Expanded(child: Center(child: MainLocalText(text: 'Расходов нет'))) :
         Expanded(
           child: ListView.builder(
             itemCount: categoriesList.length,
@@ -94,8 +93,8 @@ class _ExpensesState extends State<Expenses> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      MainRowText(singleCategory.category),
-                      MainRowText('${singleCategory.sum}'),
+                      MainRowText(text: singleCategory.category),
+                      MainRowText(text: '${singleCategory.sum}'),
                     ],
                   ),
                 ),
@@ -111,8 +110,39 @@ class _ExpensesState extends State<Expenses> {
               );
             }
           ),
-        )
+        ),
       ],
+    );
+  }
+
+  buildBottomAppBar() {
+    return BottomAppBar(
+      child: Container(
+        decoration: BoxDecoration(
+            color: MyColors.mainColor,
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.black,
+                  blurRadius: 5
+              )
+            ]
+        ),
+        height: 60,
+        child: Padding(
+          padding: EdgeInsets.only(right: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                  icon: Icon(Icons.arrow_back, color: Colors.black),
+                  onPressed: () => Navigator.pop(context)
+              ),
+              MainLocalText(text: 'Расход'),
+              buildDropdownButton(),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -186,11 +216,11 @@ class _ExpensesState extends State<Expenses> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: boolComment(middleList, index),
+                    child: boolComment(middleList[index]),
                   ),
                   Row(
                     children: [
-                      MainRowText('${middleList[index].sum}'),
+                      MainRowText(text: '${middleList[index].sum}'),
                       IconButton(
                         icon: Icon(Icons.edit),
                         color: MyColors.textColor,
@@ -221,16 +251,16 @@ class _ExpensesState extends State<Expenses> {
     );
   }
 
-  boolComment(middleList, index) {
-    if (middleList[index].comment == '' || middleList[index].comment == null){
-      return DateFormatText(dateTime: date, mode: 'Дата в строке');
+  boolComment(ExpenseNote note) {
+    if (note.comment == '' || note.comment == null){
+      return DateFormatText(dateTime: note.date, mode: 'Дата в строке');
     }
     else{
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          DateFormatText(dateTime: date, mode: 'Дата в строке'),
-          comment(middleList, index),
+          DateFormatText(dateTime: note.date, mode: 'Дата в строке'),
+          comment(note),
         ],
       );
     }
@@ -248,41 +278,42 @@ class _ExpensesState extends State<Expenses> {
     );
   }
 
-  comment(List middleList, int index) {
-      if (middleList[index].comment == null)
+  comment(ExpenseNote note) {
+      if (note.comment == null)
         return ThirdText('');
       else
         return SingleChildScrollView(
           scrollDirection: Axis.horizontal,
-          child: ThirdText(middleList[index].comment)
+          child: ThirdText(note.comment)
         );
   }
 
   // dropdown menu button
-  _buildDropdownButton() {
-        return DropdownButton(
-            hint: MainRowText(selectedMode),
-            items: [
-              DropdownMenuItem(value: 'День', child: MainRowText('День')),
-              DropdownMenuItem(value: 'Неделя', child: MainRowText('Неделя')),
-              DropdownMenuItem(value: 'Месяц', child: MainRowText('Месяц')),
-              DropdownMenuItem(value: 'Год', child: MainRowText('Год')),
-            ],
-            onChanged: (String newValue) {
-              if (selectedMode != 'Неделя' && newValue == 'Неделя') {
-                date = date.subtract(Duration(days: date.weekday + 1)).add(Duration(days: 7));
-              }
+  Widget buildDropdownButton() {
+    return DropdownButton(
+        hint: MainLocalText(text: selectedMode),
+        items: [
+          DropdownMenuItem(value: 'День', child: MainLocalText(text: 'День')),
+          DropdownMenuItem(value: 'Неделя', child: MainLocalText(text: 'Неделя')),
+          DropdownMenuItem(value: 'Месяц', child: MainLocalText(text: 'Месяц')),
+          DropdownMenuItem(value: 'Год', child: MainLocalText(text: 'Год')),
+        ],
+        onChanged: (String newValue) {
+          if (selectedMode != 'Неделя' && newValue == 'Неделя') {
+            date = date.subtract(Duration(days: date.weekday + 1)).add(Duration(days: 7));
+          }
 
-              if (selectedMode == 'Неделя' && newValue != 'Неделя') {
-                date = DateTime.now();
-              }
+          if (selectedMode == 'Неделя' && newValue != 'Неделя') {
+            date = DateTime.now();
+          }
 
-              setState(() {
-                selectedMode = newValue;
-              });
-            }
-        );
-      }
+          setState(() {
+            selectedMode = newValue;
+          });
+          updateExpensesPage();
+        }
+    );
+  }
 
   // date filter function for list of expenses
   _isInFilter(DateTime d){

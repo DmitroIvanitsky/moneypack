@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../setting/MainLocalText.dart';
 import '../Utility/Storage.dart';
 import '../setting/MyColors.dart';
 import '../setting/MainRowText.dart';
@@ -61,7 +62,7 @@ class _ListOfExpensesCategoriesState extends State<ListOfExpensesCategories> {
                       icon: Icon(Icons.arrow_back, color: Colors.black),
                       onPressed: () => Navigator.pop(context)
                   ),
-                  MainRowText('Категории расхода'),
+                  MainLocalText(text: 'Категории расхода'),
                 ],
               ),
             ),
@@ -79,7 +80,7 @@ class _ListOfExpensesCategoriesState extends State<ListOfExpensesCategories> {
       iconTheme: IconThemeData(
           color: MyColors.textColor
       ),
-      title: MainRowText('Категории расхода'),
+      title: MainRowText(text: 'Категории расхода'),
     );
   }
 
@@ -88,7 +89,7 @@ class _ListOfExpensesCategoriesState extends State<ListOfExpensesCategories> {
         children: [
           Expanded(
             child: list.isEmpty ?
-            MainRowText('Добавьте категорию') :
+            Center(child: MainLocalText(text: 'Добавьте категорию')) :
             ListView.builder(
               itemCount: list.length,
               itemBuilder: (context, index){
@@ -101,7 +102,7 @@ class _ListOfExpensesCategoriesState extends State<ListOfExpensesCategories> {
                           padding: EdgeInsets.only(left: 10),
                           child: FlatButton(
                             height: 50,
-                            child: MainRowText(list[index], TextAlign.left),
+                            child: MainRowText(text: list[index], align: TextAlign.left),
                             onPressed: (){
                               widget.callback(list[index]);
                               Navigator.pop(context);

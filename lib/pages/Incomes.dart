@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import '../setting/MainLocalText.dart';
 import '../setting/DateFormatText.dart';
-import '../setting/SecondaryText.dart';
 import '../setting/ThirdText.dart';
 import '../pages/EditPageForIncomeCategory.dart';
 import '../Objects/IncomeNote.dart';
@@ -48,8 +48,40 @@ class _IncomesState extends State<Incomes> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: MyColors.backGroundColor,
-        appBar: buildAppBar(),
+        bottomNavigationBar: buildBottomAppBar(),
+        //appBar: buildAppBar(),
         body: buildBody(),
+      ),
+    );
+  }
+
+  buildBottomAppBar() {
+    return BottomAppBar(
+      child: Container(
+        decoration: BoxDecoration(
+            color: MyColors.mainColor,
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.black,
+                  blurRadius: 5
+              )
+            ]
+        ),
+        height: 60,
+        child: Padding(
+          padding: EdgeInsets.only(right: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                  icon: Icon(Icons.arrow_back, color: Colors.black),
+                  onPressed: () => Navigator.pop(context)
+              ),
+              MainLocalText(text: 'Доход'),
+              buildDropdownButton(),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -63,7 +95,7 @@ class _IncomesState extends State<Incomes> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          MainRowText('Доход'),
+          MainRowText(text: 'Доход'),
           buildDropdownButton(),
         ],
       ),
@@ -76,11 +108,9 @@ class _IncomesState extends State<Incomes> {
     return Column(
       children: [
         _getData(),
+        Divider(),
         categoriesList.isEmpty ?
-        Align(
-          child: MainRowText('Доходов нет'),
-          alignment: Alignment.center,
-        ) :
+        Expanded(child: Center(child: MainLocalText(text: 'Доходов нет'))) :
         Expanded(
           child: ListView.builder(
             itemCount: categoriesList.length,
@@ -98,8 +128,8 @@ class _IncomesState extends State<Incomes> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              MainRowText(categoriesList[index].category),
-                              MainRowText('${categoriesList[index].sum}'),
+                              MainRowText(text: categoriesList[index].category),
+                              MainRowText(text: '${categoriesList[index].sum}'),
                             ],
                           ),
                         ),
@@ -183,10 +213,10 @@ class _IncomesState extends State<Incomes> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  boolComment(middleList, index),
+                  boolComment(middleList[index]),
                   Row(
                     children: [
-                      MainRowText("${middleList[index].sum}"),
+                      MainRowText(text: "${middleList[index].sum}"),
                       IconButton(
                         icon: Icon(Icons.edit),
                         color: MyColors.textColor,
@@ -217,16 +247,16 @@ class _IncomesState extends State<Incomes> {
     );
   }
 
-  boolComment(middleList, index) {
-    if (middleList[index].comment == '' || middleList[index].comment == null){
-      return DateFormatText(dateTime: date, mode: 'Дата в строке');
+  boolComment(IncomeNote note) {
+    if (note.comment == '' || note.comment == null){
+      return DateFormatText(dateTime: note.date, mode: 'Дата в строке');
     }
     else{
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          DateFormatText(dateTime: date, mode: 'Дата в строке'),
-          comment(middleList, index),
+          DateFormatText(dateTime: note.date, mode: 'Дата в строке'),
+          comment(note),
         ],
       );
     }
@@ -243,21 +273,21 @@ class _IncomesState extends State<Incomes> {
     );
   }
 
-  comment(middleList, index){
-    if (middleList[index].comment == null)
+  comment(IncomeNote note){
+    if (note.comment == null)
       return ThirdText('');
     else
-      return ThirdText(middleList[index].comment);
+      return ThirdText(note.comment);
   }
 
-  buildDropdownButton() {
+  Widget buildDropdownButton() {
     return DropdownButton(
-        hint: MainRowText(selectedMode),
+        hint: MainLocalText(text: selectedMode),
         items: [
-          DropdownMenuItem(value: 'День', child: MainRowText('День')),
-          DropdownMenuItem(value: 'Неделя', child: MainRowText('Неделя')),
-          DropdownMenuItem(value: 'Месяц', child: MainRowText('Месяц')),
-          DropdownMenuItem(value: 'Год', child: MainRowText('Год')),
+          DropdownMenuItem(value: 'День', child: MainLocalText(text: 'День')),
+          DropdownMenuItem(value: 'Неделя', child: MainLocalText(text: 'Неделя')),
+          DropdownMenuItem(value: 'Месяц', child: MainLocalText(text: 'Месяц')),
+          DropdownMenuItem(value: 'Год', child: MainLocalText(text: 'Год')),
         ],
         onChanged: (String newValue) {
           if (selectedMode != 'Неделя' && newValue == 'Неделя') {
@@ -271,6 +301,7 @@ class _IncomesState extends State<Incomes> {
           setState(() {
             selectedMode = newValue;
           });
+          updateIncomesPage();
         }
     );
   }

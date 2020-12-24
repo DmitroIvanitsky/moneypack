@@ -4,7 +4,7 @@ class MainRowText extends StatelessWidget{
   final String text;
   final TextAlign align;
 
-  MainRowText(this.text, [this.align]);
+  MainRowText({this.text, this.align});
 
   @override
   Widget build(BuildContext context) {

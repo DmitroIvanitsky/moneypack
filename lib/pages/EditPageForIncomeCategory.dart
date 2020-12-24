@@ -1,6 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_tutorial/pages/Calculator.dart';
+import '../pages/Calculator.dart';
+import '../setting/DateFormatText.dart';
+import '../setting/MainLocalText.dart';
+import '../setting/SecondaryLocalText.dart';
+import '../widgets/rowWithButton.dart';
+import '../widgets/rowWithWidgets.dart';
 import '../Objects/IncomeNote.dart';
 import '../Objects/ListOfIncomes.dart';
 import '../Utility/Storage.dart';
@@ -48,9 +53,48 @@ class _EditPageForIncomeCategoryState extends State<EditPageForIncomeCategory> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: MyColors.backGroundColor,
-        appBar: buildAppBar(),
+        bottomNavigationBar: buildBottomAppBar(),
+        //appBar: buildAppBar(),
         body: buildBody()
       ),
+    );
+  }
+
+  Widget buildBottomAppBar() {
+    return BottomAppBar(
+      child: Container(
+        height: 60,
+        decoration: BoxDecoration(
+            color: MyColors.mainColor,
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.black,
+                  blurRadius: 5
+              )
+            ]
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            IconButton(
+                icon: Icon(Icons.arrow_back, color: Colors.black),
+                onPressed: () => Navigator.pop(context)
+            ),
+            MainLocalText(text: "Редактирование"),
+            IconButton(
+                iconSize: 35,
+                icon: Icon(Icons.done, color: MyColors.textColor),
+                onPressed: (){
+                  updateListOfIncomes();
+                  widget.updateIncomePage();
+                  widget.updateMainPage();
+                  Navigator.pop(context);
+                }
+            ),
+          ],
+        ),
+      ),
+
     );
   }
 
@@ -63,12 +107,12 @@ class _EditPageForIncomeCategoryState extends State<EditPageForIncomeCategory> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          MainRowText("Редактирование"),
+          MainRowText(text: "Редактирование"),
           IconButton(
             iconSize: 35,
             icon: Icon(Icons.done, color: MyColors.textColor),
             onPressed: (){
-              updateListOfIncome();
+              updateListOfIncomes();
               widget.updateIncomePage();
               widget.updateMainPage();
               Navigator.pop(context);
@@ -87,21 +131,24 @@ class _EditPageForIncomeCategoryState extends State<EditPageForIncomeCategory> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 10),
-              // date widget row
-              getDateWidget(currentNote.date),
-              Divider(),
-              // category row
-              FlatButton(
-                child: Row(
-                  children: [
-                    MainRowText(currentNote.category),
-                    Icon(Icons.arrow_drop_down, color: MyColors.textColor)
-                  ],
-                ),
-                onPressed: () => onCategoryTap(context),
+              SizedBox(height: 35),
+              RowWithWidgets(
+                  leftWidget: MainLocalText(text: 'Дата'),
+                  rightWidget: (currentNote.date != null)?
+                  DateFormatText(
+                      dateTime: currentNote.date,
+                      mode: 'Дата в строке'
+                  )
+                      : SecondaryLocalText(text: 'Выбирите дату'),
+                  onTap: onDateTap
               ),
-              Divider(),
+              SizedBox(height: 30),
+              RowWithButton(
+                leftText: 'Категория',
+                rightText: currentNote.category,
+                onTap: () => onCategoryTap(context),
+              ),
+              SizedBox(height: 30),
               Container(
                 height: 100,
                 child: IconButton(
@@ -158,7 +205,7 @@ class _EditPageForIncomeCategoryState extends State<EditPageForIncomeCategory> {
     );
   }
 
-  updateListOfIncome() async{
+  updateListOfIncomes() async{
     int index = ListOfIncomes.list.indexOf(widget.note);
     ListOfIncomes.list[index] = currentNote;
     await Storage.saveString(jsonEncode(ListOfIncomes().toJson()), 'IncomeNote');
@@ -179,9 +226,9 @@ class _EditPageForIncomeCategoryState extends State<EditPageForIncomeCategory> {
     return FlatButton(
       onPressed: onDateTap,
       child: (date != null)? MainRowText(
-        date.toString().substring(0, 10),
-        TextAlign.left,
-      ) : MainRowText('Выберите дату'),
+        text: date.toString().substring(0, 10),
+        align: TextAlign.left,
+      ) : MainRowText(text: 'Выберите дату'),
     );
   }
 

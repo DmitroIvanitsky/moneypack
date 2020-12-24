@@ -1,22 +1,21 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../setting/MainLocalText.dart';
 import '../setting/MyColors.dart';
-import '../setting/SecondaryText.dart';
 
-class RowWithButton extends StatelessWidget{
+
+class RowWithWidgets extends StatelessWidget{
   final Function onTap;
-  final String leftText;
-  final String rightText;
-  RowWithButton({this.leftText, this.rightText, this.onTap});
+  final Widget leftWidget;
+  final Widget rightWidget;
+  RowWithWidgets({this.leftWidget, this.rightWidget, this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return
       Container(
         decoration: BoxDecoration(
-          color: MyColors.rowColor,
-          borderRadius: BorderRadius.circular(5),
+            color: MyColors.rowColor,
+            borderRadius: BorderRadius.circular(5),
             boxShadow: [
               BoxShadow(
                   color: Colors.black,
@@ -39,19 +38,17 @@ class RowWithButton extends StatelessWidget{
                 height: 50,
                 width: 160,
                 child: FlatButton(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(child: MainLocalText(text: leftText)),
-                        Icon(Icons.arrow_drop_down, color: MyColors.textColor)
-                      ],
-                    ),
-                    onPressed: (){
-                      onTap();
-                    }
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      leftWidget,
+                      Icon(Icons.arrow_drop_down, color: MyColors.textColor)
+                    ],
+                  ),
+                  onPressed: () => onTap()
                 ),
               ),
-              SecondaryText(text: rightText.toString()),
+              rightWidget
             ],
           ),
         ),

@@ -97,7 +97,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
             icon: Icon(Icons.list),
           ),
           // SizS
-          MainRowText('Finance'),
+          MainRowText(text: 'Finance'),
           buildDropdownButton(),
         ],
       ),
@@ -198,12 +198,12 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
 
   buildDropdownButton() {
     return DropdownButton(
-        hint: MainRowText(selMode),
+        hint: MainRowText(text: selMode),
         items: [
-          DropdownMenuItem(value: 'Day', child: MainRowText('Day')),
-          DropdownMenuItem(value: 'Week', child: MainRowText('Week')),
-          DropdownMenuItem(value: 'Month', child: MainRowText('Month')),
-          DropdownMenuItem(value: 'Year', child: MainRowText('Year')),
+          DropdownMenuItem(value: 'Day', child: MainRowText(text: 'Day')),
+          DropdownMenuItem(value: 'Week', child: MainRowText(text: 'Week')),
+          DropdownMenuItem(value: 'Month', child: MainRowText(text: 'Month')),
+          DropdownMenuItem(value: 'Year', child: MainRowText(text: 'Year')),
         ],
         onChanged: (String newValue) {
           if (selMode == 'Day' && newValue != 'Day') {
@@ -244,10 +244,10 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                 //boxShadow: [BoxShadow(color: MyColors.mainColor, blurRadius: 10, spreadRadius: 1),],
                 borderRadius: BorderRadius.all(Radius.circular(25))),
             child: GestureDetector(
-                child: MainRowText(index, TextAlign.left),
+                child: MainRowText(text: index, align: TextAlign.left),
                 onTap: () => _goTo(context, index)),
           ),
-          MainRowText('$category', TextAlign.right),
+          MainRowText(text: '$category', align: TextAlign.right),
         ],
       ),
     );
@@ -332,7 +332,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
 
               },
             ),
-            MainRowText(date.toString().substring(0, 10)),
+            MainRowText(text: date.toString().substring(0, 10)),
             IconButton(
               icon: Icon(Icons.arrow_right),
               onPressed: () {
@@ -360,8 +360,8 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
             ),
             Row(
               children: [
-                MainRowText(lastWeekDay.subtract(Duration(days: 6)).toString().substring(0, 10) + ' - '),
-                MainRowText(lastWeekDay.toString().substring(0, 10)),
+                MainRowText(text: lastWeekDay.subtract(Duration(days: 6)).toString().substring(0, 10) + ' - '),
+                MainRowText(text: lastWeekDay.toString().substring(0, 10)),
               ],
             ),
             IconButton(
@@ -388,7 +388,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                 });
               },
             ),
-            MainRowText(date.month.toString()),
+            MainRowText(text: date.month.toString()),
             IconButton(
               icon: Icon(Icons.arrow_right),
               onPressed: () {
@@ -413,7 +413,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                 });
               },
             ),
-            MainRowText(date.year.toString()),
+            MainRowText(text: date.year.toString()),
             IconButton(
               icon: Icon(Icons.arrow_right),
               onPressed: () {
