@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tutorial/Utility/appLocalizations.dart';
+import 'package:flutter_tutorial/setting/MainLocalText.dart';
 import 'package:flutter_tutorial/setting/SecondaryText.dart';
 import 'package:flutter_tutorial/widgets/rowWithButton.dart';
 import '../setting/DateFormatText.dart';
@@ -35,7 +37,8 @@ class _AddExpensesState extends State<AddExpenses> {
   initList() async{
     lastCategories = await Storage.getExpenseCategories();
     lastCategories == null || lastCategories.isEmpty ?
-      category = 'Выбирите категорию' : category = lastCategories.last;
+      category = 'Выбирите категорию'
+        : category = lastCategories.last;
     setState(() {});
   }
 
@@ -57,47 +60,7 @@ class _AddExpensesState extends State<AddExpenses> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: MyColors.backGroundColor,
-          bottomNavigationBar: BottomAppBar(
-            child: Container(
-              decoration: BoxDecoration(
-                  color: MyColors.mainColor,
-                  boxShadow: [
-                    BoxShadow(
-                        color: Colors.black,
-                        blurRadius: 5
-                    )
-                  ]
-              ),
-              height: 60,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.arrow_back, color: Colors.black),
-                    onPressed: () => Navigator.pop(context)
-                  ),
-                  MainRowText('Добавить расход'),
-                  IconButton(
-                    iconSize: 35,
-                    icon: Icon(Icons.done, color: MyColors.textColor),
-                    onPressed: (){
-                      if (category == 'Выбирите категорию' || sum == null) return; // to not add empty sum note
-                      Storage.saveExpenseNote(
-                          ExpenseNote(
-                              date: date,
-                              category: category,
-                              sum: sum,
-                              comment: comment),
-                          category
-                      ); // function to create note object
-                      widget.callBack();
-                      Navigator.pop(context);
-                    },
-                  )
-                ],
-              ),
-            ),
-          ),
+          bottomNavigationBar: buildBottomAppBar(),
         //appBar: buildAppBar(),
         body: Padding(
           padding: EdgeInsets.only(left: 10, right: 10),
@@ -107,10 +70,13 @@ class _AddExpensesState extends State<AddExpenses> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 SizedBox(height: 15),
-                Row(children: [
-                  getDateWidget(),
-                  Icon(Icons.arrow_drop_down, color: MyColors.textColor)
-                ],),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    getDateWidget(),
+                    Icon(Icons.arrow_drop_down, color: MyColors.textColor)
+                  ],
+                ),
                 Divider(color: MyColors.backGroundColor),
                 Container(
                   decoration: BoxDecoration(
@@ -129,7 +95,7 @@ class _AddExpensesState extends State<AddExpenses> {
                       ),
                       RowWithButton(
                         leftText: 'Категория',
-                        rightText: category,
+                        rightText: AppLocalizations.of(context).translate(category),
                         onTap: () =>
                             Navigator.push(context,
                               MaterialPageRoute(builder: (context) => ListOfExpensesCategories(callback: updateCategory, cat: category)),
@@ -145,28 +111,33 @@ class _AddExpensesState extends State<AddExpenses> {
                     ],
                   ),
                 ),
-                Container(
-                  height: 100,
-                  child: IconButton(
-                      icon: Icon(
-                          Icons.calculate_outlined,
-                          color: MyColors.textColor,
-                          size: 40
+                Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        height: 75,
+                        child: TextFormField(
+                          keyboardType: TextInputType.number,
+                          controller: calcController,
+                          decoration: const InputDecoration(
+                            hintText: ('Введите сумму'),
+                          ),
+                          onChanged: (v) => sum = double.parse(v),
+                        ),
                       ),
-                      onPressed: () => goToCalculator(context)
-                  ),
-                ),
-                // sum row
-                Container(
-                  height: 75,
-                  child: TextFormField(
-                    keyboardType: TextInputType.number,
-                    controller: calcController,
-                    decoration: const InputDecoration(
-                      hintText: 'Введите сумму',
                     ),
-                    onChanged: (v) => sum = double.parse(v),
-                  ),
+                    Container(
+                      height: 100,
+                      child: IconButton(
+                          icon: Icon(
+                              Icons.calculate_outlined,
+                              color: MyColors.textColor,
+                              size: 40
+                          ),
+                          onPressed: () => goToCalculator(context)
+                      ),
+                    ),
+                  ],
                 ),
                 Container(
                   height: 75,
@@ -183,6 +154,50 @@ class _AddExpensesState extends State<AddExpenses> {
         )
       ),
     );
+  }
+
+  buildBottomAppBar() {
+    return BottomAppBar(
+          child: Container(
+            decoration: BoxDecoration(
+                color: MyColors.mainColor,
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.black,
+                      blurRadius: 5
+                  )
+                ]
+            ),
+            height: 60,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.arrow_back, color: Colors.black),
+                  onPressed: () => Navigator.pop(context)
+                ),
+                MainLocalText('Добавить расход'),
+                IconButton(
+                  iconSize: 35,
+                  icon: Icon(Icons.done, color: MyColors.textColor),
+                  onPressed: (){
+                    if (category == 'Выбирите категорию' || sum == null) return; // to not add empty sum note
+                    Storage.saveExpenseNote(
+                        ExpenseNote(
+                            date: date,
+                            category: category,
+                            sum: sum,
+                            comment: comment),
+                        category
+                    ); // function to create note object
+                    widget.callBack();
+                    Navigator.pop(context);
+                  },
+                )
+              ],
+            ),
+          ),
+        );
   }
 
   List<Widget> getLastCategories(){
@@ -265,7 +280,7 @@ class _AddExpensesState extends State<AddExpenses> {
     return FlatButton(
       onPressed: onDateTap,
       child: (date != null)? DateFormatText(dateTime: date, mode: 'Дата в строке')
-          : SecondaryText('Выберите дату'),
+          : SecondaryText(text: 'Выберите дату'),
     );
   }
 

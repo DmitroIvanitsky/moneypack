@@ -4,7 +4,7 @@ class SecondaryText extends StatelessWidget{
   final String text;
   final TextAlign align;
 
-  SecondaryText(this.text, [this.align]);
+  SecondaryText({this.text, this.align});
 
   @override
   Widget build(BuildContext context) {

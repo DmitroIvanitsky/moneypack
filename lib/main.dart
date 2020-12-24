@@ -10,7 +10,6 @@ import 'package:flutter_tutorial/pages/AddExpense.dart';
 import 'package:flutter_tutorial/pages/AddIncome.dart';
 import 'package:flutter_tutorial/pages/Expenses.dart';
 import 'package:flutter_tutorial/pages/Incomes.dart';
-import 'package:flutter_tutorial/pages/Balance.dart';
 import 'package:flutter_tutorial/setting/DateFormatText.dart';
 import 'package:flutter_tutorial/setting/MainLocalText.dart';
 import 'package:flutter_tutorial/setting/MyColors.dart';
@@ -49,6 +48,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
   double expense = 0;
   double balance = 0;
   double remain = 0;
+  GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -99,34 +99,12 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
 
     return SafeArea(
       child: Scaffold(
+        key: scaffoldKey,
         endDrawerEnableOpenDragGesture: true,
         resizeToAvoidBottomInset: false,
         backgroundColor: MyColors.backGroundColor,
         drawer: buildDrawer(),
-        bottomNavigationBar: BottomAppBar(
-          child: Container(
-            decoration: BoxDecoration(
-              color: MyColors.mainColor,
-              boxShadow: [
-                BoxShadow(
-                    color: Colors.black,
-                    blurRadius: 5
-                )
-              ]
-            ),
-            height: 60,
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(icon: Icon(Icons.menu, color: Colors.black),
-                      onPressed: () {
-                    Scaffold.of(context).openDrawer();
-                  }),
-                  buildDropdownButton(),
-                ],
-            ),
-          ),
-        ),
+        bottomNavigationBar: buildBottomAppBar(),
         //appBar: buildAppBar(),
         body: Container(
           height: MediaQuery.of(context).size.height,
@@ -173,14 +151,14 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           MainLocalText('Баланс'),
-                          SecondaryText(balance.toString(), TextAlign.right),
+                          SecondaryText(text: balance.toString()),
                         ],
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           MainLocalText('Общий остаток'),
-                          SecondaryText(remain.toString(), TextAlign.right),
+                          SecondaryText(text: remain.toString()),
                         ],
                       ),
                     ],
@@ -251,6 +229,37 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
         )
       )
     );
+  }
+
+  BottomAppBar buildBottomAppBar() {
+    return BottomAppBar(
+        child: Container(
+          decoration: BoxDecoration(
+            color: MyColors.mainColor,
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.black,
+                  blurRadius: 5
+              )
+            ]
+          ),
+          height: 60,
+          child: Padding(
+            padding: EdgeInsets.only(right: 10, left: 10),
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // IconButton(icon: Icon(Icons.menu, color: Colors.black),
+                  //     onPressed: () {
+                  //       scaffoldKey.currentState.openDrawer();
+                  // }),
+                  MainLocalText('Учёт'),
+                  buildDropdownButton(),
+                ],
+            ),
+          ),
+        ),
+      );
   }
 
   getDate(){
@@ -399,12 +408,12 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
 
   Widget buildDropdownButton() {
     return DropdownButton(
-        hint: MainRowText(selectedMode),
+        hint: MainLocalText(selectedMode),
         items: [
-          DropdownMenuItem(value: 'День', child: MainRowText('День')),
-          DropdownMenuItem(value: 'Неделя', child: MainRowText('Неделя')),
-          DropdownMenuItem(value: 'Месяц', child: MainRowText('Месяц')),
-          DropdownMenuItem(value: 'Год', child: MainRowText('Год')),
+          DropdownMenuItem(value: 'День', child: MainLocalText('День')),
+          DropdownMenuItem(value: 'Неделя', child: MainLocalText('Неделя')),
+          DropdownMenuItem(value: 'Месяц', child: MainLocalText('Месяц')),
+          DropdownMenuItem(value: 'Год', child: MainLocalText('Год')),
         ],
         onChanged: (String newValue) {
           if (selectedMode != 'Неделя' && newValue == 'Неделя') {

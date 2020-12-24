@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tutorial/setting/MainLocalText.dart';
 import 'package:flutter_tutorial/setting/MainRowText.dart';
 import 'package:flutter_tutorial/setting/MyColors.dart';
+import 'package:flutter_tutorial/setting/SecondaryLocalText.dart';
 import 'package:flutter_tutorial/setting/SecondaryText.dart';
 
 class RowWithButton extends StatelessWidget{
   final Function onTap;
-  String leftText;
-  String rightText;
+  final String leftText;
+  final String rightText;
   RowWithButton({this.leftText, this.rightText, this.onTap});
 
   @override
@@ -39,7 +40,6 @@ class RowWithButton extends StatelessWidget{
                 ),
                 height: 50,
                 width: 160,
-                
                 child: FlatButton(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -53,7 +53,7 @@ class RowWithButton extends StatelessWidget{
                     }
                 ),
               ),
-              SecondaryText(rightText.toString(), TextAlign.right),
+              SecondaryText(text: rightText.toString()),
             ],
           ),
         ),

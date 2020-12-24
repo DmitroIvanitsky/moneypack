@@ -41,7 +41,7 @@ class DateFormatText extends StatelessWidget {
         return MainRowText(dateTime.year.toString());
 
       case 'Дата в строке' :
-        return SecondaryText(
+        return SecondaryText(text:
             DateFormat.d().format(dateTime) +
                 ' ' + AppLocalizations.of(context).translate(DateFormat.MMMM().format(dateTime)) +
                 ' ' + DateFormat.y().format(dateTime)
