@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import '../Utility/appLocalizations.dart';
+import '../widgets/customSnackBar.dart';
 import '../setting/MainLocalText.dart';
 import '../setting/DateFormatText.dart';
 import '../setting/ThirdText.dart';
@@ -22,6 +24,7 @@ class Expenses extends StatefulWidget{
 class _ExpensesState extends State<Expenses> {
   DateTime date = DateTime.now();
   String selectedMode = 'День';
+  GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
 
   @override
   void initState() {
@@ -43,10 +46,22 @@ class _ExpensesState extends State<Expenses> {
     });
   }
 
+  void undoDelete(ExpenseNote note, int index) async {
+    if (index < ListOfExpenses.list.length)
+      ListOfExpenses.list.insert(index, note);
+    else
+      ListOfExpenses.list.add(note);
+
+    await Storage.saveString(jsonEncode(
+        new ListOfExpenses().toJson()), 'ExpenseNote');
+    updateExpensesPage();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        key: scaffoldKey,
         backgroundColor: MyColors.backGroundColor,
         bottomNavigationBar: buildBottomAppBar(),
         //appBar: buildAppBar(),
@@ -233,11 +248,20 @@ class _ExpensesState extends State<Expenses> {
                         icon: Icon(Icons.delete),
                         color: MyColors.textColor,
                         onPressed: () async {
+                          int indexInListOfExpenses = ListOfExpenses.list.indexOf(middleList[index]);
+                          CustomSnackBar.show(
+                            key: scaffoldKey,
+                            context: context,
+                            text: AppLocalizations.of(context).translate('Заметка удалена'),
+                            callBack: () {
+                              undoDelete(middleList[index], indexInListOfExpenses);
+                            }
+                          );
                           ListOfExpenses.list.remove(middleList[index]);
                           await Storage.saveString(jsonEncode(
                             new ListOfExpenses().toJson()), 'ExpenseNote');
                           widget.updateMainPage();
-                          setState(() {});
+                          updateExpensesPage();
                         }
                       ),
                     ],

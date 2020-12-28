@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '../Utility/appLocalizations.dart';
+import '../widgets/customSnackBar.dart';
 import '../Utility/Storage.dart';
 import '../setting/MainLocalText.dart';
 import '../setting/MyColors.dart';
@@ -17,6 +19,12 @@ class ListOfIncomesCategories extends StatefulWidget{
 class _ListOfIncomesCategoriesState extends State<ListOfIncomesCategories> {
   List<String> list = [];
   String tempField = '';
+  GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
+
+  // createList () async {
+  //   list.add(AppLocalizations.of(context).translate('Зарплата'));
+  //   await Storage.saveList(list, "Incomes");
+  // }
 
   @override
   void initState() {
@@ -25,46 +33,70 @@ class _ListOfIncomesCategoriesState extends State<ListOfIncomesCategories> {
   }
 
   initList() async{
-    list = await Storage.getList('Income');
-    if(list == null) list = [];
+    list = await Storage.getList('Incomes');
+    if(list == null) {
+      list = [AppLocalizations.of(context).translate('Зарплата')];
+      await Storage.saveList(list, 'Incomes');
+    }
     list.sort();
     setState(() {});
+  }
+
+  void updateList(){
+    setState(() {
+      list.sort();
+    });
+  }
+
+  void undoDelete(String category, int index) async {
+    if (index < list.length)
+      list.insert(index, category);
+    else
+      list.add(category);
+
+    await Storage.saveList(list, "Incomes");
+    updateList();
   }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        key: scaffoldKey,
         backgroundColor: MyColors.backGroundColor,
-        bottomNavigationBar: BottomAppBar(
-          child: Container(
-            decoration: BoxDecoration(
-                color: MyColors.mainColor,
-                boxShadow: [
-                  BoxShadow(
-                      color: Colors.black,
-                      blurRadius: 5
-                  )
-                ]
-            ),
-            height: 60,
-            child: Padding(
-              padding: EdgeInsets.only(right: 15),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                      icon: Icon(Icons.arrow_back, color: Colors.black),
-                      onPressed: () => Navigator.pop(context)
-                  ),
-                  MainLocalText(text: 'Категории дохода'),
-                ],
-              ),
-            ),
-          ),
-        ),
+        bottomNavigationBar: buildBottomAppBar(),
         //appBar: buildAppBar(),
         body: buildBody(),
+      ),
+    );
+  }
+
+  Widget buildBottomAppBar() {
+    return BottomAppBar(
+      child: Container(
+        decoration: BoxDecoration(
+          color: MyColors.mainColor,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black,
+              blurRadius: 5
+            )
+          ]
+        ),
+        height: 60,
+        child: Padding(
+          padding: EdgeInsets.only(right: 15),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                icon: Icon(Icons.arrow_back, color: Colors.black),
+                onPressed: () => Navigator.pop(context)
+              ),
+              MainLocalText(text: 'Категории дохода'),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -88,6 +120,7 @@ class _ListOfIncomesCategoriesState extends State<ListOfIncomesCategories> {
           ListView.builder(
             itemCount: list.length,
             itemBuilder: (context, index){
+              String category = list[index];
               return Padding(
                 padding: EdgeInsets.only(left: 10, right: 10),
                 child: Column(
@@ -97,9 +130,9 @@ class _ListOfIncomesCategoriesState extends State<ListOfIncomesCategories> {
                       children: [
                         FlatButton(
                           height: 50,
-                          child: MainRowText(text: list[index]),
+                          child: MainRowText(text: category),
                           onPressed: (){
-                            widget.callback(list[index]);
+                            widget.callback(category);
                             Navigator.pop(context);
                           },
                         ),
@@ -107,8 +140,16 @@ class _ListOfIncomesCategoriesState extends State<ListOfIncomesCategories> {
                           icon: Icon(Icons.delete),
                           color: MyColors.textColor,
                           onPressed: () async{
-                            list.removeAt(index);
-                            await Storage.saveList(list, 'Income');
+                            CustomSnackBar.show(
+                                key: scaffoldKey,
+                                context: context,
+                                text: AppLocalizations.of(context).translate('Удалена категория: ') + category,
+                                callBack: (){
+                                  undoDelete(category, index);
+                                }
+                            );
+                            list.remove(category);
+                            await Storage.saveList(list, 'Incomes');
                             setState(() {});
                           }
                         )
@@ -131,6 +172,14 @@ class _ListOfIncomesCategoriesState extends State<ListOfIncomesCategories> {
                   Expanded(
                     child: TextFormField(
                       controller: TextEditingController(),
+                      decoration: InputDecoration(
+                        hintText: AppLocalizations.of(context).translate('Добавьте новую категорию'),
+                        contentPadding: EdgeInsets.all(20.0),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(5)),
+                          borderSide: BorderSide(color: Colors.blue)
+                        ),
+                      ),
                       onChanged: (v) => tempField = v,
                     ),
                   ),
@@ -141,8 +190,8 @@ class _ListOfIncomesCategoriesState extends State<ListOfIncomesCategories> {
                       list.add(tempField);
                       tempField = '';
                       TextEditingController().clear();
-                      await Storage.saveList(list, "Income");
-                      setState(() {});
+                      await Storage.saveList(list, "Incomes");
+                      updateList();
                     },
                   )
                 ]

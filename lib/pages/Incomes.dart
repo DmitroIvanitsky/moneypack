@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_tutorial/Utility/appLocalizations.dart';
+import 'package:flutter_tutorial/widgets/customSnackBar.dart';
 import '../setting/MainLocalText.dart';
 import '../setting/DateFormatText.dart';
 import '../setting/ThirdText.dart';
@@ -22,6 +24,7 @@ class Incomes extends StatefulWidget{
 class _IncomesState extends State<Incomes> {
   DateTime date = DateTime.now();
   String selectedMode = 'День';
+  GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
 
   @override
   void initState(){
@@ -43,10 +46,22 @@ class _IncomesState extends State<Incomes> {
     });
   }
 
+  void undoDelete(IncomeNote note, int index) async {
+    if(index < ListOfIncomes.list.length)
+      ListOfIncomes.list.insert(index, note);
+    else
+      ListOfIncomes.list.add(note);
+
+    await Storage.saveString(jsonEncode(
+        new ListOfIncomes().toJson()), 'IncomeNote');
+    updateIncomesPage();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        key: scaffoldKey,
         backgroundColor: MyColors.backGroundColor,
         bottomNavigationBar: buildBottomAppBar(),
         //appBar: buildAppBar(),
@@ -229,6 +244,15 @@ class _IncomesState extends State<Incomes> {
                         icon: Icon(Icons.delete),
                         color: MyColors.textColor,
                         onPressed: () async {
+                          int indexInListOfIncomes = ListOfIncomes.list.indexOf(middleList[index]);
+                          CustomSnackBar.show(
+                            key: scaffoldKey,
+                            context: context,
+                            text: AppLocalizations.of(context).translate('Заметка удалена'),
+                            callBack: () {
+                              undoDelete(middleList[index], indexInListOfIncomes);
+                            }
+                          );
                           ListOfIncomes.list.remove(middleList[index]);
                           await Storage.saveString(jsonEncode(
                             new ListOfIncomes().toJson()), 'IncomeNote');

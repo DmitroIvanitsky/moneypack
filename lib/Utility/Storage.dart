@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import '../Objects/IncomeNote.dart';
 import '../Objects/ListOfExpenses.dart';
 import '../Objects/ListOfIncomes.dart';
@@ -34,7 +33,7 @@ class Storage{
       ListOfExpenses.list.add(expenseNote);
     }
     await Storage.saveString(jsonEncode(ListOfExpenses().toJson()), 'ExpenseNote');
-    saveExpenseCategory(category);
+    saveLastExpenseCategory(category);
     return true;
   }
 
@@ -43,11 +42,11 @@ class Storage{
       ListOfIncomes.list.add(incomeNote);
     }
     await Storage.saveString(jsonEncode(ListOfIncomes().toJson()), 'IncomeNote');
-    saveIncomeCategory(category);
+    saveLastIncomeCategory(category);
     return true;
   }
   
-  static saveExpenseCategory(String category) async {
+  static saveLastExpenseCategory(String category) async {
     List <String> expCategories = await getExpenseCategories();
     if (expCategories == null) expCategories = [];
     if (expCategories.contains(category)) return;
@@ -57,7 +56,7 @@ class Storage{
     await saveList(expCategories, 'expCategories');
   }
 
-  static saveIncomeCategory(String category) async {
+  static saveLastIncomeCategory(String category) async {
     List <String> incCategories = await getIncomeCategories();
     if (incCategories == null) incCategories = [];
     if (incCategories.contains(category)) return;
@@ -75,5 +74,21 @@ class Storage{
   static getIncomeCategories() async {
     List iL = await getList('incCategories');
     return iL;
+  }
+
+  static saveExpenseCategory(String category) async{
+    List <String> expCategories = await getList('Expenses');
+    if (!expCategories.contains(category)) {
+      expCategories.add(category);
+      await saveList(expCategories, 'Expenses');
+    }
+  }
+
+  static saveIncomeCategory(String category) async{
+    List <String> incCategories = await getList('Incomes');
+    if (!incCategories.contains(category)) {
+      incCategories.add(category);
+      await saveList(incCategories, 'Incomes');
+    }
   }
 }

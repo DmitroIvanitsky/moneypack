@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_calculator/flutter_simple_calculator.dart';
+import 'package:flutter_tutorial/Utility/appLocalizations.dart';
 import '../setting/MainLocalText.dart';
 import '../setting/MainRowText.dart';
 import '../setting/MyColors.dart';
@@ -39,54 +40,7 @@ class _CalculatorState extends State<Calculator> {
     return MaterialApp(
       home: SafeArea(
         child: Scaffold(
-          // appBar: AppBar(
-          //   backgroundColor: MyColors.mainColor,
-          //    title: Row(
-          //      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //      children: [
-          //        MainLocalText(text: 'Calculator'),
-          //        IconButton(
-          //          iconSize: 35,
-          //          icon: Icon(Icons.done, color: MyColors.textColor),
-          //          onPressed: (){
-          //            widget.updateSum(_currentValue);
-          //            Navigator.pop(context);
-          //          },
-          //        )
-          //      ],
-          //    )
-          // ),
-          bottomNavigationBar: BottomAppBar(
-              child: Container(
-                decoration: BoxDecoration(
-                    color: MyColors.mainColor,
-                    boxShadow: [
-                      BoxShadow(
-                          color: Colors.black,
-                          blurRadius: 5
-                      )
-                    ]
-                ),
-                height: 60,
-                child: Padding(
-                  padding: EdgeInsets.only(left: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      MainRowText(text: 'Calculator'),
-                      IconButton(
-                        iconSize: 35,
-                        icon: Icon(Icons.done, color: MyColors.textColor),
-                        onPressed: (){
-                          widget.updateSum(_currentValue);
-                          Navigator.pop(context);
-                        },
-                      )
-                    ],
-                  ),
-                ),
-              )
-          ),
+          bottomNavigationBar: buildBottomAppBar(),
           body: Align(
             alignment: Alignment.bottomCenter,
             child: Column(
@@ -103,6 +57,60 @@ class _CalculatorState extends State<Calculator> {
           ),
         ),
     );
+  }
+
+  Widget buildBottomAppBar() {
+    return BottomAppBar(
+      child: Container(
+        decoration: BoxDecoration(
+          color: MyColors.mainColor,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black,
+              blurRadius: 5
+            )
+          ]
+        ),
+        height: 60,
+        child: Padding(
+          padding: EdgeInsets.only(left: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              MainRowText(text: AppLocalizations.of(context).translate('Калькулятор')),
+              IconButton(
+                iconSize: 35,
+                icon: Icon(Icons.done, color: MyColors.textColor),
+                onPressed: (){
+                  widget.updateSum(_currentValue);
+                  Navigator.pop(context);
+                },
+              )
+            ],
+          ),
+        ),
+      )
+    );
+  }
+
+  Widget buildAppBar() {
+    return AppBar(
+          backgroundColor: MyColors.mainColor,
+           title: Row(
+             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+             children: [
+               MainLocalText(text: 'Calculator'),
+               IconButton(
+                 iconSize: 35,
+                 icon: Icon(Icons.done, color: MyColors.textColor),
+                 onPressed: (){
+                   widget.updateSum(_currentValue);
+                   Navigator.pop(context);
+                 },
+               )
+             ],
+           )
+        );
   }
 }
 

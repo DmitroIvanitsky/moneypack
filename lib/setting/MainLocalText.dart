@@ -12,7 +12,7 @@ class MainLocalText extends StatelessWidget{
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Text(
-        AppLocalizations.of(context).translate(text),
+        AppLocalizations.of(context).translate(text) == null? Text('NL::' +text) : AppLocalizations.of(context).translate(text),
         textAlign: align,
         style: TextStyle(
           color: Colors.black,

@@ -40,6 +40,15 @@
   "Добавьте категорию" : "Add category",
   "Расходов нет" : "No expenses",
   "Доходов нет" : "No incomes",
-  "Calculator" : "Calculator",
-  "Редактирование" : "Edit"
+  "Калькулятор" : "Calculator",
+  "CAR" : "CAR",
+  "Редактирование" : "Edit",
+  "Зарплата" : "Salary",
+  "Продукты" : "Food",
+  "Введите сумму" : "Enter sum",
+  "Введите коментарий" : "Enter comment",
+  "Добавьте новую категорию" : "Add new category",
+  "Удалена категория: " : "Deleted category: ",
+  "Заметка удалена" : "Note deleted",
+  "Отменить" : "Undo"
 }

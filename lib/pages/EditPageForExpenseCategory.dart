@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import '../Utility/appLocalizations.dart';
 import '../setting/SecondaryLocalText.dart';
 import '../pages/Calculator.dart';
 import '../setting/DateFormatText.dart';
@@ -31,9 +32,19 @@ class EditPageForExpenseCategory extends StatefulWidget {
 
 class _EditPageForExpenseCategoryState extends State<EditPageForExpenseCategory> {
   ExpenseNote currentNote;
-  TextEditingController calcController = TextEditingController();
+  TextEditingController calcController;
+  FocusNode sumFocusNode;
+  FocusNode commentFocusNode;
 
   _EditPageForExpenseCategoryState(this.currentNote);
+
+  @override
+  void initState() {
+    sumFocusNode = FocusNode();
+    commentFocusNode = FocusNode();
+    calcController = TextEditingController(text: currentNote.sum.toString());
+    super.initState();
+  }
 
   void updateCategory(String cat) {
     setState(() {
@@ -43,7 +54,7 @@ class _EditPageForExpenseCategoryState extends State<EditPageForExpenseCategory>
 
   void updateSum(double result){
     setState(() {
-      //if (currentNote.sum != result) calcController.text = result.toString();
+      if (currentNote.sum != result) calcController.text = result.toString();
       currentNote.sum = result;
     });
   }
@@ -85,6 +96,9 @@ class _EditPageForExpenseCategoryState extends State<EditPageForExpenseCategory>
                       iconSize: 35,
                       icon: Icon(Icons.done, color: MyColors.textColor),
                       onPressed: (){
+                        if (currentNote.category == AppLocalizations.of(context).translate('Выбирите категорию')
+                            || currentNote.sum == null
+                        ) return;
                         updateListOfExpenses();
                         widget.updateExpensePage();
                         widget.updateMainPage();
@@ -134,14 +148,14 @@ class _EditPageForExpenseCategoryState extends State<EditPageForExpenseCategory>
             SizedBox(height: 35),
             // date widget row
             RowWithWidgets(
-                leftWidget: MainLocalText(text: 'Дата'),
-                rightWidget: (currentNote.date != null)?
-                    DateFormatText(
-                        dateTime: currentNote.date,
-                        mode: 'Дата в строке'
-                    )
-                    : SecondaryLocalText(text: 'Выбирите дату'),
-                onTap: onDateTap
+              leftWidget: MainLocalText(text: 'Дата'),
+              rightWidget: (currentNote.date != null)?
+                DateFormatText(
+                  dateTime: currentNote.date,
+                  mode: 'Дата в строке'
+                )
+                : SecondaryLocalText(text: 'Выбирите дату'),
+              onTap: onDateTap
             ),
             SizedBox(height: 30),
             RowWithButton(
@@ -150,39 +164,72 @@ class _EditPageForExpenseCategoryState extends State<EditPageForExpenseCategory>
               onTap: () => onCategoryTap(context),
             ),
             SizedBox(height: 30),
-            Container(
-              height: 100,
-              child: IconButton(
-                  icon: Icon(
-                      Icons.calculate_outlined,
-                      color: MyColors.textColor,
-                      size: 40
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  height: 60,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(5)
                   ),
-                  onPressed: () => goToCalculator(context)
-              ),
-            ),
-            // sum row
-            Container(
-              height: 75,
-              child: TextFormField(
-                keyboardType: TextInputType.number,
-                initialValue: currentNote.sum.toString(),
-                decoration: const InputDecoration(
-                  hintText: 'Введите сумму',
+                  width:  MediaQuery.of(context).size.width - 100,
+                  child: TextFormField(
+                    onTap: () => sumFocusNode.requestFocus(),
+                    focusNode: sumFocusNode,
+                    keyboardType: TextInputType.number,
+                    controller: calcController,
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.all(20),
+                      hintText: AppLocalizations.of(context).translate('Введите сумму'),
+                      border: sumFocusNode.hasFocus ?
+                          OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5),
+                            borderSide: BorderSide(color: Colors.blue)
+                          ) : InputBorder.none
+                    ),
+                    onChanged: (v) => currentNote.sum = double.parse(v),
+                  ),
                 ),
-                onChanged: (v) => currentNote.sum = double.parse(v),
-              ),
-            ),
-            Container(
-              height: 75,
-              child: TextFormField(
-                initialValue: currentNote.comment,
-                decoration: const InputDecoration(
-                  hintText: 'Введите коментарий',
+                Container(
+                  height: 60,
+                  width: 60,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.all(Radius.circular(5))
+                  ),
+                  child: IconButton(
+                      icon: Icon(
+                          Icons.calculate_outlined,
+                          color: MyColors.textColor,
+                          size: 40
+                      ),
+                      onPressed: () => goToCalculator(context)
+                  ),
                 ),
-                onChanged: (v) => currentNote.comment = v,
-              ),
+              ],
             ),
+            SizedBox(height: 20),
+            TextFormField(
+              focusNode: commentFocusNode,
+              maxLines: 3,
+              initialValue: currentNote.comment,
+              decoration: InputDecoration(
+                hintText: AppLocalizations.of(context).translate('Введите коментарий'),
+                contentPadding: EdgeInsets.all(20),
+                fillColor: Colors.white,
+                border: commentFocusNode.hasFocus ?
+                OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                    borderSide: BorderSide(color: Colors.blue)
+                ) : OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                    borderSide: BorderSide(color: Colors.grey)
+                )
+              ),
+              onChanged: (v) => currentNote.comment = v,
+            ),
+            // ),
           ],
         ),
       ),
@@ -200,7 +247,7 @@ class _EditPageForExpenseCategoryState extends State<EditPageForExpenseCategory>
     );
   }
 
-  updateListOfExpenses() async{
+  updateListOfExpenses() async {
     int index = ListOfExpenses.list.indexOf(widget.note);
     ListOfExpenses.list[index] = currentNote;
     await Storage.saveExpenseNote(null, currentNote.category);
@@ -262,6 +309,8 @@ class _EditPageForExpenseCategoryState extends State<EditPageForExpenseCategory>
 
   void dispose() {
     calcController.dispose();
+    sumFocusNode.dispose();
+    commentFocusNode.dispose();
     super.dispose();
   }
 

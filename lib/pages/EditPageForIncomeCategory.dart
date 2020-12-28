@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import '../Utility/appLocalizations.dart';
 import '../pages/Calculator.dart';
 import '../setting/DateFormatText.dart';
 import '../setting/MainLocalText.dart';
@@ -31,9 +32,19 @@ class EditPageForIncomeCategory extends StatefulWidget {
 
 class _EditPageForIncomeCategoryState extends State<EditPageForIncomeCategory> {
   IncomeNote currentNote;
-  TextEditingController calcController = TextEditingController();
+  TextEditingController calcController;
+  FocusNode sumFocusNode;
+  FocusNode commentFocusNode;
 
   _EditPageForIncomeCategoryState(this.currentNote);
+
+  @override
+  void initState() {
+    sumFocusNode = FocusNode();
+    commentFocusNode = FocusNode();
+    calcController = TextEditingController(text: currentNote.sum.toString());
+    super.initState();
+  }
 
   void updateCategory(String cat) {
     setState(() {
@@ -43,7 +54,7 @@ class _EditPageForIncomeCategoryState extends State<EditPageForIncomeCategory> {
 
   void updateSum(double result){
     setState(() {
-      //if (calcController != null) calcController.text = result.toString();
+      if (calcController != null) calcController.text = result.toString();
       currentNote.sum = result;
     });
   }
@@ -85,6 +96,9 @@ class _EditPageForIncomeCategoryState extends State<EditPageForIncomeCategory> {
                 iconSize: 35,
                 icon: Icon(Icons.done, color: MyColors.textColor),
                 onPressed: (){
+                  if (currentNote.category == AppLocalizations.of(context).translate('Выбирите категорию')
+                      || currentNote.sum == null
+                  ) return;
                   updateListOfIncomes();
                   widget.updateIncomePage();
                   widget.updateMainPage();
@@ -125,73 +139,101 @@ class _EditPageForIncomeCategoryState extends State<EditPageForIncomeCategory> {
 
   Widget buildBody() {
     return Padding(
-        padding: EdgeInsets.only(left: 10, right: 10),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 35),
-              RowWithWidgets(
-                  leftWidget: MainLocalText(text: 'Дата'),
-                  rightWidget: (currentNote.date != null)?
-                  DateFormatText(
-                      dateTime: currentNote.date,
-                      mode: 'Дата в строке'
-                  )
-                      : SecondaryLocalText(text: 'Выбирите дату'),
-                  onTap: onDateTap
-              ),
-              SizedBox(height: 30),
-              RowWithButton(
-                leftText: 'Категория',
-                rightText: currentNote.category,
-                onTap: () => onCategoryTap(context),
-              ),
-              SizedBox(height: 30),
-              Container(
-                height: 100,
-                child: IconButton(
-                    icon: Icon(
-                        Icons.calculate_outlined,
-                        color: MyColors.textColor,
-                        size: 40
+      padding: EdgeInsets.only(left: 10, right: 10),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            SizedBox(height: 35),
+            // date widget row
+            RowWithWidgets(
+                leftWidget: MainLocalText(text: 'Дата'),
+                rightWidget: (currentNote.date != null)?
+                DateFormatText(
+                    dateTime: currentNote.date,
+                    mode: 'Дата в строке'
+                )
+                    : SecondaryLocalText(text: 'Выбирите дату'),
+                onTap: onDateTap
+            ),
+            SizedBox(height: 30),
+            RowWithButton(
+              leftText: 'Категория',
+              rightText: currentNote.category,
+              onTap: () => onCategoryTap(context),
+            ),
+            SizedBox(height: 30),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  height: 60,
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(5)
+                  ),
+                  width:  MediaQuery.of(context).size.width - 100,
+                  child: TextFormField(
+                    onTap: () => sumFocusNode.requestFocus(),
+                    focusNode: sumFocusNode,
+                    keyboardType: TextInputType.number,
+                    controller: calcController,
+                    decoration: InputDecoration(
+                        contentPadding: EdgeInsets.all(20),
+                        hintText: AppLocalizations.of(context).translate('Введите сумму'),
+                        border: sumFocusNode.hasFocus ?
+                        OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5),
+                            borderSide: BorderSide(color: Colors.blue)
+                        ) : InputBorder.none
                     ),
-                    onPressed: () => goToCalculator(context)
-                ),
-              ),
-              // sum row
-              Container(
-                height: 75,
-                child: TextFormField(
-                  keyboardType: TextInputType.number,
-                  initialValue: currentNote.sum.toString(),
-                  decoration: const InputDecoration(
-                    hintText: 'Введите сумму',
+                    onChanged: (v) => currentNote.sum = double.parse(v),
                   ),
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Пожалуйста введите сумму';
-                    }
-                    return null;
-                  },
-                  onChanged: (v) => currentNote.sum = double.parse(v),
                 ),
-              ),
-              Container(
-                height: 75,
-                child: TextFormField(
-                  initialValue: currentNote.comment,
-                  decoration: const InputDecoration(
-                    hintText: 'Введите коментарий',
+                Container(
+                  height: 60,
+                  width: 60,
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.all(Radius.circular(5))
                   ),
-                  onChanged: (v) => currentNote.comment = v,
+                  child: IconButton(
+                      icon: Icon(
+                          Icons.calculate_outlined,
+                          color: MyColors.textColor,
+                          size: 40
+                      ),
+                      onPressed: () => goToCalculator(context)
+                  ),
                 ),
+              ],
+            ),
+            SizedBox(height: 20),
+            TextFormField(
+              focusNode: commentFocusNode,
+              maxLines: 3,
+              initialValue: currentNote.comment,
+              decoration: InputDecoration(
+                  hintText: AppLocalizations.of(context).translate('Введите коментарий'),
+                  contentPadding: EdgeInsets.all(20),
+                  fillColor: Colors.white,
+                  border: commentFocusNode.hasFocus ?
+                  OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                      borderSide: BorderSide(color: Colors.blue)
+                  ) : OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                      borderSide: BorderSide(color: Colors.grey)
+                  )
               ),
-            ],
-          ),
+              onChanged: (v) => currentNote.comment = v,
+            ),
+            // ),
+          ],
         ),
-      );
+      ),
+    );
   }
 
   goToCalculator(BuildContext context){
@@ -260,6 +302,13 @@ class _EditPageForIncomeCategoryState extends State<EditPageForIncomeCategory> {
       ),
       child: child,
     );
+  }
+
+  void dispose() {
+    calcController.dispose();
+    sumFocusNode.dispose();
+    commentFocusNode.dispose();
+    super.dispose();
   }
 
 }

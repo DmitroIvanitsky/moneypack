@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tutorial/Objects/ListOfExpenses.dart';
 import '../Utility/appLocalizations.dart';
 import '../setting/MainLocalText.dart';
 import '../setting/SecondaryLocalText.dart';
@@ -74,207 +75,56 @@ class _AddExpensesState extends State<AddExpenses> {
         backgroundColor: MyColors.backGroundColor,
           bottomNavigationBar: buildBottomAppBar(),
         //appBar: buildAppBar(),
-        body: Padding(
-          padding: EdgeInsets.only(left: 10, right: 10),
-          child: SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                SizedBox(height: 35),
-                RowWithWidgets(
-                    leftWidget: MainLocalText(text: 'Дата'),
-                    rightWidget: (date != null)? DateFormatText(dateTime: date, mode: 'Дата в строке')
-                        : SecondaryLocalText(text: 'Выбирите дату'),
-                    onTap: onDateTap
-                ),
-                Divider(color: MyColors.backGroundColor),
-                Container(
-                  decoration: BoxDecoration(
-                    color: MyColors.backGroundColor,
-                    borderRadius: BorderRadius.circular(5),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey,
-                        spreadRadius: 1
-                      )
-                    ]
-                  ),
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: 10,
-                      ),
-                      RowWithButton(
-                        leftText: 'Категория',
-                        rightText: category,
-                        onTap: () =>
-                            Navigator.push(context,
-                              MaterialPageRoute(builder: (context) => ListOfExpensesCategories(callback: updateCategory, cat: category)),
-                            ),
-                      ),
-                      Container(
-                        height: 175,
-                        child: ListView(
-                          physics: NeverScrollableScrollPhysics(),
-                          children: getLastCategories(),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                     Container(
-                       height: 60,
-                       decoration: BoxDecoration(
-                           border: Border.all(
-                             color: Colors.grey,
-                           ),
-                           borderRadius: BorderRadius.all(Radius.circular(5))
-                       ),
-                       child: Row(
-                         children: [
-                           GestureDetector(
-                             onTap: () => sumFocusNode.requestFocus(),
-                             child: Container(
-                               width: MediaQuery.of(context).size.width - 100,
-                               child:  TextFormField(
-                                 focusNode: sumFocusNode,
-                                 keyboardType: TextInputType.number,
-                                 controller: calcController,
-                                 decoration: InputDecoration(
-                                     hintText: '   Введите сумму',
-                                     border: sumFocusNode.hasFocus
-                                         ? OutlineInputBorder(
-                                         borderRadius: BorderRadius.all(Radius.circular(5)),
-                                         borderSide: BorderSide(color: Colors.blue)
-                                     ) : InputBorder.none
-                                 ),
-                                 onChanged: (v) => sum = double.parse(v),
-                               ),
-                             ),
-                           ),
-                         ],
-                        ),
-                     ),
-
-                    Container(
-                      height: 60,
-                      width: 60,
-                      decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.grey,
-                          ),
-                          borderRadius: BorderRadius.all(Radius.circular(5))
-                      ),
-                      child: IconButton(
-                          icon: Icon(
-                              Icons.calculate_outlined,
-                              color: MyColors.textColor,
-                              size: 40
-                          ),
-                          onPressed: () => goToCalculator(context)
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 20),
-                TextFormField(
-                  focusNode: commentFocusNode,
-                  maxLines: 3,
-                  decoration: InputDecoration(
-                    hintText: 'Введите коментарий',
-                    fillColor: Colors.white,
-                    border: commentFocusNode.hasFocus
-                        ? OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                        borderSide: BorderSide(color: Colors.blue)
-                    ) : OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                        borderSide: BorderSide(color: Colors.grey)
-                    )
-                  ),
-                  onChanged: (v) => comment = v,
-                ),
-              ],
-            ),
-          ),
-        )
+        body: buildBody(),
       ),
     );
   }
 
-  buildBottomAppBar() {
+  Widget buildBottomAppBar() {
     return BottomAppBar(
-          child: Container(
-            decoration: BoxDecoration(
-                color: MyColors.mainColor,
-                boxShadow: [
-                  BoxShadow(
-                      color: Colors.black,
-                      blurRadius: 5
-                  )
-                ]
-            ),
-            height: 60,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.arrow_back, color: Colors.black),
-                  onPressed: () => Navigator.pop(context)
-                ),
-                MainLocalText(text: 'Добавить расход'),
-                IconButton(
-                  iconSize: 35,
-                  icon: Icon(Icons.done, color: MyColors.textColor),
-                  onPressed: (){
-                    if (category == 'Выбирите категорию' || sum == null) return; // to not add empty sum note
-                    Storage.saveExpenseNote(
-                        ExpenseNote(
-                            date: date,
-                            category: category,
-                            sum: sum,
-                            comment: comment),
-                        category
-                    ); // function to create note object
-                    widget.callBack();
-                    Navigator.pop(context);
-                  },
-                )
-              ],
-            ),
-          ),
-        );
-  }
-
-  List<Widget> getLastCategories(){
-    if (lastCategories == null || lastCategories.length == 0) return [Text('')]; // TO DEBUG null in process
-    List<Widget> result = [];
-    for (String catName in lastCategories) {
-      result.add(
-        RadioListTile<String>(
-          title: Text(
-            catName,
-            style: TextStyle(
-                fontWeight: catName == category? FontWeight.bold : FontWeight.normal
-            ),
-          ),
-          groupValue: category,
-          value: catName,
-          onChanged: (String value) {
-            setState(() {
-              category = value;
-            });
-          },
+      child: Container(
+        decoration: BoxDecoration(
+            color: MyColors.mainColor,
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.black,
+                  blurRadius: 5
+              )
+            ]
         ),
-      );
-    }
-
-    return result;
+        height: 60,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            IconButton(
+                icon: Icon(Icons.arrow_back, color: Colors.black),
+                onPressed: () => Navigator.pop(context)
+            ),
+            MainLocalText(text: 'Добавить расход'),
+            IconButton(
+              iconSize: 35,
+              icon: Icon(Icons.done, color: MyColors.textColor),
+              onPressed: () async{
+                if (category == AppLocalizations.of(context).translate('Выбирите категорию')
+                    || sum == null
+                ) return; // to not add empty sum note
+                Storage.saveExpenseCategory(category);
+                Storage.saveExpenseNote(
+                    ExpenseNote(
+                        date: date,
+                        category: category,
+                        sum: sum,
+                        comment: comment),
+                    category
+                );
+                widget.callBack();
+                Navigator.pop(context);
+              },
+            )
+          ],
+        ),
+      ),
+    );
   }
 
   Widget buildAppBar() {
@@ -307,6 +157,161 @@ class _AddExpensesState extends State<AddExpenses> {
         ],
       ),
     );
+  }
+
+  Widget buildBody() {
+    return Padding(
+      padding: EdgeInsets.only(left: 10, right: 10),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            SizedBox(height: 35),
+            RowWithWidgets(
+              leftWidget: MainLocalText(text: 'Дата'),
+              rightWidget: (date != null) ?
+                DateFormatText(dateTime: date, mode: 'Дата в строке') :
+                SecondaryLocalText(text: 'Выбирите дату'),
+              onTap: onDateTap
+            ),
+            Divider(color: MyColors.backGroundColor),
+            Container(
+              decoration: BoxDecoration(
+                color: MyColors.backGroundColor,
+                borderRadius: BorderRadius.circular(5),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey,
+                    spreadRadius: 1
+                  )
+                ]
+              ),
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 10,
+                  ),
+                  RowWithButton(
+                    leftText: 'Категория',
+                    rightText: category,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ListOfExpensesCategories(
+                          callback: updateCategory,
+                          cat: category)
+                      ),
+                    ),
+                  ),
+                  Container(
+                    height: 175,
+                    child: ListView(
+                      physics: NeverScrollableScrollPhysics(),
+                      children: getLastCategories(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                 Container(
+                   height: 60,
+                   decoration: BoxDecoration(
+                     border: Border.all(color: Colors.grey),
+                     borderRadius: BorderRadius.all(Radius.circular(5))
+                   ),
+                   width: MediaQuery.of(context).size.width - 100,
+                   child:  TextFormField(
+                     onTap: () => sumFocusNode.requestFocus(),
+                     focusNode: sumFocusNode,
+                     keyboardType: TextInputType.number,
+                     controller: calcController,
+                     decoration: InputDecoration(
+                       contentPadding: EdgeInsets.all(20.0),
+                       hintText: AppLocalizations.of(context).translate('Введите сумму'),
+                       border: sumFocusNode.hasFocus ?
+                         OutlineInputBorder(
+                           borderRadius: BorderRadius.all(Radius.circular(5)),
+                           borderSide: BorderSide(color: Colors.blue)
+                         ) :
+                         InputBorder.none
+                     ),
+                     onChanged: (v) => sum = double.parse(v),
+                   ),
+                 ),
+                Container(
+                  height: 60,
+                  width: 60,
+                  decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.grey,
+                      ),
+                      borderRadius: BorderRadius.all(Radius.circular(5))
+                  ),
+                  child: IconButton(
+                      icon: Icon(
+                          Icons.calculate_outlined,
+                          color: MyColors.textColor,
+                          size: 40
+                      ),
+                      onPressed: () => goToCalculator(context)
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
+            TextFormField(
+              focusNode: commentFocusNode,
+              maxLines: 3,
+              decoration: InputDecoration(
+                hintText: AppLocalizations.of(context).translate('Введите коментарий'),
+                contentPadding: EdgeInsets.all(20.0),
+                fillColor: Colors.white,
+                border: commentFocusNode.hasFocus
+                    ? OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                    borderSide: BorderSide(color: Colors.blue)
+                ) : OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                    borderSide: BorderSide(color: Colors.grey)
+                )
+              ),
+              onChanged: (v) => comment = v,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  List<Widget> getLastCategories(){
+    if (lastCategories == null || lastCategories.length == 0) return [Text('')]; // TO DEBUG null in process
+    List<Widget> result = [];
+    for (String catName in lastCategories) {
+      result.add(
+        RadioListTile<String>(
+          title: Text(
+            catName,
+            style: TextStyle(
+                fontWeight: catName == category? FontWeight.bold : FontWeight.normal
+            ),
+          ),
+          groupValue: category,
+          value: catName,
+          onChanged: (String value) {
+            setState(() {
+              category = value;
+            });
+          },
+        ),
+      );
+    }
+
+    return result;
   }
 
   initialValue(){
