@@ -64,8 +64,8 @@ class _EditPageForExpenseCategoryState extends State<EditPageForExpenseCategory>
     return SafeArea(
       child: Scaffold(
         backgroundColor: MyColors.backGroundColor,
-        bottomNavigationBar: buildBottomAppBar(),
-        //appBar: buildAppBar(),
+        //bottomNavigationBar: buildBottomAppBar(),
+        appBar: buildAppBar(),
         body: buildBody(),
       ),
     );
@@ -121,7 +121,7 @@ class _EditPageForExpenseCategoryState extends State<EditPageForExpenseCategory>
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          MainLocalText(text: "Редактирование"),
+          MainLocalText(text: 'Редактирование'),
           IconButton(
             iconSize: 35,
             icon: Icon(Icons.done, color: MyColors.textColor),

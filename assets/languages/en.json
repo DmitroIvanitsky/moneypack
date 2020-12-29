@@ -1,5 +1,4 @@
 {
-  "test" : "test",
   "December" : "December",
   "November" : "November",
   "October" : "October",
@@ -22,7 +21,7 @@
   "Доход" : "Income",
   "Расход" : "Expense",
   "Баланс" : "Balance",
-  "Общий остаток" : "Remain",
+  "Остаток" : "Remain",
   "Учёт" : "Accounting",
   "Добавить расход" : "Add Expense",
   "Добавить доход" : "Add Income",
@@ -35,13 +34,12 @@
   "Выбирите дату" : "Choose date",
   "Период" : "Период",
   "Дата" : "Date",
-  "Категории расхода" : "Expense categories",
-  "Категории дохода" : "Income categories",
+  "Категории расходов" : "Expenses categories",
+  "Категории доходов" : "Incomes categories",
   "Добавьте категорию" : "Add category",
   "Расходов нет" : "No expenses",
   "Доходов нет" : "No incomes",
   "Калькулятор" : "Calculator",
-  "CAR" : "CAR",
   "Редактирование" : "Edit",
   "Зарплата" : "Salary",
   "Продукты" : "Food",
@@ -50,5 +48,6 @@
   "Добавьте новую категорию" : "Add new category",
   "Удалена категория: " : "Deleted category: ",
   "Заметка удалена" : "Note deleted",
-  "Отменить" : "Undo"
+  "Отменить" : "Undo",
+  "Итого" : "Total"
 }

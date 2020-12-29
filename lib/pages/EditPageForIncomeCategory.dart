@@ -64,8 +64,8 @@ class _EditPageForIncomeCategoryState extends State<EditPageForIncomeCategory> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: MyColors.backGroundColor,
-        bottomNavigationBar: buildBottomAppBar(),
-        //appBar: buildAppBar(),
+        //bottomNavigationBar: buildBottomAppBar(),
+        appBar: buildAppBar(),
         body: buildBody()
       ),
     );
@@ -91,7 +91,7 @@ class _EditPageForIncomeCategoryState extends State<EditPageForIncomeCategory> {
                 icon: Icon(Icons.arrow_back, color: Colors.black),
                 onPressed: () => Navigator.pop(context)
             ),
-            MainLocalText(text: "Редактирование"),
+            MainLocalText(text: 'Редактирование'),
             IconButton(
                 iconSize: 35,
                 icon: Icon(Icons.done, color: MyColors.textColor),
@@ -121,7 +121,7 @@ class _EditPageForIncomeCategoryState extends State<EditPageForIncomeCategory> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          MainRowText(text: "Редактирование"),
+          MainLocalText(text: "Редактирование"),
           IconButton(
             iconSize: 35,
             icon: Icon(Icons.done, color: MyColors.textColor),

@@ -40,7 +40,8 @@ class _CalculatorState extends State<Calculator> {
     return MaterialApp(
       home: SafeArea(
         child: Scaffold(
-          bottomNavigationBar: buildBottomAppBar(),
+          //bottomNavigationBar: buildBottomAppBar(),
+          appBar: buildAppBar(),
           body: Align(
             alignment: Alignment.bottomCenter,
             child: Column(
@@ -50,7 +51,6 @@ class _CalculatorState extends State<Calculator> {
                   height: MediaQuery.of(context).size.height * 0.75,
                   child: calc
                 ),
-                SizedBox(height: 2.5)
               ],
             ),
             ),
@@ -99,7 +99,7 @@ class _CalculatorState extends State<Calculator> {
            title: Row(
              mainAxisAlignment: MainAxisAlignment.spaceBetween,
              children: [
-               MainLocalText(text: 'Calculator'),
+               MainRowText(text: AppLocalizations.of(context).translate('Калькулятор')),
                IconButton(
                  iconSize: 35,
                  icon: Icon(Icons.done, color: MyColors.textColor),

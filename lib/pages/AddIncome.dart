@@ -72,8 +72,8 @@ class _AddIncomeState extends State<AddIncome> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: MyColors.backGroundColor,
-        bottomNavigationBar: buildBottomAppBar(),
-        //appBar: buildAppBar(),
+        //bottomNavigationBar: buildBottomAppBar(),
+        appBar: buildAppBar(),
         body: buildBody(),
       ),
     );
@@ -135,7 +135,7 @@ class _AddIncomeState extends State<AddIncome> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children:[
-          MainRowText(text: 'Добавить доход'),
+          MainLocalText(text: 'Добавить доход'),
           IconButton(
             iconSize: 35,
             icon: Icon(

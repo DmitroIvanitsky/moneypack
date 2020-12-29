@@ -19,7 +19,7 @@ import 'package:flutter_tutorial/widgets/rowWithButton.dart';
 import 'Utility/appLocalizations.dart';
 
 void main() => runApp(MaterialApp(
-  debugShowCheckedModeBanner: true,
+  //debugShowCheckedModeBanner: true,
   localizationsDelegates: [
     // A class which loads the translations from JSON files
     AppLocalizationsDelegate(),
@@ -31,7 +31,7 @@ void main() => runApp(MaterialApp(
   supportedLocales: [
     const Locale.fromSubtags(languageCode: 'en'), // English, no country code
     const Locale.fromSubtags(languageCode: 'ru'),
-    const Locale.fromSubtags(languageCode: 'ua'),
+    const Locale.fromSubtags(languageCode: 'uk'),
   ],
   home: FlutterTutorialApp(),
 ));
@@ -95,7 +95,6 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
 
   @override
   Widget build(BuildContext context) {
-    print(MediaQuery.of(context).size);
 
     return SafeArea(
       child: Scaffold(
@@ -103,9 +102,9 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
         endDrawerEnableOpenDragGesture: true,
         resizeToAvoidBottomInset: false,
         backgroundColor: MyColors.backGroundColor,
-        drawer: buildDrawer(),
-        bottomNavigationBar: buildBottomAppBar(),
-        //appBar: buildAppBar(),
+        //drawer: buildDrawer(),
+        //bottomNavigationBar: buildBottomAppBar(),
+        appBar: buildAppBar(),
         body: Container(
           height: MediaQuery.of(context).size.height,
           child:  Column(
@@ -157,7 +156,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          MainLocalText(text: 'Общий остаток'),
+                          MainLocalText(text: 'Остаток'),
                           SecondaryText(text: remain.toString()),
                         ],
                       ),

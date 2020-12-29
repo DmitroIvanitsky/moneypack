@@ -64,8 +64,8 @@ class _ListOfIncomesCategoriesState extends State<ListOfIncomesCategories> {
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: MyColors.backGroundColor,
-        bottomNavigationBar: buildBottomAppBar(),
-        //appBar: buildAppBar(),
+        //bottomNavigationBar: buildBottomAppBar(),
+        appBar: buildAppBar(),
         body: buildBody(),
       ),
     );
@@ -107,7 +107,7 @@ class _ListOfIncomesCategoriesState extends State<ListOfIncomesCategories> {
       iconTheme: IconThemeData(
           color: MyColors.textColor
       ),
-      title: MainRowText(text: 'Категории дохода'),
+      title: MainLocalText(text: 'Категории доходов'),
     );
   }
 

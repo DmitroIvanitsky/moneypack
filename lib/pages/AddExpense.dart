@@ -73,8 +73,8 @@ class _AddExpensesState extends State<AddExpenses> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: MyColors.backGroundColor,
-          bottomNavigationBar: buildBottomAppBar(),
-        //appBar: buildAppBar(),
+        //bottomNavigationBar: buildBottomAppBar(),
+        appBar: buildAppBar(),
         body: buildBody(),
       ),
     );
@@ -136,7 +136,7 @@ class _AddExpensesState extends State<AddExpenses> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          MainRowText(text: 'Добавить расход'),
+          MainLocalText(text: 'Добавить расход'),
           IconButton(
             iconSize: 35,
             icon: Icon(Icons.done, color: MyColors.textColor),

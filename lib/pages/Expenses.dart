@@ -57,14 +57,22 @@ class _ExpensesState extends State<Expenses> {
     updateExpensesPage();
   }
 
+  double totalSum(List list){
+    double total = 0;
+    for (int i = 0; i < list.length; i++){
+      total += list[i].sum;
+    }
+    return total;
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: MyColors.backGroundColor,
-        bottomNavigationBar: buildBottomAppBar(),
-        //appBar: buildAppBar(),
+        //bottomNavigationBar: buildBottomAppBar(),
+        appBar: buildAppBar(),
         body: buildBody(),
       ),
     );
@@ -79,7 +87,7 @@ class _ExpensesState extends State<Expenses> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          MainRowText(text: 'Расход'),
+          MainLocalText(text: 'Расход'),
           buildDropdownButton()
         ],
       ), // dropdown menu button
@@ -95,6 +103,20 @@ class _ExpensesState extends State<Expenses> {
         Divider(),
         categoriesList.isEmpty ?
         Expanded(child: Center(child: MainLocalText(text: 'Расходов нет'))) :
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          child: Container(
+            height: 50,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                MainLocalText(text: 'Итого'),
+                MainRowText(text: totalSum(categoriesList).toString())
+              ],
+            ),
+          ),
+        ),
+        //Divider(color: MyColors.textColor),
         Expanded(
           child: ListView.builder(
             itemCount: categoriesList.length,

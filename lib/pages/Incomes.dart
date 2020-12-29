@@ -57,14 +57,22 @@ class _IncomesState extends State<Incomes> {
     updateIncomesPage();
   }
 
+  double totalSum(List list){
+    double total = 0;
+    for (int i = 0; i < list.length; i++){
+      total += list[i].sum;
+    }
+    return total;
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: MyColors.backGroundColor,
-        bottomNavigationBar: buildBottomAppBar(),
-        //appBar: buildAppBar(),
+        //bottomNavigationBar: buildBottomAppBar(),
+        appBar: buildAppBar(),
         body: buildBody(),
       ),
     );
@@ -110,7 +118,7 @@ class _IncomesState extends State<Incomes> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          MainRowText(text: 'Доход'),
+          MainLocalText(text: 'Доход'),
           buildDropdownButton(),
         ],
       ),
@@ -126,6 +134,20 @@ class _IncomesState extends State<Incomes> {
         Divider(),
         categoriesList.isEmpty ?
         Expanded(child: Center(child: MainLocalText(text: 'Доходов нет'))) :
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          child: Container(
+            height: 50,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                MainLocalText(text: 'Итого'),
+                MainRowText(text: totalSum(categoriesList).toString())
+              ],
+            ),
+          ),
+        ),
+        //Divider(color: MyColors.textColor),
         Expanded(
           child: ListView.builder(
             itemCount: categoriesList.length,
