@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import '../setting/SecondaryText.dart';
 import '../Utility/appLocalizations.dart';
 import '../widgets/customSnackBar.dart';
 import '../setting/MainLocalText.dart';
 import '../Utility/Storage.dart';
 import '../setting/MyColors.dart';
-import '../setting/MainRowText.dart';
 
 class ListOfExpensesCategories extends StatefulWidget{
   final Function callback;
@@ -129,7 +129,7 @@ class _ListOfExpensesCategoriesState extends State<ListOfExpensesCategories> {
                         padding: EdgeInsets.only(left: 10),
                         child: FlatButton(
                           height: 50,
-                          child: MainRowText(text: category, align: TextAlign.left),
+                          child: SecondaryText(text: category),
                           onPressed: (){
                             widget.callback(category);
                             Navigator.pop(context);
@@ -138,7 +138,7 @@ class _ListOfExpensesCategoriesState extends State<ListOfExpensesCategories> {
                       ),
                       IconButton(
                         icon: Icon(Icons.delete),
-                        color: MyColors.textColor,
+                        color: MyColors.buttonColor,
                         onPressed: () async{
                           CustomSnackBar.show(
                             key: scaffoldKey,

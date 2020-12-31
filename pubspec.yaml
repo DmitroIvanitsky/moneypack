@@ -1,4 +1,4 @@
-name: flutter_tutorial
+name: money_pack
 description: A new Flutter application.
 
 # The following line prevents the package from being accidentally published to
@@ -26,6 +26,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
+
   shared_preferences:
   intl:
   flutter_simple_calculator:
@@ -38,6 +39,12 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons:
+
+flutter_icons:
+  ios: true
+  android: "launcher_icon"
+  image_path: "assets/launcher/icon.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

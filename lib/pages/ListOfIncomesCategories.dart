@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:money_pack/setting/SecondaryText.dart';
 import '../Utility/appLocalizations.dart';
 import '../widgets/customSnackBar.dart';
 import '../Utility/Storage.dart';
@@ -130,7 +131,7 @@ class _ListOfIncomesCategoriesState extends State<ListOfIncomesCategories> {
                       children: [
                         FlatButton(
                           height: 50,
-                          child: MainRowText(text: category),
+                          child: SecondaryText(text: category),
                           onPressed: (){
                             widget.callback(category);
                             Navigator.pop(context);
@@ -138,7 +139,7 @@ class _ListOfIncomesCategoriesState extends State<ListOfIncomesCategories> {
                         ),
                         IconButton(
                           icon: Icon(Icons.delete),
-                          color: MyColors.textColor,
+                          color: MyColors.buttonColor,
                           onPressed: () async{
                             CustomSnackBar.show(
                                 key: scaffoldKey,

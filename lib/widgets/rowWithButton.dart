@@ -51,7 +51,7 @@ class RowWithButton extends StatelessWidget{
                     }
                 ),
               ),
-              SecondaryText(text: rightText.toString()),
+              Expanded(child: SecondaryText(text: rightText.toString(), align: TextAlign.right))
             ],
           ),
         ),

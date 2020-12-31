@@ -17,6 +17,7 @@ class MyColors{
   static Color backGroundColor = Colors.brown[50];
   static Color rowColor = Colors.brown[100];
   static Color textColor = Colors.black;
+  static Color secondTextColor = Colors.black54;
 
   static  Color mainColor2 = Colors.lime;
   static Color backGroundColor2 = Color(0xff32373d);
@@ -24,4 +25,6 @@ class MyColors{
   static Color incomeButton2 = Color(0xff79f5b7);
   static Color rowColor2 = Color(0xfff5e7c8);
   static Color blurColor = Color(0xff10a7fb);
+
+  static Color buttonColor = Colors.black54;
 }

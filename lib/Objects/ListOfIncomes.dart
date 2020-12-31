@@ -1,4 +1,4 @@
-import 'package:flutter_tutorial/Objects/IncomeNote.dart';
+import '../Objects/IncomeNote.dart';
 
 class ListOfIncomes {
   static List<IncomeNote> list = List();

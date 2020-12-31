@@ -7,11 +7,9 @@ import 'package:intl/intl.dart';
 class DateFormatText extends StatelessWidget {
   final DateTime dateTime;
   final String mode;
-  final DateTime lastWeekDay = DateTime.now().subtract(
-      Duration(days: DateTime.now().weekday)).add(Duration(days: 7));
+  final Color color;
 
-
-  DateFormatText({this.dateTime, this.mode});
+  DateFormatText({this.dateTime, this.mode, this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +23,10 @@ class DateFormatText extends StatelessWidget {
         );
 
       case 'Неделя':
+        int weekDay = (Localizations.localeOf(context).languageCode == 'ru' ||
+            Localizations.localeOf(context).languageCode == 'uk') ? dateTime.weekday : dateTime.weekday + 1;
+        DateTime lastWeekDay = dateTime.subtract(
+            Duration(days: weekDay)).add(Duration(days: 7));
         return MainRowText(text:
           DateFormat.d().format(lastWeekDay.subtract(Duration(days: 6))) + ' - '
               + DateFormat.d().format(lastWeekDay) + ' '
@@ -32,6 +34,17 @@ class DateFormatText extends StatelessWidget {
               + DateFormat.y().format(dateTime)
         );
 
+      case 'Неделя(Д)':
+        int weekDay = (Localizations.localeOf(context).languageCode == 'ru' ||
+            Localizations.localeOf(context).languageCode == 'uk') ? dateTime.weekday : dateTime.weekday + 1;
+        DateTime lastWeekDay = dateTime.subtract(
+            Duration(days: weekDay)).add(Duration(days: 7));
+        return MainRowText(text:
+        DateFormat.d().format(lastWeekDay.subtract(Duration(days: 6))) + ' - '
+            + DateFormat.d().format(lastWeekDay) + ' '
+            + AppLocalizations.of(context).translate(DateFormat.MMMM().format(lastWeekDay)) + ' '
+            + DateFormat.y().format(dateTime)
+        );
       case 'Месяц':
         return MainRowText(text: AppLocalizations.of(context).translate(DateFormat.MMMM().format(dateTime))+ ' '
             + DateFormat.y().format(dateTime)
@@ -44,7 +57,7 @@ class DateFormatText extends StatelessWidget {
         return SecondaryText(text:
             DateFormat.d().format(dateTime) +
                 ' ' + AppLocalizations.of(context).translate(DateFormat.MMMM().format(dateTime)) +
-                ' ' + DateFormat.y().format(dateTime)
+                ' ' + DateFormat.y().format(dateTime), color: color
         );
     }
   }

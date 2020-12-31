@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tutorial/Objects/ListOfExpenses.dart';
+import '../Objects/ListOfExpenses.dart';
 import '../Utility/appLocalizations.dart';
 import '../setting/MainLocalText.dart';
 import '../setting/SecondaryLocalText.dart';
@@ -171,7 +171,7 @@ class _AddExpensesState extends State<AddExpenses> {
             RowWithWidgets(
               leftWidget: MainLocalText(text: 'Дата'),
               rightWidget: (date != null) ?
-                DateFormatText(dateTime: date, mode: 'Дата в строке') :
+                DateFormatText(dateTime: date, mode: 'Дата в строке', color: MyColors.textColor) :
                 SecondaryLocalText(text: 'Выбирите дату'),
               onTap: onDateTap
             ),

@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_tutorial/Utility/appLocalizations.dart';
-import 'package:flutter_tutorial/widgets/customSnackBar.dart';
+import 'package:money_pack/setting/SecondaryText.dart';
+import '../Utility/appLocalizations.dart';
+import '../widgets/customSnackBar.dart';
 import '../setting/MainLocalText.dart';
 import '../setting/DateFormatText.dart';
 import '../setting/ThirdText.dart';
@@ -127,6 +128,7 @@ class _IncomesState extends State<Incomes> {
 
   Widget buildBody(){
     List categoriesList = filteredIncomes();
+    categoriesList.sort((a, b) => b.date.compareTo(a.date));
 
     return Column(
       children: [
@@ -154,6 +156,7 @@ class _IncomesState extends State<Incomes> {
             itemBuilder: (context, index){
               IncomeNote singleCategory = categoriesList[index];
               List <IncomeNote> childrenList = getFilteredChildrenCategory(singleCategory);
+              childrenList.sort((a, b) => b.date.compareTo(a.date));
 
               return Column(
                 children: [
@@ -165,8 +168,8 @@ class _IncomesState extends State<Incomes> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              MainRowText(text: categoriesList[index].category),
-                              MainRowText(text: '${categoriesList[index].sum}'),
+                              SecondaryText(text: categoriesList[index].category),
+                              SecondaryText(text: '${categoriesList[index].sum}'),
                             ],
                           ),
                         ),
@@ -253,10 +256,10 @@ class _IncomesState extends State<Incomes> {
                   boolComment(middleList[index]),
                   Row(
                     children: [
-                      MainRowText(text: "${middleList[index].sum}"),
+                      SecondaryText(text: "${middleList[index].sum}"),
                       IconButton(
                         icon: Icon(Icons.edit),
-                        color: MyColors.textColor,
+                        color: Colors.black54,
                         onPressed: () => goToEditPage(
                             context,
                             middleList[index],
@@ -264,7 +267,7 @@ class _IncomesState extends State<Incomes> {
                       ),
                       IconButton(
                         icon: Icon(Icons.delete),
-                        color: MyColors.textColor,
+                        color: Colors.black54,
                         onPressed: () async {
                           int indexInListOfIncomes = ListOfIncomes.list.indexOf(middleList[index]);
                           CustomSnackBar.show(
@@ -295,13 +298,13 @@ class _IncomesState extends State<Incomes> {
 
   boolComment(IncomeNote note) {
     if (note.comment == '' || note.comment == null){
-      return DateFormatText(dateTime: note.date, mode: 'Дата в строке');
+      return DateFormatText(dateTime: note.date, mode: 'Дата в строке', color: MyColors.secondTextColor);
     }
     else{
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          DateFormatText(dateTime: note.date, mode: 'Дата в строке'),
+          DateFormatText(dateTime: note.date, mode: 'Дата в строке', color: MyColors.secondTextColor),
           comment(note),
         ],
       );
@@ -336,17 +339,16 @@ class _IncomesState extends State<Incomes> {
           DropdownMenuItem(value: 'Год', child: MainLocalText(text: 'Год')),
         ],
         onChanged: (String newValue) {
-          if (selectedMode != 'Неделя' && newValue == 'Неделя') {
-            date = date.subtract(Duration(days: date.weekday + 1)).add(Duration(days: 7));
-          }
-
-          if (selectedMode == 'Неделя' && newValue != 'Неделя') {
-            date = DateTime.now();
-          }
-
-          setState(() {
-            selectedMode = newValue;
-          });
+          // if (selectedMode != 'Неделя' && newValue == 'Неделя') {
+          //   int weekDay = Localizations.localeOf(context).languageCode == 'ru' ||
+          //       Localizations.localeOf(context).languageCode == 'uk' ? date.weekday : date.weekday + 1;
+          //   date = date.subtract(Duration(days: weekDay)).add(Duration(days: 7));
+          // }
+          //
+          // if (selectedMode == 'Неделя' && newValue != 'Неделя') {
+          //   date = DateTime.now();
+          // }
+          selectedMode = newValue;
           updateIncomesPage();
         }
     );
@@ -363,10 +365,12 @@ class _IncomesState extends State<Incomes> {
               d.day == date.day;
         break;
       case 'Неделя':
+        int weekDay = Localizations.localeOf(context).languageCode == 'ru' ||
+            Localizations.localeOf(context).languageCode == 'uk' ? date.weekday : date.weekday + 1;
+        DateTime nextWeekFirstDay = date.subtract(
+            Duration(days: weekDay)).add(Duration(days: 8));
         return
-          d.year == date.year &&
-              d.month == date.month &&
-              d.isBefore(date) && d.isAfter(date.subtract(Duration(days: 7)));
+          d.isAfter(nextWeekFirstDay.subtract(Duration(days: 8))) &&  d.isBefore(nextWeekFirstDay);
         break;
       case 'Месяц' :
         return
