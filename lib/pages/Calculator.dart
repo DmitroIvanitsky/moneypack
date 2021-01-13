@@ -95,6 +95,7 @@ class _CalculatorState extends State<Calculator> {
 
   Widget buildAppBar() {
     return AppBar(
+        shadowColor: Colors.black,
           backgroundColor: MyColors.mainColor,
            title: Row(
              mainAxisAlignment: MainAxisAlignment.spaceBetween,

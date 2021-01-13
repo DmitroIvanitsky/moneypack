@@ -23,7 +23,7 @@ class Incomes extends StatefulWidget{
 }
 
 class _IncomesState extends State<Incomes> {
-  DateTime date = DateTime.now();
+  DateTime date = new DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
   String selectedMode = 'День';
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
 
@@ -112,6 +112,7 @@ class _IncomesState extends State<Incomes> {
 
   Widget buildAppBar() {
     return AppBar(
+      shadowColor: Colors.black,
       iconTheme: IconThemeData(
           color: MyColors.textColor
       ),
@@ -144,7 +145,7 @@ class _IncomesState extends State<Incomes> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 MainLocalText(text: 'Итого'),
-                MainRowText(text: totalSum(categoriesList).toString())
+                MainRowText(text: totalSum(categoriesList).toStringAsFixed(2))
               ],
             ),
           ),
@@ -169,7 +170,7 @@ class _IncomesState extends State<Incomes> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               SecondaryText(text: categoriesList[index].category),
-                              SecondaryText(text: '${categoriesList[index].sum}'),
+                              SecondaryText(text: categoriesList[index].sum.toStringAsFixed(2)),
                             ],
                           ),
                         ),
@@ -256,7 +257,7 @@ class _IncomesState extends State<Incomes> {
                   boolComment(middleList[index]),
                   Row(
                     children: [
-                      SecondaryText(text: "${middleList[index].sum}"),
+                      SecondaryText(text: middleList[index].sum.toStringAsFixed(2)),
                       IconButton(
                         icon: Icon(Icons.edit),
                         color: Colors.black54,

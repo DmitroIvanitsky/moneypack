@@ -8,6 +8,7 @@ import 'package:money_pack/Objects/ListOfIncomes.dart';
 import 'package:money_pack/Utility/Storage.dart';
 import 'package:money_pack/pages/AddExpense.dart';
 import 'package:money_pack/pages/AddIncome.dart';
+import 'package:money_pack/pages/Balance.dart';
 import 'package:money_pack/pages/Expenses.dart';
 import 'package:money_pack/pages/Incomes.dart';
 import 'package:money_pack/setting/DateFormatText.dart';
@@ -41,7 +42,7 @@ class FlutterTutorialApp extends StatefulWidget {
 }
 
 class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
-  DateTime date = DateTime.now();
+  DateTime date = new DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
   String selectedMode = 'День';
   double income = 0;
   double expense = 0;
@@ -109,6 +110,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
 
   Widget buildAppBar() {
     return AppBar(
+      shadowColor: Colors.black,
       iconTheme: IconThemeData(color: MyColors.textColor),
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -131,7 +133,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
             getDate(),
             RowWithButton(
               leftText: 'Доход',
-              rightText: income.toString(),
+              rightText: income.toStringAsFixed(2),
               onTap: () =>
                 Navigator.push(context,
                   MaterialPageRoute(
@@ -141,7 +143,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
             ),
             RowWithButton(
               leftText: 'Расход',
-              rightText: expense.toString(),
+              rightText: expense.toStringAsFixed(2),
                 onTap: () =>
                   Navigator.push(context,
                     MaterialPageRoute(
@@ -149,7 +151,17 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                     ),
                   ),
             ),
-            // balance row
+            /// Test button for main page
+            RowWithButton(
+              leftText: 'Баланс',
+              rightText: balance.toStringAsFixed(2),
+              onTap: () =>
+                  Navigator.push(context,
+                    MaterialPageRoute(
+                        builder: (context) => Balance(updateMainPage: updateMainPage)
+                    ),
+                  ),
+            ),
             Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(5),
@@ -161,25 +173,25 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                     )
                   ]
               ),
-              height: 70,
+              height: 50,
               margin: EdgeInsets.only(left: 10, right: 10, top: 10),
               child: Padding(
                 padding: EdgeInsets.only(left: 15, right: 10),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        MainLocalText(text: 'Баланс'),
-                        SecondaryText(text: balance.toString()),
-                      ],
-                    ),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //   children: [
+                    //     MainLocalText(text: 'Баланс'),
+                    //     SecondaryText(text: balance.toStringAsFixed(2)),
+                    //   ],
+                    // ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         MainLocalText(text: 'Остаток'),
-                        SecondaryText(text: remain.toString()),
+                        SecondaryText(text: remain.toStringAsFixed(2)),
                       ],
                     ),
                   ],
@@ -408,16 +420,6 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
           DropdownMenuItem(value: 'Год', child: MainLocalText(text: 'Год')),
         ],
         onChanged: (String newValue) {
-          // if (selectedMode != 'Неделя' && newValue == 'Неделя') {
-          //   int weekDay = Localizations.localeOf(context).languageCode == 'ru' ||
-          //       Localizations.localeOf(context).languageCode == 'uk' ? date.weekday : date.weekday + 1;
-          //   date = date.subtract(Duration(days: weekDay)).add(Duration(days: 7));
-          //
-          // }
-          //
-          // if (selectedMode == 'Неделя' && newValue != 'Неделя') {
-          //   date = DateTime.now();
-          // }
           selectedMode = newValue;
           updateMainPage();
         }

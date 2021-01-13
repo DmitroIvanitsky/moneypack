@@ -1,12 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:money_pack/setting/SecondaryText.dart';
+import '../setting/SecondaryText.dart';
 import '../Utility/appLocalizations.dart';
 import '../widgets/customSnackBar.dart';
 import '../Utility/Storage.dart';
 import '../setting/MainLocalText.dart';
 import '../setting/MyColors.dart';
-import '../setting/MainRowText.dart';
 
 class ListOfIncomesCategories extends StatefulWidget{
   final Function callback;
@@ -61,6 +60,7 @@ class _ListOfIncomesCategoriesState extends State<ListOfIncomesCategories> {
 
   @override
   Widget build(BuildContext context) {
+
     return SafeArea(
       child: Scaffold(
         key: scaffoldKey,
@@ -104,6 +104,7 @@ class _ListOfIncomesCategoriesState extends State<ListOfIncomesCategories> {
 
   Widget buildAppBar() {
     return AppBar(
+      shadowColor: Colors.black,
       backgroundColor: MyColors.mainColor,
       iconTheme: IconThemeData(
           color: MyColors.textColor
@@ -113,6 +114,7 @@ class _ListOfIncomesCategoriesState extends State<ListOfIncomesCategories> {
   }
 
   Widget buildBody() {
+    Size size = MediaQuery.of(context).size;
     return Column(
       children: [
         Expanded(
@@ -126,35 +128,37 @@ class _ListOfIncomesCategoriesState extends State<ListOfIncomesCategories> {
                 padding: EdgeInsets.only(left: 10, right: 10),
                 child: Column(
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        FlatButton(
-                          height: 50,
-                          child: SecondaryText(text: category),
-                          onPressed: (){
-                            widget.callback(category);
-                            Navigator.pop(context);
-                          },
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.delete),
-                          color: MyColors.buttonColor,
-                          onPressed: () async{
-                            CustomSnackBar.show(
-                                key: scaffoldKey,
-                                context: context,
-                                text: AppLocalizations.of(context).translate('Удалена категория: ') + category,
-                                callBack: (){
-                                  undoDelete(category, index);
-                                }
-                            );
-                            list.remove(category);
-                            await Storage.saveList(list, 'Incomes');
-                            setState(() {});
-                          }
-                        )
-                      ]
+                    Container(
+                      height: 35,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          FlatButton(
+                            child: SecondaryText(text: category),
+                            onPressed: (){
+                              widget.callback(category);
+                              Navigator.pop(context);
+                            },
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.delete),
+                            color: MyColors.buttonColor,
+                            onPressed: () async{
+                              CustomSnackBar.show(
+                                  key: scaffoldKey,
+                                  context: context,
+                                  text: AppLocalizations.of(context).translate('Удалена категория: ') + category,
+                                  callBack: (){
+                                    undoDelete(category, index);
+                                  }
+                              );
+                              list.remove(category);
+                              await Storage.saveList(list, 'Incomes');
+                              setState(() {});
+                            }
+                          )
+                        ]
+                      ),
                     ),
                     Divider(),
                   ],

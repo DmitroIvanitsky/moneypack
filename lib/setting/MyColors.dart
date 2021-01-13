@@ -25,6 +25,7 @@ class MyColors{
   static Color incomeButton2 = Color(0xff79f5b7);
   static Color rowColor2 = Color(0xfff5e7c8);
   static Color blurColor = Color(0xff10a7fb);
+  //static Color blurColor = Colors.lightBlueAccent;
 
   static Color buttonColor = Colors.black54;
 }

@@ -102,6 +102,7 @@ class _ListOfExpensesCategoriesState extends State<ListOfExpensesCategories> {
 
   Widget buildAppBar() {
     return AppBar(
+      shadowColor: Colors.black,
       backgroundColor: MyColors.mainColor,
       iconTheme: IconThemeData(
           color: MyColors.textColor
@@ -122,38 +123,40 @@ class _ListOfExpensesCategoriesState extends State<ListOfExpensesCategories> {
               String category = list[index];
               return Column(
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(left: 10),
-                        child: FlatButton(
-                          height: 50,
-                          child: SecondaryText(text: category),
-                          onPressed: (){
-                            widget.callback(category);
-                            Navigator.pop(context);
-                          },
+                  Container(
+                    height: 35,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(left: 10),
+                          child: FlatButton(
+                            child: SecondaryText(text: category),
+                            onPressed: (){
+                              widget.callback(category);
+                              Navigator.pop(context);
+                            },
+                          ),
                         ),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.delete),
-                        color: MyColors.buttonColor,
-                        onPressed: () async{
-                          CustomSnackBar.show(
-                            key: scaffoldKey,
-                            context: context,
-                            text: AppLocalizations.of(context).translate('Удалена категория: ') + category,
-                            callBack: (){
-                              undoDelete(category, index);
-                            }
-                          );
-                          list.remove(category);
-                          await Storage.saveList(list, 'Expenses');
-                          updateList();
-                        }
-                      )
-                    ]
+                        IconButton(
+                          icon: Icon(Icons.delete),
+                          color: MyColors.buttonColor,
+                          onPressed: () async{
+                            CustomSnackBar.show(
+                              key: scaffoldKey,
+                              context: context,
+                              text: AppLocalizations.of(context).translate('Удалена категория: ') + category,
+                              callBack: (){
+                                undoDelete(category, index);
+                              }
+                            );
+                            list.remove(category);
+                            await Storage.saveList(list, 'Expenses');
+                            updateList();
+                          }
+                        )
+                      ]
+                    ),
                   ),
                   Divider(),
                 ],

@@ -23,7 +23,7 @@ class AddExpenses extends StatefulWidget{
 
 class _AddExpensesState extends State<AddExpenses> {
 
-  DateTime date = DateTime.now();
+  DateTime date = new DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
   String category = '';
   double sum;
   String comment;
@@ -132,6 +132,7 @@ class _AddExpensesState extends State<AddExpenses> {
       iconTheme: IconThemeData(
           color: MyColors.textColor
       ),
+      shadowColor: Colors.black,
       backgroundColor: MyColors.mainColor,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

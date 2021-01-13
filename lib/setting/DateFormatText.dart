@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:money_pack/setting/MyColors.dart';
 import '../Utility/appLocalizations.dart';
 import '../setting/MainRowText.dart';
 import '../setting/SecondaryText.dart';
@@ -13,13 +14,19 @@ class DateFormatText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Color _color;
+    if (color == null)
+      _color = null;
+    else
+      _color = color;
     switch(mode){
       case 'День':
         return MainRowText(text:
           AppLocalizations.of(context).translate(DateFormat.E().format(dateTime)) +
               ', ' + DateFormat.d().format(dateTime) +
               ' ' + AppLocalizations.of(context).translate(DateFormat.MMMM().format(dateTime)) +
-              ' ' + DateFormat.y().format(dateTime)
+              ' ' + DateFormat.y().format(dateTime),
+          color: _color,
         );
 
       case 'Неделя':
@@ -31,7 +38,8 @@ class DateFormatText extends StatelessWidget {
           DateFormat.d().format(lastWeekDay.subtract(Duration(days: 6))) + ' - '
               + DateFormat.d().format(lastWeekDay) + ' '
               + AppLocalizations.of(context).translate(DateFormat.MMMM().format(lastWeekDay)) + ' '
-              + DateFormat.y().format(dateTime)
+              + DateFormat.y().format(dateTime),
+          color: _color,
         );
 
       case 'Неделя(Д)':
@@ -43,21 +51,24 @@ class DateFormatText extends StatelessWidget {
         DateFormat.d().format(lastWeekDay.subtract(Duration(days: 6))) + ' - '
             + DateFormat.d().format(lastWeekDay) + ' '
             + AppLocalizations.of(context).translate(DateFormat.MMMM().format(lastWeekDay)) + ' '
-            + DateFormat.y().format(dateTime)
+            + DateFormat.y().format(dateTime),
+          color: _color,
         );
       case 'Месяц':
         return MainRowText(text: AppLocalizations.of(context).translate(DateFormat.MMMM().format(dateTime))+ ' '
-            + DateFormat.y().format(dateTime)
+            + DateFormat.y().format(dateTime),
+          color: _color,
         );
 
       case 'Год':
-        return MainRowText(text: dateTime.year.toString());
+        return MainRowText(text: dateTime.year.toString(), color: _color,);
 
       case 'Дата в строке' :
         return SecondaryText(text:
             DateFormat.d().format(dateTime) +
                 ' ' + AppLocalizations.of(context).translate(DateFormat.MMMM().format(dateTime)) +
-                ' ' + DateFormat.y().format(dateTime), color: color
+                ' ' + DateFormat.y().format(dateTime),
+          color: _color,
         );
     }
   }

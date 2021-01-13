@@ -117,6 +117,7 @@ class _EditPageForExpenseCategoryState extends State<EditPageForExpenseCategory>
       iconTheme: IconThemeData(
         color: MyColors.textColor,
       ),
+      shadowColor: Colors.black,
       backgroundColor: MyColors.mainColor,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

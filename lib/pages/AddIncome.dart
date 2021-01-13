@@ -22,7 +22,7 @@ class AddIncome extends StatefulWidget{
 
 class _AddIncomeState extends State<AddIncome> {
 
-  DateTime date = DateTime.now();
+  DateTime date = new DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
   String category = '';
   double sum;
   String comment;
@@ -131,6 +131,7 @@ class _AddIncomeState extends State<AddIncome> {
       iconTheme: IconThemeData(
           color: MyColors.textColor
       ),
+      shadowColor: Colors.black,
       backgroundColor: MyColors.mainColor,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

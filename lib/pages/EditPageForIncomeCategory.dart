@@ -114,6 +114,7 @@ class _EditPageForIncomeCategoryState extends State<EditPageForIncomeCategory> {
 
   Widget buildAppBar() {
     return AppBar(
+      shadowColor: Colors.black,
       iconTheme: IconThemeData(
         color: MyColors.textColor,
       ),

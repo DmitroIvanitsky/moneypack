@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:money_pack/Objects/ListOfIncomes.dart';
 import '../setting/SecondaryLocalText.dart';
 import '../setting/SecondaryText.dart';
 import '../Utility/appLocalizations.dart';
@@ -14,19 +15,19 @@ import '../Utility/Storage.dart';
 import '../setting/MyColors.dart';
 import '../setting/MainRowText.dart';
 
-class Expenses extends StatefulWidget {
+class Balance extends StatefulWidget {
   final Function updateMainPage;
 
-  Expenses({this.updateMainPage});
+  Balance({this.updateMainPage});
 
   @override
-  _ExpensesState createState() => _ExpensesState();
+  _BalanceState createState() => _BalanceState();
 }
 
-class _ExpensesState extends State<Expenses> {
+class _BalanceState extends State<Balance> {
   DateTime date = new DateTime(
       DateTime.now().year, DateTime.now().month, DateTime.now().day);
-  String selectedMode = 'День';
+  String selectedMode = 'Неделя';
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
   List<double> listForAvgFunc = [];
 
@@ -85,10 +86,17 @@ class _ExpensesState extends State<Expenses> {
   }
 
   // function to only one view mode 'Неделя(Д)'
-  String sumByDay(int day, List list) {
+  String sumByDay(int index, List list) {
     double sum = 0;
-    for (int i = 0; i < list.length; i++) {
-      if (list[i].date.weekday == day) sum += list[i].sum;
+    if (selectedMode == 'Год') {
+      for (int i = 0; i < list.length; i++) {
+        if (list[i].date.month == index) sum += list[i].sum;
+      }
+    }
+    if (selectedMode == 'Неделя') {
+      for (int i = 0; i < list.length; i++) {
+        if (list[i].date.weekday == index) sum += list[i].sum;
+      }
     }
     if (sum > 0) listForAvgFunc.add(sum);
     return sum.toStringAsFixed(2);
@@ -114,7 +122,7 @@ class _ExpensesState extends State<Expenses> {
       backgroundColor: MyColors.mainColor,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [MainLocalText(text: 'Расход'), buildDropdownButton()],
+        children: [MainLocalText(text: 'Баланс'), buildDropdownButton()],
       ), // dropdown menu button
     );
   }
@@ -128,8 +136,7 @@ class _ExpensesState extends State<Expenses> {
         _getData(),
         Divider(),
         categoriesList.isEmpty
-            ? Expanded(
-                child: Center(child: MainLocalText(text: 'Расходов нет')))
+            ? Expanded(child: Center(child: MainLocalText(text: 'Записей нет')))
             : Padding(
                 padding: EdgeInsets.only(left: 15, right: 20),
                 child: Container(
@@ -137,222 +144,129 @@ class _ExpensesState extends State<Expenses> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      MainLocalText(text: 'Итого'),
-                      MainRowText(text: totalSum(categoriesList).toStringAsFixed(2))
+                      MainLocalText(text: 'Баланс за период'),
+                      MainRowText(
+                          text: totalSum(categoriesList).toStringAsFixed(2))
                     ],
                   ),
                 ),
               ),
-        //Divider(color: MyColors.textColor),
-        selectedMode == 'Неделя(Д)' && categoriesList.isNotEmpty
-            ? Expanded(
-                child: Column(
-                  //mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: ListView(
+        if (selectedMode == 'Неделя' && categoriesList.isNotEmpty)
+          Expanded(
+            child: ListView.builder(
+                itemCount: 7,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Container(
+                      height: 35,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          ExpansionTile(
-                            title: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  SecondaryLocalText(text: 'Mon'),
-                                  SecondaryText(
-                                      text: sumByDay(1, categoriesList)),
-                                ],
-                            ),
-                            backgroundColor: MyColors.backGroundColor,
-                            onExpansionChanged: (e) {},
-                            children: [
-                              Container(
-                                height: _childrenListLength(
-                                    getFilteredChildrenListByDay(1, categoriesList)),
-                                child: getExpandedChildrenForDay(
-                                    getFilteredChildrenListByDay(
-                                        1, categoriesList), 1),
-                              )
-                            ],
-                          ),
-                          ExpansionTile(
-                            title: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  SecondaryLocalText(text: 'Tue'),
-                                  SecondaryText(
-                                      text: sumByDay(2, categoriesList)),
-                                ],
-                            ),
-                            backgroundColor: MyColors.backGroundColor,
-                            onExpansionChanged: (e) {},
-                            children: [
-                              Container(
-                                height: _childrenListLength(
-                                    getFilteredChildrenListByDay(2, categoriesList)),
-                                child: getExpandedChildrenForDay(
-                                    getFilteredChildrenListByDay(
-                                        2, categoriesList), 2),
-                              )
-                            ],
-                          ),
-                          ExpansionTile(
-                            title: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  SecondaryLocalText(text: 'Wed'),
-                                  SecondaryText(
-                                      text: sumByDay(3, categoriesList)),
-                                ],
-                            ),
-                            backgroundColor: MyColors.backGroundColor,
-                            onExpansionChanged: (e) {},
-                            children: [
-                              Container(
-                                height: _childrenListLength(
-                                    getFilteredChildrenListByDay(3, categoriesList)),
-                                child: getExpandedChildrenForDay(
-                                    getFilteredChildrenListByDay(
-                                        3, categoriesList), 3),
-                              )
-                            ],
-                          ),
-                          ExpansionTile(
-                            title: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  SecondaryLocalText(text: 'Thu'),
-                                  SecondaryText(
-                                      text: sumByDay(4, categoriesList)),
-                                ],
-                            ),
-                            backgroundColor: MyColors.backGroundColor,
-                            onExpansionChanged: (e) {},
-                            children: [
-                              Container(
-                                height: _childrenListLength(
-                                    getFilteredChildrenListByDay(4, categoriesList)),
-                                child: getExpandedChildrenForDay(
-                                    getFilteredChildrenListByDay(
-                                        4, categoriesList), 4),
-                              )
-                            ],
-                          ),
-                          ExpansionTile(
-                            title: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  SecondaryLocalText(text: 'Fri'),
-                                  SecondaryText(
-                                      text: sumByDay(5, categoriesList)),
-                                ],
-                            ),
-                            backgroundColor: MyColors.backGroundColor,
-                            onExpansionChanged: (e) {},
-                            children: [
-                              Container(
-                                height: _childrenListLength(
-                                    getFilteredChildrenListByDay(5, categoriesList)),
-                                child: getExpandedChildrenForDay(
-                                    getFilteredChildrenListByDay(
-                                        5, categoriesList), 5),
-                              )
-                            ],
-                          ),
-                          ExpansionTile(
-                            title: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  SecondaryLocalText(text: 'Sat'),
-                                  SecondaryText(
-                                      text: sumByDay(6, categoriesList)),
-                                ],
-                              ),
-                            backgroundColor: MyColors.backGroundColor,
-                            onExpansionChanged: (e) {},
-                            children: [
-                              Container(
-                                height: _childrenListLength(
-                                    getFilteredChildrenListByDay(6, categoriesList)),
-                                child: getExpandedChildrenForDay(
-                                    getFilteredChildrenListByDay(
-                                        6, categoriesList), 6),
-                              )
-                            ],
-                          ),
-                          ExpansionTile(
-                            title: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  SecondaryLocalText(text: 'Sun'),
-                                  SecondaryText(
-                                      text: sumByDay(7, categoriesList)),
-                                ],
-                              ),
-                            backgroundColor: MyColors.backGroundColor,
-                            onExpansionChanged: (e) {},
-                            children: [
-                              Container(
-                                height: _childrenListLength(
-                                    getFilteredChildrenListByDay(7, categoriesList)),
-                                child: getExpandedChildrenForDay(
-                                    getFilteredChildrenListByDay(
-                                        7, categoriesList), 7),
-                              )
-                            ],
-                          ),
+                          Expanded(
+                              child: SecondaryText(
+                                  text: toDateFormatDay(index + 1))),
+                          SecondaryText(
+                              text: sumByDay((index + 1), categoriesList)),
                         ],
-                      )
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Container(
-                        height: 50,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            MainLocalText(text: 'Среднее за день'),
-                            MainRowText(
-                                text: averageFunc(listForAvgFunc).toString())
-                          ],
-                        ),
                       ),
-                    )
-                  ],
-                ),
-              )
-            : Expanded(
-                child: ListView.builder(
-                    itemCount: categoriesList.length,
-                    itemBuilder: (context, index) {
-                      ExpenseNote singleCategory = categoriesList[index];
-                      List<ExpenseNote> childrenList =
-                          getFilteredChildrenOfCategory(singleCategory);
-                      childrenList.sort((a, b) => b.date.compareTo(a.date));
-
-                      return ExpansionTile(
-                        title: Padding(
-                          padding: EdgeInsets.only(left: 5),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              SecondaryText(text: singleCategory.category),
-                              SecondaryText(text: singleCategory.sum.toStringAsFixed(2)),
-                            ],
-                          ),
-                        ),
-                        backgroundColor: MyColors.backGroundColor,
-                        onExpansionChanged: (e) {},
+                    ),
+                  );
+                }),
+          ),
+        if (selectedMode == 'Год' && categoriesList.isNotEmpty)
+          Expanded(
+            child: ListView.builder(
+                itemCount: 12,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Container(
+                      height: 35,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Container(
-                            height: _childrenListLength(childrenList),
-                            //height: 200, // how to optimize height to max needed
-                            child: getExpandedChildrenForCategory(childrenList),
-                          )
+                          SecondaryText(text: toDateFormatMonth(index + 1)),
+                          SecondaryText(
+                              text: sumByDay((index + 1), categoriesList)),
                         ],
-                      );
-                    }),
-              )
+                      ),
+                    ),
+                  );
+                }),
+          ),
       ],
     );
+  }
+
+  String toDateFormatDay(int index) {
+    String dateFormat;
+    switch (index) {
+      case 1:
+        dateFormat = 'Пн';
+        break;
+      case 2:
+        dateFormat = 'Вт';
+        break;
+      case 3:
+        dateFormat = 'Ср';
+        break;
+      case 4:
+        dateFormat = 'Чт';
+        break;
+      case 5:
+        dateFormat = 'Пт';
+        break;
+      case 6:
+        dateFormat = 'Сб';
+        break;
+      case 7:
+        dateFormat = 'Вс';
+    }
+    return dateFormat;
+  }
+
+  String toDateFormatMonth(int index) {
+    String dateFormat;
+    switch (index) {
+      case 1:
+        dateFormat = 'Январь';
+        break;
+      case 2:
+        dateFormat = 'Февраль';
+        break;
+      case 3:
+        dateFormat = 'Март';
+        break;
+      case 4:
+        dateFormat = 'Апрель';
+        break;
+      case 5:
+        dateFormat = 'Май';
+        break;
+      case 6:
+        dateFormat = 'Июнь';
+        break;
+      case 7:
+        dateFormat = 'Июль';
+        break;
+      case 8:
+        dateFormat = 'Август';
+        break;
+      case 9:
+        dateFormat = 'Сентябрь';
+        break;
+      case 10:
+        dateFormat = 'Октябрь';
+        break;
+      case 11:
+        dateFormat = 'Ноябрь';
+        break;
+      case 12:
+        dateFormat = 'Декабрь';
+        break;
+    }
+    return dateFormat;
   }
 
   Widget buildBottomAppBar() {
@@ -391,51 +305,37 @@ class _ExpensesState extends State<Expenses> {
 
   // creating main list according to date filter
   List filteredExpenses() {
-    List middleList = List();
+    List middleIncomeList = List();
+    for (int i = 0; i < ListOfIncomes.list.length; i++) {
+      if (_isInFilter(ListOfIncomes.list[i].date))
+        middleIncomeList.add(ListOfIncomes.list[i]);
+    }
+    List middleExpenseList = List();
     for (int i = 0; i < ListOfExpenses.list.length; i++) {
       if (_isInFilter(ListOfExpenses.list[i].date))
-        middleList.add(ListOfExpenses.list[i]);
+        middleExpenseList.add(ListOfExpenses.list[i]);
     }
     List resultList = List();
-    for (int i = 0; i < middleList.length; i++) {
-      bool isFound = false;
-      ExpenseNote currentExpenseNote = middleList[i];
-
-      for (ExpenseNote E in resultList) {
-        if (currentExpenseNote.category == E.category) {
-          isFound = true;
-          break;
-        }
-      }
-      if (isFound) continue;
-
-      double sum = middleList[i].sum;
-      for (int j = i + 1; j < middleList.length; j++) {
-        if (currentExpenseNote.category == middleList[j].category)
-          sum += middleList[j].sum;
-      }
+    for (int i = 0; i < middleIncomeList.length; i++) {
       resultList.add(ExpenseNote(
-          date: currentExpenseNote.date,
-          category: currentExpenseNote.category,
-          sum: sum,
-          comment: currentExpenseNote.comment));
+          date: middleIncomeList[i].date, sum: middleIncomeList[i].sum));
     }
-    if (selectedMode == 'Неделя(Д)')
-      return middleList;
-    else
-      return resultList;
+    for (int i = 0; i < middleExpenseList.length; i++) {
+      resultList.add(ExpenseNote(
+          date: middleExpenseList[i].date, sum: middleExpenseList[i].sum * -1));
+    }
+    return resultList;
   }
 
   List<ExpenseNote> getFilteredChildrenOfCategory(ExpenseNote expenseNote, {int day}) {
     List<ExpenseNote> childrenList = [];
-    if(selectedMode != 'Неделя(Д)') {
+    if (selectedMode != 'Неделя(Д)') {
       for (int i = 0; i < ListOfExpenses.list.length; i++) {
         if (_isInFilter(ListOfExpenses.list[i].date) &&
             ListOfExpenses.list[i].category == expenseNote.category)
           childrenList.add(ListOfExpenses.list[i]);
       }
-    }
-    else{
+    } else {
       for (int i = 0; i < ListOfExpenses.list.length; i++) {
         if (_isInFilter(ListOfExpenses.list[i].date) &&
             ListOfExpenses.list[i].date.weekday == day &&
@@ -539,61 +439,28 @@ class _ExpensesState extends State<Expenses> {
         });
   }
 
-  // ListView getExpandedChildrenForDay(List list, int day) {
-  //   return ListView.builder(
-  //       itemCount: list.length,
-  //       itemBuilder: (context, index) {
-  //         ExpenseNote singleCategory = list[index];
-  //         List<ExpenseNote> childrenList =
-  //         getFilteredChildrenOfCategory(singleCategory, day: day);
-  //         childrenList.sort((a, b) => b.date.compareTo(a.date));
-  //
-  //         return ExpansionTile(
-  //           title: Padding(
-  //             padding: EdgeInsets.only(left: 5),
-  //             child: Row(
-  //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //               children: [
-  //                 SecondaryText(text: list[index].category, color: MyColors.secondTextColor),
-  //                 SecondaryText(text: '${list[index].sum}', color: MyColors.secondTextColor),
-  //               ],
-  //             ),
-  //           ),
-  //           backgroundColor: MyColors.backGroundColor,
-  //           onExpansionChanged: (e) {},
-  //           children: [
-  //             Container(
-  //               height: _childrenListLength(childrenList),
-  //               //height: 200, // how to optimize height to max needed
-  //               child: getExpandedChildrenForCategory(childrenList),
-  //             )
-  //           ],
-  //         );
-  //       });
-  // }
-
   ListView getExpandedChildrenForDay(List list, int day) {
     return ListView.builder(
-      itemCount: list.length,
-      itemBuilder: (context, index) {
-        return Container(
-          height: 50,
-          child: Padding(
-            padding: EdgeInsets.only(left: 25, right: 25 ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                SecondaryText(text: list[index].category, color: MyColors.secondTextColor),
-                SecondaryText(
-                    text: list[index].sum.toStringAsFixed(2),
-                    color: MyColors.secondTextColor
-                ),
-              ],
+        itemCount: list.length,
+        itemBuilder: (context, index) {
+          return Container(
+            height: 50,
+            child: Padding(
+              padding: EdgeInsets.only(left: 25, right: 25),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SecondaryText(
+                      text: list[index].category,
+                      color: MyColors.secondTextColor),
+                  SecondaryText(
+                      text: list[index].sum.toStringAsFixed(2),
+                      color: MyColors.secondTextColor),
+                ],
+              ),
             ),
-          ),
-        );
-      }
-    );
+          );
+        });
   }
 
   boolComment(ExpenseNote note) {
@@ -638,24 +505,10 @@ class _ExpensesState extends State<Expenses> {
     return DropdownButton(
         hint: MainLocalText(text: selectedMode),
         items: [
-          DropdownMenuItem(value: 'День', child: MainLocalText(text: 'День')),
-          DropdownMenuItem(
-              value: 'Неделя', child: MainLocalText(text: 'Неделя')),
-          DropdownMenuItem(
-              value: 'Неделя(Д)', child: MainLocalText(text: 'Неделя(Д)')),
-          DropdownMenuItem(value: 'Месяц', child: MainLocalText(text: 'Месяц')),
+          DropdownMenuItem(value: 'Неделя', child: MainLocalText(text: 'Неделя')),
           DropdownMenuItem(value: 'Год', child: MainLocalText(text: 'Год')),
         ],
         onChanged: (String newValue) {
-          // if (selectedMode != 'Неделя' && newValue == 'Неделя') {
-          //   int weekDay = Localizations.localeOf(context).languageCode == 'ru' ||
-          //       Localizations.localeOf(context).languageCode == 'uk' ? date.weekday : date.weekday + 1;
-          //   date = date.subtract(Duration(days: weekDay)).add(Duration(days: 7));
-          // }
-          //
-          // if (selectedMode == 'Неделя' && newValue != 'Неделя') {
-          //   date = DateTime.now();
-          // }
           selectedMode = newValue;
           updateExpensesPage();
         });
