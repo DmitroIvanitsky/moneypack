@@ -8,7 +8,6 @@ import '../setting/DateFormatText.dart';
 import '../pages/Calculator.dart';
 import '../Objects/IncomeNote.dart';
 import '../Utility/Storage.dart';
-import '../setting/MainRowText.dart';
 import '../setting/MyColors.dart';
 import '../pages/ListOfIncomesCategories.dart';
 
@@ -62,7 +61,7 @@ class _AddIncomeState extends State<AddIncome> {
 
   void updateSum(double result){
     setState(() {
-      if (calcController != null) calcController.text = result.toString();
+      if (calcController != null) calcController.text = result.toStringAsFixed(2);
       sum = result;
     });
   }
@@ -144,7 +143,10 @@ class _AddIncomeState extends State<AddIncome> {
               color: MyColors.textColor,
             ),
             onPressed: (){
-              if (category == 'Выбирите категорию' || sum == null) return;
+              if (category == 'Выбирите категорию' ||
+                  category == 'Choose category' ||
+                  category == 'Оберіть категорію' ||
+                  sum == null) return;
               Storage.saveIncomeNote(IncomeNote(date: date, category: category, sum: sum, comment: comment), category); // function to create note object
               widget.callback();
               Navigator.pop(context);

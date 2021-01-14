@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../Objects/ListOfExpenses.dart';
 import '../Utility/appLocalizations.dart';
 import '../setting/MainLocalText.dart';
 import '../setting/SecondaryLocalText.dart';
@@ -11,7 +10,6 @@ import '../Utility/Storage.dart';
 import '../pages/Calculator.dart';
 import '../pages/ListOfExpensesCategories.dart';
 import '../setting/MyColors.dart';
-import '../setting/MainRowText.dart';
 
 class AddExpenses extends StatefulWidget{
   final Function callBack;
@@ -63,7 +61,7 @@ class _AddExpensesState extends State<AddExpenses> {
 
   void updateSum(double result){
     setState(() {
-      if (calcController != null) calcController.text = result.toString();
+      if (calcController != null) calcController.text = result.toStringAsFixed(2);
       sum = result;
     });
   }
@@ -142,7 +140,10 @@ class _AddExpensesState extends State<AddExpenses> {
             iconSize: 35,
             icon: Icon(Icons.done, color: MyColors.textColor),
             onPressed: (){
-              if (category == 'Выбирите категорию' || sum == null) return; // to not add empty sum note
+              if (category == 'Выбирите категорию' ||
+                  category == 'Choose category' ||
+                  category == 'Оберіть категорію' ||
+                  sum == null) return; // to not add empty sum note
               Storage.saveExpenseNote(
                   ExpenseNote(
                       date: date,

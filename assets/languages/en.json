@@ -21,7 +21,7 @@
   "Доход" : "Income",
   "Расход" : "Expense",
   "Баланс" : "Balance",
-  "Остаток" : "Remain",
+  "Общий остаток" : "Total balance",
   "Учёт" : "Accounting",
   "Добавить расход" : "Add Expense",
   "Добавить доход" : "Add Income",
@@ -49,5 +49,7 @@
   "Удалена категория: " : "Deleted category: ",
   "Заметка удалена" : "Note deleted",
   "Отменить" : "Undo",
-  "Итого" : "Total"
+  "Итого" : "Total",
+  "Записей нет" : "No entries",
+  "Баланс за период" : "Balance for the period"
 }

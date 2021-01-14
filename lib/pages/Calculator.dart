@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_calculator/flutter_simple_calculator.dart';
 import '../Utility/appLocalizations.dart';
-import '../setting/MainLocalText.dart';
 import '../setting/MainRowText.dart';
 import '../setting/MyColors.dart';
 
@@ -42,18 +41,22 @@ class _CalculatorState extends State<Calculator> {
         child: Scaffold(
           //bottomNavigationBar: buildBottomAppBar(),
           appBar: buildAppBar(),
-          body: Align(
-            alignment: Alignment.bottomCenter,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.75,
-                  child: calc
+          body: //Align(
+            //alignment: Alignment.bottomCenter,
+            //child:
+          //Column(
+              //mainAxisAlignment: MainAxisAlignment.end,
+              //children: [
+                SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: Container(
+                    height: MediaQuery.of(context).size.height * 0.865,
+                    child: calc
+                  ),
                 ),
-              ],
-            ),
-            ),
+              //],
+            //),
+            //),
           ),
         ),
     );

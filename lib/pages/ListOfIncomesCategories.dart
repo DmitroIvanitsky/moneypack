@@ -114,9 +114,9 @@ class _ListOfIncomesCategoriesState extends State<ListOfIncomesCategories> {
   }
 
   Widget buildBody() {
-    Size size = MediaQuery.of(context).size;
     return Column(
       children: [
+        SizedBox(height: 10),
         Expanded(
           child: list.isEmpty ?
           Center(child: MainLocalText(text: 'Добавьте категорию')) :
@@ -125,39 +125,40 @@ class _ListOfIncomesCategoriesState extends State<ListOfIncomesCategories> {
             itemBuilder: (context, index){
               String category = list[index];
               return Padding(
-                padding: EdgeInsets.only(left: 10, right: 10),
+                padding: EdgeInsets.only(left: 15, right: 5),
                 child: Column(
                   children: [
                     Container(
-                      height: 35,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          FlatButton(
-                            child: SecondaryText(text: category),
-                            onPressed: (){
-                              widget.callback(category);
-                              Navigator.pop(context);
-                            },
-                          ),
-                          IconButton(
-                            icon: Icon(Icons.delete),
-                            color: MyColors.buttonColor,
-                            onPressed: () async{
-                              CustomSnackBar.show(
-                                  key: scaffoldKey,
-                                  context: context,
-                                  text: AppLocalizations.of(context).translate('Удалена категория: ') + category,
-                                  callBack: (){
-                                    undoDelete(category, index);
-                                  }
-                              );
-                              list.remove(category);
-                              await Storage.saveList(list, 'Incomes');
-                              setState(() {});
-                            }
-                          )
-                        ]
+                      height: 40,
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: (){
+                          widget.callback(category);
+                          Navigator.pop(context);
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            SecondaryText(text: category),
+                            IconButton(
+                              icon: Icon(Icons.delete),
+                              color: MyColors.buttonColor,
+                              onPressed: () async{
+                                CustomSnackBar.show(
+                                    key: scaffoldKey,
+                                    context: context,
+                                    text: AppLocalizations.of(context).translate('Удалена категория: ') + category,
+                                    callBack: (){
+                                      undoDelete(category, index);
+                                    }
+                                );
+                                list.remove(category);
+                                await Storage.saveList(list, 'Incomes');
+                                setState(() {});
+                              }
+                            )
+                          ]
+                        ),
                       ),
                     ),
                     Divider(),

@@ -47,7 +47,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
   double income = 0;
   double expense = 0;
   double balance = 0;
-  double remain = 0;
+  double totalBalance = 0;
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -74,7 +74,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
       income = filterSumByPeriod(ListOfIncomes.list);
       expense = filterSumByPeriod(ListOfExpenses.list);
       balance = income - expense;
-      remain = remainFunc();
+      totalBalance = remainFunc();
     });
   }
 
@@ -190,8 +190,8 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        MainLocalText(text: 'Остаток'),
-                        SecondaryText(text: remain.toStringAsFixed(2)),
+                        MainLocalText(text: 'Общий остаток'),
+                        SecondaryText(text: totalBalance.toStringAsFixed(2)),
                       ],
                     ),
                   ],
