@@ -8,7 +8,6 @@ class Calculator extends StatefulWidget {
   final Function (double) updateSum;
   final double result;
 
-
   Calculator({this.updateSum, this.result});
 
   @override
@@ -40,82 +39,36 @@ class _CalculatorState extends State<Calculator> {
       home: SafeArea(
         child: Scaffold(
           //bottomNavigationBar: buildBottomAppBar(),
-          appBar: buildAppBar(),
-          body: //Align(
-            //alignment: Alignment.bottomCenter,
-            //child:
-          //Column(
-              //mainAxisAlignment: MainAxisAlignment.end,
-              //children: [
-                SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  child: Container(
-                    height: MediaQuery.of(context).size.height * 0.865,
-                    child: calc
-                  ),
-                ),
-              //],
-            //),
-            //),
-          ),
-        ),
-    );
-  }
-
-  Widget buildBottomAppBar() {
-    return BottomAppBar(
-      child: Container(
-        decoration: BoxDecoration(
-          color: MyColors.mainColor,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black,
-              blurRadius: 5
-            )
-          ]
-        ),
-        height: 60,
-        child: Padding(
-          padding: EdgeInsets.only(left: 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              MainRowText(text: AppLocalizations.of(context).translate('Калькулятор')),
-              IconButton(
-                iconSize: 35,
-                icon: Icon(Icons.done, color: MyColors.textColor),
-                onPressed: (){
-                  widget.updateSum(_currentValue);
-                  Navigator.pop(context);
-                },
+          appBar: AppBar(
+              shadowColor: Colors.black,
+              backgroundColor: MyColors.mainColor,
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  MainRowText(text: AppLocalizations.of(context).translate('Калькулятор')),
+                  IconButton(
+                    iconSize: 35,
+                    icon: Icon(Icons.done, color: MyColors.textColor),
+                    onPressed: (){
+                      widget.updateSum(_currentValue);
+                      Navigator.pop(context);
+                    },
+                  )
+                ],
               )
-            ],
+          ),
+          body: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Container(
+                  height: MediaQuery.of(context).size.height * 0.865,
+                  child: calc
+                ),
+              ),
           ),
         ),
-      )
     );
   }
 
-  Widget buildAppBar() {
-    return AppBar(
-        shadowColor: Colors.black,
-          backgroundColor: MyColors.mainColor,
-           title: Row(
-             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-             children: [
-               MainRowText(text: AppLocalizations.of(context).translate('Калькулятор')),
-               IconButton(
-                 iconSize: 35,
-                 icon: Icon(Icons.done, color: MyColors.textColor),
-                 onPressed: (){
-                   widget.updateSum(_currentValue);
-                   Navigator.pop(context);
-                 },
-               )
-             ],
-           )
-        );
-  }
 }
 
 

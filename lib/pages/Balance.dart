@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:money_pack/Objects/IncomeNote.dart';
+import '../Utility/Storage.dart';
+import '../widgets/DateWidget.dart';
 import '../Objects/ListOfIncomes.dart';
 import '../setting/SecondaryLocalText.dart';
 import '../setting/SecondaryText.dart';
 import '../setting/MainLocalText.dart';
-import '../setting/DateFormatText.dart';
 import '../Objects/ExpenseNote.dart';
 import '../Objects/ListOfExpenses.dart';
 import '../setting/MyColors.dart';
@@ -23,10 +25,45 @@ class _BalanceState extends State<Balance> {
       DateTime.now().year, DateTime.now().month, DateTime.now().day);
   String selectedMode = 'Неделя';
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
-  List<double> listForAvgFunc = [];
+  List categoriesList = [];
+
+  @override
+  void initState() {
+    loadCategoryList();
+    super.initState();
+  }
 
   void updateBalancePage() {
-    setState(() {});
+    setState(() {
+      loadCategoryList();
+    });
+  }
+
+  void loadCategoryList() {
+    List <IncomeNote> incomeList = List();
+    for (IncomeNote note in ListOfIncomes.list) {
+      if (_isInFilter(note.date))
+        incomeList.add(note);
+    }
+    List <ExpenseNote> expenseList = List();
+    for (ExpenseNote note in ListOfExpenses.list) {
+      if (_isInFilter(note.date))
+        expenseList.add(note);
+    }
+
+    for (int i = 0; i < incomeList.length; i++) {
+      categoriesList.add(IncomeNote(date: incomeList[i].date, sum: incomeList[i].sum));
+    }
+    for (int i = 0; i < expenseList.length; i++) {
+      categoriesList.add(ExpenseNote(date: expenseList[i].date, sum: expenseList[i].sum * -1));
+    }
+
+    categoriesList.sort((a, b) => b.date.compareTo(a.date));
+  }
+
+  void updateDate(DateTime dateTime) {
+      date = dateTime;
+      updateBalancePage();
   }
 
   double totalSum(List list) {
@@ -37,8 +74,7 @@ class _BalanceState extends State<Balance> {
     return total;
   }
 
-  // function to only one view mode 'Неделя(Д)'
-  String sumByDay(int index, List list) {
+  String sumBySelectedMode(int index, List list) {
     double sum = 0;
     if (selectedMode == 'Год') {
       for (int i = 0; i < list.length; i++) {
@@ -50,153 +86,65 @@ class _BalanceState extends State<Balance> {
         if (list[i].date.weekday == index) sum += list[i].sum;
       }
     }
-    if (sum > 0) listForAvgFunc.add(sum);
     return sum.toStringAsFixed(2);
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        key: scaffoldKey,
-        backgroundColor: MyColors.backGroundColor,
-        //bottomNavigationBar: buildBottomAppBar(),
-        appBar: buildAppBar(),
-        body: buildBody(),
-      ),
-    );
-  }
+  String getSumByDayLIst(int index){
+    List <String> sumByDay = [];
+    String sum;
 
-  Widget buildAppBar() {
-    return AppBar(
-      shadowColor: Colors.black,
-      iconTheme: IconThemeData(color: MyColors.textColor),
-      backgroundColor: MyColors.mainColor,
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [MainLocalText(text: 'Баланс'), buildDropdownButton()],
-      ), // dropdown menu button
-    );
-  }
+    for (int i = 1; i <= 7; i++){
+      sumByDay.add(sumBySelectedMode(i, categoriesList));
+    }
 
-  Widget buildBody() {
-    List categoriesList = filteredExpenses();
-    categoriesList.sort((a, b) => b.date.compareTo(a.date));
-
-    return Column(
-      children: [
-        _getData(),
-        Divider(),
-        categoriesList.isEmpty
-            ? Expanded(child: Center(child: MainLocalText(text: 'Записей нет')))
-            : Padding(
-                padding: EdgeInsets.only(left: 15, right: 20),
-                child: Container(
-                  height: 50,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      MainLocalText(text: 'Баланс за период'),
-                      MainRowText(
-                          text: totalSum(categoriesList).toStringAsFixed(2))
-                    ],
-                  ),
-                ),
-              ),
-        if (selectedMode == 'Неделя' && categoriesList.isNotEmpty)
-          Expanded(
-            child: ListView.builder(
-                itemCount: 7,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
-                    child: Container(
-                      height: 35,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                              child: SecondaryLocalText(
-                                  text: toDateFormatDay(index + 1))),
-                          SecondaryText(
-                              text: sumByDay((index + 1), categoriesList)),
-                        ],
-                      ),
-                    ),
-                  );
-                }),
-          ),
-        if (selectedMode == 'Год' && categoriesList.isNotEmpty)
-          Expanded(
-            child: ListView.builder(
-                itemCount: 12,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
-                    child: Container(
-                      height: 35,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          SecondaryLocalText(text: toDateFormatMonth(index + 1)),
-                          SecondaryText(
-                              text: sumByDay((index + 1), categoriesList)),
-                        ],
-                      ),
-                    ),
-                  );
-                }),
-          ),
-      ],
-    );
-  }
-
-  List filteredExpenses() {
-    List middleIncomeList = List();
-    for (int i = 0; i < ListOfIncomes.list.length; i++) {
-      if (_isInFilter(ListOfIncomes.list[i].date))
-        middleIncomeList.add(ListOfIncomes.list[i]);
+    switch (index) {
+      case 1:
+        sum = Storage.langCode == 'en' ? sumByDay[6] : sumByDay[0];
+        break;
+      case 2:
+        sum = Storage.langCode == 'en' ? sumByDay[0] : sumByDay[1];
+        break;
+      case 3:
+        sum = Storage.langCode == 'en' ? sumByDay[1] : sumByDay[2];
+        break;
+      case 4:
+        sum = Storage.langCode == 'en' ? sumByDay[2] : sumByDay[3];
+        break;
+      case 5:
+        sum = Storage.langCode == 'en' ? sumByDay[3] : sumByDay[4];
+        break;
+      case 6:
+        sum = Storage.langCode == 'en' ? sumByDay[4] : sumByDay[5];
+        break;
+      case 7:
+        sum = Storage.langCode == 'en' ? sumByDay[5] : sumByDay[6];
     }
-    List middleExpenseList = List();
-    for (int i = 0; i < ListOfExpenses.list.length; i++) {
-      if (_isInFilter(ListOfExpenses.list[i].date))
-        middleExpenseList.add(ListOfExpenses.list[i]);
-    }
-    List resultList = List();
-    for (int i = 0; i < middleIncomeList.length; i++) {
-      resultList.add(ExpenseNote(
-          date: middleIncomeList[i].date, sum: middleIncomeList[i].sum));
-    }
-    for (int i = 0; i < middleExpenseList.length; i++) {
-      resultList.add(ExpenseNote(
-          date: middleExpenseList[i].date, sum: middleExpenseList[i].sum * -1));
-    }
-    return resultList;
+    return sum;
   }
 
   String toDateFormatDay(int index) {
     String dateFormat;
     switch (index) {
       case 1:
-        dateFormat = 'Mon';
+        dateFormat = Storage.langCode == 'en' ? 'Sun' : 'Mon';
         break;
       case 2:
-        dateFormat = 'Tue';
+        dateFormat = Storage.langCode == 'en' ? 'Mon' : 'Tue';
         break;
       case 3:
-        dateFormat = 'Wed';
+        dateFormat = Storage.langCode == 'en' ? 'Tue' : 'Wed';
         break;
       case 4:
-        dateFormat = 'Thu';
+        dateFormat = Storage.langCode == 'en' ? 'Wed' : 'Thu';
         break;
       case 5:
-        dateFormat = 'Fri';
+        dateFormat = Storage.langCode == 'en' ? 'Thu' : 'Fri';
         break;
       case 6:
-        dateFormat = 'Sat';
+        dateFormat = Storage.langCode == 'en' ? 'Fri' : 'Sat';
         break;
       case 7:
-        dateFormat = 'Sun';
+        dateFormat = Storage.langCode == 'en' ? 'Sat' : 'Sun';
     }
     return dateFormat;
   }
@@ -261,73 +209,103 @@ class _BalanceState extends State<Balance> {
   // date filter function
   _isInFilter(DateTime d) {
     if (d == null) return false;
-
-    switch (selectedMode) {
-      case 'Неделя':
-        int weekDay = Localizations.localeOf(context).languageCode == 'ru' ||
-                Localizations.localeOf(context).languageCode == 'uk'
-            ? date.weekday
-            : date.weekday + 1;
-        DateTime nextWeekFirstDay =
-            date.subtract(Duration(days: weekDay)).add(Duration(days: 8));
-        return d.isAfter(nextWeekFirstDay.subtract(Duration(days: 8))) &&
-            d.isBefore(nextWeekFirstDay);
-        break;
-      case 'Год':
-        return d.year == date.year;
-        break;
-    }
+      switch (selectedMode) {
+        case 'Неделя':
+          int weekDay = Storage.langCode == 'ru' || Storage.langCode == 'uk'
+              ? date.weekday
+              : date.weekday + 1;
+          DateTime nextWeekFirstDay =
+              date.subtract(Duration(days: weekDay)).add(Duration(days: 8));
+          return d.isAfter(nextWeekFirstDay.subtract(Duration(days: 8))) &&
+              d.isBefore(nextWeekFirstDay);
+          break;
+        case 'Год':
+          return d.year == date.year;
+          break;
+      }
   }
 
-  // function return date with buttons
-  _getData() {
-    switch (selectedMode) {
-      case 'Неделя':
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+        key: scaffoldKey,
+        backgroundColor: MyColors.backGroundColor,
+        //bottomNavigationBar: buildBottomAppBar(),
+        appBar: AppBar(
+          shadowColor: Colors.black,
+          iconTheme: IconThemeData(color: MyColors.textColor),
+          backgroundColor: MyColors.mainColor,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [MainLocalText(text: 'Баланс'), buildDropdownButton()],
+          ), // dropdown menu button
+        ),
+        body: Column(
           children: [
-            IconButton(
-              icon: Icon(Icons.arrow_left),
-              onPressed: () {
-                setState(() {
-                  date = date.subtract(Duration(days: 7));
-                });
-              },
+            DateWidget.getDate(selectedMode: selectedMode, date: date, update: updateDate),
+            Divider(),
+            categoriesList.isEmpty ?
+            Expanded(child: Center(child: MainLocalText(text: 'Записей нет')))
+            : Padding(
+                padding: EdgeInsets.only(left: 15, right: 20),
+                child: Container(
+                  height: 50,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      MainLocalText(text: 'Баланс за период'),
+                      MainRowText(text: totalSum(categoriesList).toStringAsFixed(2))
+                    ],
+                  ),
+                ),
             ),
-            DateFormatText(dateTime: date, mode: selectedMode),
-            IconButton(
-              icon: Icon(Icons.arrow_right),
-              onPressed: () {
-                setState(() {
-                  date = date.add(Duration(days: 7));
-                });
-              },
-            ),
+            if (selectedMode == 'Неделя' && categoriesList.isNotEmpty)
+              Expanded(
+                child: ListView.builder(
+                  itemCount: 7,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: Container(
+                        height: 35,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(child: SecondaryLocalText(text: toDateFormatDay(index + 1))),
+                            SecondaryText(text: getSumByDayLIst(index + 1)),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+                ),
+              ),
+            if (selectedMode == 'Год' && categoriesList.isNotEmpty)
+              Expanded(
+                child: ListView.builder(
+                  itemCount: 12,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: Container(
+                        height: 35,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            SecondaryLocalText(text: toDateFormatMonth(index + 1)),
+                            SecondaryText(text: sumBySelectedMode((index + 1), categoriesList)),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+                ),
+              ),
           ],
-        );
-      case 'Год':
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            IconButton(
-              icon: Icon(Icons.arrow_left),
-              onPressed: () {
-                setState(() {
-                  date = new DateTime(date.year - 1, date.month, date.day);
-                });
-              },
-            ),
-            DateFormatText(dateTime: date, mode: selectedMode),
-            IconButton(
-              icon: Icon(Icons.arrow_right),
-              onPressed: () {
-                setState(() {
-                  date = DateTime(date.year + 1, date.month, date.day);
-                });
-              },
-            ),
-          ],
-        );
-    }
+        ),
+      ),
+    );
   }
+
 }

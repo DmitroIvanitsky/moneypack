@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import '../setting/SecondaryText.dart';
 import '../Utility/appLocalizations.dart';
 import '../widgets/customSnackBar.dart';
@@ -6,7 +7,7 @@ import '../setting/MainLocalText.dart';
 import '../Utility/Storage.dart';
 import '../setting/MyColors.dart';
 
-class ListOfExpensesCategories extends StatefulWidget{
+class ListOfExpensesCategories extends StatefulWidget {
   final Function callback;
   final String cat;
   ListOfExpensesCategories({this.callback, this.cat});
@@ -20,20 +21,15 @@ class _ListOfExpensesCategoriesState extends State<ListOfExpensesCategories> {
   String tempField = '';
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
 
-  createList () async {
-    list.add(AppLocalizations.of(context).translate('Продукты'));
-    await Storage.saveList(list, "Expenses");
-  }
-
   @override
   void initState() {
     initList();
     super.initState();
   }
 
-  initList() async{
+  initList() async {
     list = await Storage.getList('Expenses');
-    if(list == null) {
+    if (list == null) {
       list = [AppLocalizations.of(context).translate('Продукты')];
       await Storage.saveList(list, 'Expenses');
     }
@@ -41,7 +37,7 @@ class _ListOfExpensesCategoriesState extends State<ListOfExpensesCategories> {
     updateList();
   }
 
-  void updateList(){
+  void updateList() {
     setState(() {
       list.sort();
     });
@@ -64,134 +60,96 @@ class _ListOfExpensesCategoriesState extends State<ListOfExpensesCategories> {
         key: scaffoldKey,
         backgroundColor: MyColors.backGroundColor,
         //bottomNavigationBar: buildBottomAppBar(),
-        appBar: buildAppBar(),
-        body: buildBody(),
-      ),
-    );
-  }
-
-  Widget buildBottomAppBar() {
-    return BottomAppBar(
-      child: Container(
-        decoration: BoxDecoration(
-          color: MyColors.mainColor,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black,
-              blurRadius: 5
-            )
-          ]
+        appBar: AppBar(
+          shadowColor: Colors.black,
+          backgroundColor: MyColors.mainColor,
+          iconTheme: IconThemeData(color: MyColors.textColor),
+          title: MainLocalText(text: 'Категории расходов'),
         ),
-        height: 60,
-        child: Padding(
-          padding: EdgeInsets.only(right: 15),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              IconButton(
-                  icon: Icon(Icons.arrow_back, color: Colors.black),
-                  onPressed: () => Navigator.pop(context)
-              ),
-              MainLocalText(text: 'Категории расхода'),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget buildAppBar() {
-    return AppBar(
-      shadowColor: Colors.black,
-      backgroundColor: MyColors.mainColor,
-      iconTheme: IconThemeData(
-          color: MyColors.textColor
-      ),
-      title: MainLocalText(text: 'Категории расходов'),
-    );
-  }
-
-  Widget buildBody() {
-    return Column(
-      children: [
-        SizedBox(height: 10),
-        Expanded(
-          child: list.isEmpty ?
-          Center(child: MainLocalText(text: 'Добавьте категорию')) :
-          ListView.builder(
-            itemCount: list.length,
-            itemBuilder: (context, index){
-              String category = list[index];
-              return Padding(
-                padding: EdgeInsets.only(left: 15, right: 5),
-                child: Column(
-                  children: [
-                    Container(
-                      height: 40,
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: (){
-                          widget.callback(category);
-                          Navigator.pop(context);
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            SecondaryText(text: category),
-                            IconButton(
-                              icon: Icon(Icons.delete),
-                              color: MyColors.buttonColor,
-                              onPressed: () async{
-                                CustomSnackBar.show(
-                                  key: scaffoldKey,
-                                  context: context,
-                                  text: AppLocalizations.of(context).translate('Удалена категория: ') + category,
-                                  callBack: (){
-                                    undoDelete(category, index);
-                                  }
-                                );
-                                list.remove(category);
-                                await Storage.saveList(list, 'Expenses');
-                                updateList();
-                              }
-                            )
-                          ]
-                        ),
+        body: Column(
+          children: [
+            SizedBox(height: 10),
+            Expanded(
+              child: list.isEmpty ?
+              Center(child: MainLocalText(text: 'Добавьте категорию')) :
+              ListView.builder(
+                itemCount: list.length,
+                itemBuilder: (context, index) {
+                  String category = list[index];
+                  return Dismissible(
+                    key: ValueKey(category),
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 15, right: 5),
+                      child: Column(
+                        children: [
+                          Container(
+                            height: 50,
+                            child: GestureDetector(
+                              behavior: HitTestBehavior.opaque,
+                              onTap: () {
+                                widget.callback(category);
+                                Navigator.pop(context);
+                              },
+                              child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [SecondaryText(text: category)]),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    Divider(),
-                  ],
-                ),
-              );
-            },
-          ),
-        ),
-        // create a new Expense category
-        Padding(
-          padding: EdgeInsets.only(left: 10, right: 10),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
+                    direction: DismissDirection.endToStart,
+                    onDismissed: (direction) async {
+                      CustomSnackBar.show(
+                          key: scaffoldKey,
+                          context: context,
+                          text: AppLocalizations.of(context)
+                              .translate('Удалена категория: ') +
+                              category,
+                          textColor: Colors.white,
+                          callBack: () {
+                            undoDelete(category, index);
+                          });
+                      list.remove(category);
+                      await Storage.saveList(list, 'Expenses');
+                      updateList();
+                    },
+                    background: Container(),
+                    secondaryBackground: Container(
+                      alignment: Alignment.centerRight,
+                      color: Colors.redAccent,
+                      child: Padding(
+                        padding: EdgeInsets.only(right: 15),
+                        child: Icon(Icons.delete, color: Colors.black54,),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            // create a new Expense category
+            Padding(
+              padding: EdgeInsets.only(left: 10, right: 10),
+              child: Column(children: [
+                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                   Expanded(
                     child: TextFormField(
                       controller: TextEditingController(),
                       decoration: InputDecoration(
-                          hintText: AppLocalizations.of(context).translate('Добавьте новую категорию'),
-                          contentPadding: EdgeInsets.all(20.0),
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(5)),
-                              borderSide: BorderSide(color: Colors.blue)
-                          ),
+                        hintText: AppLocalizations.of(context)
+                            .translate('Добавьте новую категорию'),
+                        contentPadding: EdgeInsets.all(20.0),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(5)),
+                            borderSide: BorderSide(color: Colors.blue)),
                       ),
                       onChanged: (v) => tempField = v,
                     ),
                   ),
                   IconButton(
                     icon: Icon(Icons.add),
-                    onPressed: () async{
-                      if(tempField == '') return;
+                    onPressed: () async {
+                      if (tempField == '') return;
                       list.add(tempField);
                       tempField = '';
                       TextEditingController().clear();
@@ -199,21 +157,22 @@ class _ListOfExpensesCategoriesState extends State<ListOfExpensesCategories> {
                       updateList();
                     },
                   )
-                ]
-              ),
-              Divider()
-            ]
-          ),
-        )
-      //   IconButton(
-      //     icon: Icon(Icons.ac_unit),
-      //     onPressed: () async{
-      //       await Storage.saveList(list, 'Expenses');
-      //       list = await Storage.getList('Expenses');
-      //       print(list[0]);
-      //     },
-      //   )
-      ],
+                ]),
+                Divider()
+              ]),
+            )
+            //   IconButton(
+            //     icon: Icon(Icons.ac_unit),
+            //     onPressed: () async{
+            //       await Storage.saveList(list, 'Expenses');
+            //       list = await Storage.getList('Expenses');
+            //       print(list[0]);
+            //     },
+            //   )
+          ],
+        ),
+      ),
     );
   }
+
 }

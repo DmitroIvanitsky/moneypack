@@ -59,184 +59,6 @@ class _EditPageForIncomeCategoryState extends State<EditPageForIncomeCategory> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: MyColors.backGroundColor,
-        //bottomNavigationBar: buildBottomAppBar(),
-        appBar: buildAppBar(),
-        body: buildBody()
-      ),
-    );
-  }
-
-  Widget buildBottomAppBar() {
-    return BottomAppBar(
-      child: Container(
-        height: 60,
-        decoration: BoxDecoration(
-            color: MyColors.mainColor,
-            boxShadow: [
-              BoxShadow(
-                  color: Colors.black,
-                  blurRadius: 5
-              )
-            ]
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            IconButton(
-                icon: Icon(Icons.arrow_back, color: Colors.black),
-                onPressed: () => Navigator.pop(context)
-            ),
-            MainLocalText(text: 'Редактирование'),
-            IconButton(
-                iconSize: 35,
-                icon: Icon(Icons.done, color: MyColors.textColor),
-                onPressed: (){
-                  if (currentNote.category == AppLocalizations.of(context).translate('Выбирите категорию')
-                      || currentNote.sum == null
-                  ) return;
-                  updateListOfIncomes();
-                  widget.updateIncomePage();
-                  widget.updateMainPage();
-                  Navigator.pop(context);
-                }
-            ),
-          ],
-        ),
-      ),
-
-    );
-  }
-
-  Widget buildAppBar() {
-    return AppBar(
-      shadowColor: Colors.black,
-      iconTheme: IconThemeData(
-        color: MyColors.textColor,
-      ),
-      backgroundColor: MyColors.mainColor,
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          MainLocalText(text: "Редактирование"),
-          IconButton(
-            iconSize: 35,
-            icon: Icon(Icons.done, color: MyColors.textColor),
-            onPressed: (){
-              updateListOfIncomes();
-              widget.updateIncomePage();
-              widget.updateMainPage();
-              Navigator.pop(context);
-            }
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget buildBody() {
-    return Padding(
-      padding: EdgeInsets.only(left: 10, right: 10),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            SizedBox(height: 35),
-            // date widget row
-            RowWithWidgets(
-                leftWidget: MainLocalText(text: 'Дата'),
-                rightWidget: (currentNote.date != null)?
-                DateFormatText(
-                    dateTime: currentNote.date,
-                    mode: 'Дата в строке'
-                )
-                    : SecondaryLocalText(text: 'Выбирите дату'),
-                onTap: onDateTap
-            ),
-            SizedBox(height: 30),
-            RowWithButton(
-              leftText: 'Категория',
-              rightText: currentNote.category,
-              onTap: () => onCategoryTap(context),
-            ),
-            SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  height: 60,
-                  decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(5)
-                  ),
-                  width:  MediaQuery.of(context).size.width - 100,
-                  child: TextFormField(
-                    onTap: () => sumFocusNode.requestFocus(),
-                    focusNode: sumFocusNode,
-                    keyboardType: TextInputType.number,
-                    controller: calcController,
-                    decoration: InputDecoration(
-                        contentPadding: EdgeInsets.all(20),
-                        hintText: AppLocalizations.of(context).translate('Введите сумму'),
-                        border: sumFocusNode.hasFocus ?
-                        OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5),
-                            borderSide: BorderSide(color: Colors.blue)
-                        ) : InputBorder.none
-                    ),
-                    onChanged: (v) => currentNote.sum = double.parse(v),
-                  ),
-                ),
-                Container(
-                  height: 60,
-                  width: 60,
-                  decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.all(Radius.circular(5))
-                  ),
-                  child: IconButton(
-                      icon: Icon(
-                          Icons.calculate_outlined,
-                          color: MyColors.textColor,
-                          size: 40
-                      ),
-                      onPressed: () => goToCalculator(context)
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 20),
-            TextFormField(
-              focusNode: commentFocusNode,
-              maxLines: 3,
-              initialValue: currentNote.comment,
-              decoration: InputDecoration(
-                  hintText: AppLocalizations.of(context).translate('Введите коментарий'),
-                  contentPadding: EdgeInsets.all(20),
-                  fillColor: Colors.white,
-                  border: commentFocusNode.hasFocus ?
-                  OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                      borderSide: BorderSide(color: Colors.blue)
-                  ) : OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                      borderSide: BorderSide(color: Colors.grey)
-                  )
-              ),
-              onChanged: (v) => currentNote.comment = v,
-            ),
-            // ),
-          ],
-        ),
-      ),
-    );
-  }
-
   goToCalculator(BuildContext context){
     Navigator.push(
         context,
@@ -310,6 +132,135 @@ class _EditPageForIncomeCategoryState extends State<EditPageForIncomeCategory> {
     sumFocusNode.dispose();
     commentFocusNode.dispose();
     super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+          backgroundColor: MyColors.backGroundColor,
+          //bottomNavigationBar: buildBottomAppBar(),
+          appBar: AppBar(
+            shadowColor: Colors.black,
+            iconTheme: IconThemeData(
+              color: MyColors.textColor,
+            ),
+            backgroundColor: MyColors.mainColor,
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                MainLocalText(text: "Редактирование"),
+                IconButton(
+                    iconSize: 35,
+                    icon: Icon(Icons.done, color: MyColors.textColor),
+                    onPressed: (){
+                      updateListOfIncomes();
+                      widget.updateIncomePage();
+                      widget.updateMainPage();
+                      Navigator.pop(context);
+                    }
+                ),
+              ],
+            ),
+          ),
+          body: Padding(
+            padding: EdgeInsets.only(left: 10, right: 10),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  SizedBox(height: 35),
+                  // date widget row
+                  RowWithWidgets(
+                      leftWidget: MainLocalText(text: 'Дата'),
+                      rightWidget: (currentNote.date != null)?
+                      DateFormatText(
+                          dateTime: currentNote.date,
+                          mode: 'Дата в строке'
+                      )
+                          : SecondaryLocalText(text: 'Выбирите дату'),
+                      onTap: onDateTap
+                  ),
+                  SizedBox(height: 30),
+                  RowWithButton(
+                    leftText: 'Категория',
+                    rightText: currentNote.category,
+                    onTap: () => onCategoryTap(context),
+                  ),
+                  SizedBox(height: 30),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        height: 60,
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(5)
+                        ),
+                        width:  MediaQuery.of(context).size.width - 100,
+                        child: TextFormField(
+                          onTap: () => sumFocusNode.requestFocus(),
+                          focusNode: sumFocusNode,
+                          keyboardType: TextInputType.number,
+                          controller: calcController,
+                          decoration: InputDecoration(
+                              contentPadding: EdgeInsets.all(20),
+                              hintText: AppLocalizations.of(context).translate('Введите сумму'),
+                              border: sumFocusNode.hasFocus ?
+                              OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(5),
+                                  borderSide: BorderSide(color: Colors.blue)
+                              ) : InputBorder.none
+                          ),
+                          onChanged: (v) => currentNote.sum = double.parse(v),
+                        ),
+                      ),
+                      Container(
+                        height: 60,
+                        width: 60,
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.all(Radius.circular(5))
+                        ),
+                        child: IconButton(
+                            icon: Icon(
+                                Icons.calculate_outlined,
+                                color: MyColors.textColor,
+                                size: 40
+                            ),
+                            onPressed: () => goToCalculator(context)
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  TextFormField(
+                    focusNode: commentFocusNode,
+                    maxLines: 1,
+                    initialValue: currentNote.comment,
+                    decoration: InputDecoration(
+                        hintText: AppLocalizations.of(context).translate('Введите коментарий'),
+                        contentPadding: EdgeInsets.all(20),
+                        fillColor: Colors.white,
+                        border: commentFocusNode.hasFocus ?
+                        OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                            borderSide: BorderSide(color: Colors.blue)
+                        ) : OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                            borderSide: BorderSide(color: Colors.grey)
+                        )
+                    ),
+                    onChanged: (v) => currentNote.comment = v,
+                  ),
+                  // ),
+                ],
+              ),
+            ),
+          )
+      ),
+    );
   }
 
 }
