@@ -34,49 +34,60 @@ class ListOfIncomes {
     };
   }
 
-  // static List<IncomeNote> filtered({String selMode, DateTime currentDate}){
-  //   List <IncomeNote> filteredList = [];
-  //
-  //   for (IncomeNote note in ListOfIncomes.list)
-  //     if (_isInFilter(selMode: selMode, noteDate: note.date, currentDate: currentDate))
-  //       filteredList.add(note);
-  //
-  //     return filteredList;
-  // }
+  static List<IncomeNote> filtered({String selMode, DateTime currentDate, String currentCategory, int day}){
+    List <IncomeNote> filteredIncomesList = [];
 
-  // static _isInFilter({String selMode, DateTime noteDate, DateTime currentDate}) {
-  //   if (noteDate == null) return false;
-  //
-  //   switch (selMode) {
-  //     case 'День':
-  //       return noteDate.year == currentDate.year &&
-  //           noteDate.month == currentDate.month &&
-  //           noteDate.day == currentDate.day;
-  //       break;
-  //     case 'Неделя':
-  //       int weekDay = Storage.langCode == 'ru' || Storage.langCode == 'uk'
-  //           ? currentDate.weekday
-  //           : currentDate.weekday + 1;
-  //       DateTime nextWeekFirstDay =
-  //       currentDate.subtract(Duration(days: weekDay)).add(Duration(days: 8));
-  //       return noteDate.isAfter(nextWeekFirstDay.subtract(Duration(days: 8))) &&
-  //           noteDate.isBefore(nextWeekFirstDay);
-  //       break;
-  //     case 'Неделя(Д)':
-  //       int weekDay = Storage.langCode == 'ru' || Storage.langCode == 'uk'
-  //           ? currentDate.weekday
-  //           : currentDate.weekday + 1;
-  //       DateTime nextWeekFirstDay =
-  //       currentDate.subtract(Duration(days: weekDay)).add(Duration(days: 8));
-  //       return noteDate.isAfter(nextWeekFirstDay.subtract(Duration(days: 8))) &&
-  //           noteDate.isBefore(nextWeekFirstDay);
-  //       break;
-  //     case 'Месяц':
-  //       return noteDate.year == currentDate.year && noteDate.month == currentDate.month;
-  //       break;
-  //     case 'Год':
-  //       return noteDate.year == currentDate.year;
-  //       break;
-  //   }
-  // }
+    if (day != null) {
+      for (IncomeNote note in ListOfIncomes.list)
+        if (_isInFilter(selMode: selMode, noteDate: note.date, currentDate: currentDate) && note.date.weekday == day)
+          filteredIncomesList.add(note);
+
+    } else if (currentCategory != null) {
+      for (IncomeNote note in ListOfIncomes.list)
+        if (_isInFilter(selMode: selMode, noteDate: note.date, currentDate: currentDate) && note.category == currentCategory)
+          filteredIncomesList.add(note);
+    } else {
+      for (IncomeNote note in ListOfIncomes.list)
+        if (_isInFilter(selMode: selMode, noteDate: note.date, currentDate: currentDate))
+          filteredIncomesList.add(note);
+    }
+
+      return filteredIncomesList;
+  }
+
+  static _isInFilter({String selMode, DateTime noteDate, DateTime currentDate}) {
+    if (noteDate == null) return false;
+
+    switch (selMode) {
+      case 'День':
+        return noteDate.year == currentDate.year &&
+            noteDate.month == currentDate.month &&
+            noteDate.day == currentDate.day;
+        break;
+      case 'Неделя':
+        int weekDay = Storage.langCode == 'ru' || Storage.langCode == 'uk'
+            ? currentDate.weekday
+            : currentDate.weekday + 1;
+        DateTime nextWeekFirstDay =
+        currentDate.subtract(Duration(days: weekDay)).add(Duration(days: 8));
+        return noteDate.isAfter(nextWeekFirstDay.subtract(Duration(days: 8))) &&
+            noteDate.isBefore(nextWeekFirstDay);
+        break;
+      case 'Неделя(Д)':
+        int weekDay = Storage.langCode == 'ru' || Storage.langCode == 'uk'
+            ? currentDate.weekday
+            : currentDate.weekday + 1;
+        DateTime nextWeekFirstDay =
+        currentDate.subtract(Duration(days: weekDay)).add(Duration(days: 8));
+        return noteDate.isAfter(nextWeekFirstDay.subtract(Duration(days: 8))) &&
+            noteDate.isBefore(nextWeekFirstDay);
+        break;
+      case 'Месяц':
+        return noteDate.year == currentDate.year && noteDate.month == currentDate.month;
+        break;
+      case 'Год':
+        return noteDate.year == currentDate.year;
+        break;
+    }
+  }
 }

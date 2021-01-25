@@ -48,14 +48,7 @@ class _IncomesState extends State<Incomes> {
   }
 
   void setIncSortCatList() {
-    List <IncomeNote> incomesFilteredByDate = List();
-
-    for (IncomeNote note in ListOfIncomes.list) {
-      if (_isInFilter(note.date))
-        incomesFilteredByDate.add(note);
-    }
-
-    // incomesFilteredByDate = ListOfIncomes.filtered(selMode: selectedMode, currentDate: date);
+    List <IncomeNote> incomesFilteredByDate = ListOfIncomes.filtered(selMode: selectedMode, currentDate: date);
 
     if (selectedMode == 'Неделя(Д)'){
       incomesSortedByCategory = incomesFilteredByDate;
@@ -213,24 +206,18 @@ class _IncomesState extends State<Incomes> {
   }
 
   List<IncomeNote> getFilteredChildrenCategory(IncomeNote incomeNote) {
-    List<IncomeNote> childrenList = [];
-
-    for (IncomeNote note in ListOfIncomes.list) {
-      if (_isInFilter(note.date) && note.category == incomeNote.category)
-        childrenList.add(note);
-    }
+    List<IncomeNote> childrenList = ListOfIncomes.filtered(
+        selMode: selectedMode,
+        currentDate: date,
+        currentCategory: incomeNote.category
+    );
 
     childrenList.sort((a, b) => b.date.compareTo(a.date));
     return childrenList;
   }
 
-  List<IncomeNote> getFilteredChildrenListByDay(int day, List list) {
-    List<IncomeNote> middleByDayList = [];
-
-    for (IncomeNote note in list) {
-      if (note.date.weekday == day)
-        middleByDayList.add(note);
-    }
+  List<IncomeNote> getFilteredChildrenListByDay(int day) {
+    List<IncomeNote> middleByDayList = ListOfIncomes.filtered(selMode: selectedMode, currentDate: date, day: day);
 
     List<IncomeNote> resultByDayList = List();
 
@@ -420,42 +407,6 @@ class _IncomesState extends State<Incomes> {
     );
   }
 
-  _isInFilter(DateTime d) {
-    if (d == null) return false;
-
-    switch (selectedMode) {
-      case 'День':
-        return d.year == date.year &&
-            d.month == date.month &&
-            d.day == date.day;
-        break;
-      case 'Неделя':
-        int weekDay = Storage.langCode == 'ru' || Storage.langCode == 'uk'
-            ? date.weekday
-            : date.weekday + 1;
-        DateTime nextWeekFirstDay =
-            date.subtract(Duration(days: weekDay)).add(Duration(days: 8));
-        return d.isAfter(nextWeekFirstDay.subtract(Duration(days: 8))) &&
-            d.isBefore(nextWeekFirstDay);
-        break;
-      case 'Неделя(Д)':
-        int weekDay = Storage.langCode == 'ru' || Storage.langCode == 'uk'
-            ? date.weekday
-            : date.weekday + 1;
-        DateTime nextWeekFirstDay =
-            date.subtract(Duration(days: weekDay)).add(Duration(days: 8));
-        return d.isAfter(nextWeekFirstDay.subtract(Duration(days: 8))) &&
-            d.isBefore(nextWeekFirstDay);
-        break;
-      case 'Месяц':
-        return d.year == date.year && d.month == date.month;
-        break;
-      case 'Год':
-        return d.year == date.year;
-        break;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -516,8 +467,8 @@ class _IncomesState extends State<Incomes> {
                           onExpansionChanged: (e) {},
                           children: [
                             Container(
-                              height: _calcHeightOnChildrenListLength(getFilteredChildrenListByDay(index + 1, incomesSortedByCategory)),
-                              child: getExpandedChildrenForDay(getFilteredChildrenListByDay(index + 1, incomesSortedByCategory), index + 1),
+                              height: _calcHeightOnChildrenListLength(getFilteredChildrenListByDay(index + 1)),
+                              child: getExpandedChildrenForDay(getFilteredChildrenListByDay(index + 1), index + 1),
                             )
                           ],
                         );

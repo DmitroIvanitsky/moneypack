@@ -33,15 +33,15 @@ void main() => runApp(MaterialApp(
     const Locale.fromSubtags(languageCode: 'ru'),
     const Locale.fromSubtags(languageCode: 'uk'),
   ],
-  home: FlutterTutorialApp(),
+  home: MoneyPack(),
 ));
 
-class FlutterTutorialApp extends StatefulWidget {
+class MoneyPack extends StatefulWidget {
   @override
-  _FlutterTutorialAppState createState() => _FlutterTutorialAppState();
+  _MoneyPackState createState() => _MoneyPackState();
 }
 
-class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
+class _MoneyPackState extends State<MoneyPack> {
   DateTime date = new DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
   String selectedMode = 'День';
   double income = 0;
@@ -77,7 +77,8 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
 
   void updateMainPage() async {
     setState(() {
-      income = filterSumByPeriod(ListOfIncomes.list);
+      income = filterSumByPeriod(ListOfIncomes.filtered(selMode: selectedMode, currentDate: date));
+      income = filterSumByPeriod(ListOfIncomes.filtered(selMode: selectedMode, currentDate: date));
       expense = filterSumByPeriod(ListOfExpenses.list);
       balance = income - expense;
       totalBalance = remainFunc();
@@ -91,9 +92,7 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
   double filterSumByPeriod(List list){
     double sum = 0;
     for (int i = 0; i < list.length; i++) {
-      if (_isInFilter(list[i].date)) {
         sum += list[i].sum;
-      }
     }
     return sum;
   }
@@ -136,40 +135,6 @@ class _FlutterTutorialAppState extends State<FlutterTutorialApp> {
           updateMainPage();
         }
     );
-  }
-
-  _isInFilter(DateTime d){
-    if (Storage.langCode == null)
-      Storage.langCode = Localizations.localeOf(context).languageCode;
-
-    if (d == null) return false;
-
-    switch (selectedMode) {
-      case 'День' :
-        return
-          d.year == date.year &&
-              d.month == date.month &&
-              d.day == date.day;
-        break;
-      case 'Неделя':
-        int weekDay = Storage.langCode == 'ru' || Storage.langCode  == 'uk' ?
-            date.weekday : date.weekday + 1;
-        DateTime nextWeekFirstDay = date.subtract(
-            Duration(days: weekDay)).add(Duration(days: 8));
-        return
-          d.isAfter(nextWeekFirstDay.subtract(Duration(days: 8))) &&  d.isBefore(nextWeekFirstDay);
-        break;
-      case 'Месяц' :
-        return
-          d.year == date.year &&
-              d.month == date.month;
-        break;
-      case 'Год' :
-        return
-          d.year == date.year;
-        break;
-    }
-    print('');
   }
 
   @override

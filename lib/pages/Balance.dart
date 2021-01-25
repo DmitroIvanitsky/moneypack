@@ -40,22 +40,16 @@ class _BalanceState extends State<Balance> {
   }
 
   void loadCategoryList() {
-    List <IncomeNote> incomeList = List();
-    for (IncomeNote note in ListOfIncomes.list) {
-      if (_isInFilter(note.date))
-        incomeList.add(note);
-    }
-    List <ExpenseNote> expenseList = List();
-    for (ExpenseNote note in ListOfExpenses.list) {
-      if (_isInFilter(note.date))
-        expenseList.add(note);
-    }
+    categoriesList.clear();
 
-    for (int i = 0; i < incomeList.length; i++) {
-      categoriesList.add(IncomeNote(date: incomeList[i].date, sum: incomeList[i].sum));
+    List <IncomeNote> incomeList = ListOfIncomes.filtered(selMode: selectedMode, currentDate: date);
+    List <ExpenseNote> expenseList = ListOfExpenses.filtered(selMode: selectedMode, currentDate: date);
+
+    for (IncomeNote note in incomeList) {
+      categoriesList.add(IncomeNote(date: note.date, sum: note.sum));
     }
-    for (int i = 0; i < expenseList.length; i++) {
-      categoriesList.add(ExpenseNote(date: expenseList[i].date, sum: expenseList[i].sum * -1));
+    for (ExpenseNote note in expenseList) {
+      categoriesList.add(ExpenseNote(date: note.date, sum: note.sum * -1));
     }
 
     categoriesList.sort((a, b) => b.date.compareTo(a.date));
@@ -204,25 +198,6 @@ class _BalanceState extends State<Balance> {
           selectedMode = newValue;
           updateBalancePage();
         });
-  }
-
-  // date filter function
-  _isInFilter(DateTime d) {
-    if (d == null) return false;
-      switch (selectedMode) {
-        case 'Неделя':
-          int weekDay = Storage.langCode == 'ru' || Storage.langCode == 'uk'
-              ? date.weekday
-              : date.weekday + 1;
-          DateTime nextWeekFirstDay =
-              date.subtract(Duration(days: weekDay)).add(Duration(days: 8));
-          return d.isAfter(nextWeekFirstDay.subtract(Duration(days: 8))) &&
-              d.isBefore(nextWeekFirstDay);
-          break;
-        case 'Год':
-          return d.year == date.year;
-          break;
-      }
   }
 
   @override

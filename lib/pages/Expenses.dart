@@ -48,12 +48,7 @@ class _ExpensesState extends State<Expenses> {
   }
 
   void setExpSortCatList() {
-    List <ExpenseNote> expensesFilteredByDate = List();
-
-    for (ExpenseNote note in ListOfExpenses.list) {
-      if (_isInFilter(note.date))
-        expensesFilteredByDate.add(note);
-    }
+    List <ExpenseNote> expensesFilteredByDate = ListOfExpenses.filtered(selMode: selectedMode, currentDate: date);
 
     if (selectedMode == 'Неделя(Д)'){
       expensesSortedByCategory = expensesFilteredByDate;
@@ -213,25 +208,14 @@ class _ExpensesState extends State<Expenses> {
   }
 
   List<ExpenseNote> getFilteredChildrenOfCategory(ExpenseNote expenseNote) {
-    List<ExpenseNote> childrenList = [];
-
-    for (ExpenseNote note in ListOfExpenses.list) {
-      if (_isInFilter(note.date) && note.category == expenseNote.category)
-        childrenList.add(note);
-    }
+    List<ExpenseNote> childrenList = ListOfExpenses.filtered(selMode: selectedMode, currentDate: date, currentCategory: expenseNote.category);
 
     childrenList.sort((a, b) => b.date.compareTo(a.date));
     return childrenList;
   }
 
-  List<ExpenseNote> getFilteredChildrenListByDay(int day, List list) {
-    List<ExpenseNote> middleByDayList = [];
-
-    for (ExpenseNote note in list) {
-      if (note.date.weekday == day)
-        middleByDayList.add(note);
-    }
-
+  List<ExpenseNote> getFilteredChildrenListByDay(int day) {
+    List<ExpenseNote> middleByDayList = ListOfExpenses.filtered(selMode: selectedMode, currentDate: date, day: day);
     List<ExpenseNote> resultByDayList = List();
 
     for (int i = 0; i < middleByDayList.length; i++) {
@@ -420,45 +404,6 @@ class _ExpensesState extends State<Expenses> {
         });
   }
 
-  // date filter function
-  _isInFilter(DateTime d) {
-    if (d == null) return false;
-
-    switch (selectedMode) {
-      case 'День':
-        return d.year == date.year &&
-            d.month == date.month &&
-            d.day == date.day;
-        break;
-      case 'Неделя':
-        int weekDay = Localizations.localeOf(context).languageCode == 'ru' ||
-                Localizations.localeOf(context).languageCode == 'uk'
-            ? date.weekday
-            : date.weekday + 1;
-        DateTime nextWeekFirstDay =
-            date.subtract(Duration(days: weekDay)).add(Duration(days: 8));
-        return d.isAfter(nextWeekFirstDay.subtract(Duration(days: 8))) &&
-            d.isBefore(nextWeekFirstDay);
-        break;
-      case 'Неделя(Д)':
-        int weekDay = Localizations.localeOf(context).languageCode == 'ru' ||
-                Localizations.localeOf(context).languageCode == 'uk'
-            ? date.weekday
-            : date.weekday + 1;
-        DateTime nextWeekFirstDay =
-            date.subtract(Duration(days: weekDay)).add(Duration(days: 8));
-        return d.isAfter(nextWeekFirstDay.subtract(Duration(days: 8))) &&
-            d.isBefore(nextWeekFirstDay);
-        break;
-      case 'Месяц':
-        return d.year == date.year && d.month == date.month;
-        break;
-      case 'Год':
-        return d.year == date.year;
-        break;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -518,8 +463,8 @@ class _ExpensesState extends State<Expenses> {
                         onExpansionChanged: (e) {},
                         children: [
                           Container(
-                            height: _calcHeightOnChildrenListLength(getFilteredChildrenListByDay(index + 1, expensesSortedByCategory)),
-                            child: getExpandedChildrenForDay(getFilteredChildrenListByDay(index + 1, expensesSortedByCategory), index + 1),
+                            height: _calcHeightOnChildrenListLength(getFilteredChildrenListByDay(index + 1,)),
+                            child: getExpandedChildrenForDay(getFilteredChildrenListByDay(index + 1), index + 1),
                           )
                         ],
                       );
