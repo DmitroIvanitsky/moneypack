@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:money_pack/setting/MyColors.dart';
 
 class ThirdText extends StatelessWidget{
   final String text;
@@ -12,7 +13,7 @@ class ThirdText extends StatelessWidget{
       text,
       textAlign: align,
       style: TextStyle(
-        color: Colors.grey,
+        color: MyColors.textColor2,
         fontSize: 15,
       ),
     );

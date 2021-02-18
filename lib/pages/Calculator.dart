@@ -38,17 +38,17 @@ class _CalculatorState extends State<Calculator> {
     return MaterialApp(
       home: SafeArea(
         child: Scaffold(
-          //bottomNavigationBar: buildBottomAppBar(),
+          backgroundColor: MyColors.backGroundColor,
           appBar: AppBar(
-              shadowColor: Colors.black,
-              backgroundColor: MyColors.mainColor,
+              shadowColor: MyColors.backGroundColor.withOpacity(.001),
+              backgroundColor: MyColors.backGroundColor,
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   MainRowText(text: AppLocalizations.of(context).translate('Калькулятор')),
                   IconButton(
                     iconSize: 35,
-                    icon: Icon(Icons.done, color: MyColors.textColor),
+                    icon: Icon(Icons.done, color: MyColors.textColor2),
                     onPressed: (){
                       widget.updateSum(_currentValue);
                       Navigator.pop(context);
@@ -59,9 +59,17 @@ class _CalculatorState extends State<Calculator> {
           ),
           body: SingleChildScrollView(
                 scrollDirection: Axis.vertical,
-                child: Container(
-                  height: MediaQuery.of(context).size.height * 0.865,
-                  child: calc
+                child: Padding(
+                  padding: const EdgeInsets.all(25),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: MyColors.backGroundColor,
+                      boxShadow: MyColors.shadow,
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    height: MediaQuery.of(context).size.height * 0.85,
+                    child: calc
+                  ),
                 ),
               ),
           ),

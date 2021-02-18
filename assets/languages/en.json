@@ -53,5 +53,7 @@
   "Записей нет" : "No entries",
   "Баланс за период" : "Balance for the period",
   "Неделя(Д)" : "Week(D)",
-  "Среднее за неделю" : "weekly average"
+  "Среднее за неделю" : "weekly average",
+  "сохранить резервную копию" : "save backup",
+  "загрузить резервную копию" : "load backup"
 }

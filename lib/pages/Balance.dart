@@ -189,6 +189,9 @@ class _BalanceState extends State<Balance> {
   // dropdown menu button
   Widget buildDropdownButton() {
     return DropdownButton(
+        iconEnabledColor: MyColors.textColor2,
+        iconDisabledColor: MyColors.textColor2,
+        dropdownColor: MyColors.backGroundColor,
         hint: MainLocalText(text: selectedMode),
         items: [
           DropdownMenuItem(value: 'Неделя', child: MainLocalText(text: 'Неделя')),
@@ -206,20 +209,29 @@ class _BalanceState extends State<Balance> {
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: MyColors.backGroundColor,
-        //bottomNavigationBar: buildBottomAppBar(),
         appBar: AppBar(
-          shadowColor: Colors.black,
-          iconTheme: IconThemeData(color: MyColors.textColor),
-          backgroundColor: MyColors.mainColor,
+          shadowColor: MyColors.backGroundColor.withOpacity(.001),
+          iconTheme: IconThemeData(color: MyColors.textColor2),
+          backgroundColor: MyColors.backGroundColor,
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [MainLocalText(text: 'Баланс'), buildDropdownButton()],
+            children: [
+              MainLocalText(text: 'Баланс'),
+              buildDropdownButton()
+            ],
           ), // dropdown menu button
         ),
         body: Column(
           children: [
-            DateWidget.getDate(selectedMode: selectedMode, date: date, update: updateDate),
-            Divider(),
+            Padding(
+              padding: const EdgeInsets.only(top: 15.0, bottom: 10),
+              child: Container(
+                height: 50,
+                width: 300,
+                decoration: MyColors.boxDecoration,
+                child: DateWidget.getDate(selMode: selectedMode, date: date, update: updateDate, color: MyColors.textColor2),
+              ),
+            ),
             categoriesList.isEmpty ?
             Expanded(child: Center(child: MainLocalText(text: 'Записей нет')))
             : Padding(

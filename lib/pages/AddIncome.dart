@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:money_pack/setting/ThirdText.dart';
 import '../Utility/appLocalizations.dart';
 import '../setting/MainLocalText.dart';
 import '../setting/SecondaryLocalText.dart';
@@ -72,12 +74,7 @@ class _AddIncomeState extends State<AddIncome> {
     for (String catName in lastCategories) {
       result.add(
         RadioListTile<String>(
-          title: Text(
-            catName,
-            style: TextStyle(
-                fontWeight: catName == category? FontWeight.bold : FontWeight.normal
-            ),
-          ),
+          title: ThirdText(catName,),
           groupValue: category,
           value: catName,
           onChanged: (String value) {
@@ -123,9 +120,9 @@ class _AddIncomeState extends State<AddIncome> {
       data: ThemeData.dark().copyWith(
         colorScheme: ColorScheme.dark(
           primary: MyColors.mainColor,
-          onPrimary: MyColors.textColor,
+          onPrimary: MyColors.textColor2,
           surface: MyColors.mainColor,
-          onSurface: MyColors.textColor,
+          onSurface: MyColors.textColor2,
         ),
         dialogBackgroundColor: MyColors.backGroundColor,
       ),
@@ -138,13 +135,10 @@ class _AddIncomeState extends State<AddIncome> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: MyColors.backGroundColor,
-        //bottomNavigationBar: buildBottomAppBar(),
         appBar: AppBar(
-          iconTheme: IconThemeData(
-              color: MyColors.textColor
-          ),
-          shadowColor: Colors.black,
-          backgroundColor: MyColors.mainColor,
+          iconTheme: IconThemeData(color: MyColors.textColor2),
+          shadowColor: MyColors.backGroundColor.withOpacity(.001),
+          backgroundColor: MyColors.backGroundColor,
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children:[
@@ -153,7 +147,7 @@ class _AddIncomeState extends State<AddIncome> {
                 iconSize: 35,
                 icon: Icon(
                   Icons.done,
-                  color: MyColors.textColor,
+                  color: MyColors.textColor2,
                 ),
                 onPressed: (){
                   if (category == 'Выбирите категорию' ||
@@ -175,42 +169,35 @@ class _AddIncomeState extends State<AddIncome> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                SizedBox(height: 35),
-                RowWithWidgets(
-                    leftWidget: MainLocalText(text: 'Дата'),
-                    rightWidget: (date != null)? DateFormatText(dateTime: date, mode: 'Дата в строке')
-                        : SecondaryLocalText(text: 'Выбирите дату'),
-                    onTap: onDateTap
-                ),
-                Divider(color: MyColors.backGroundColor),
-                Container(
-                  decoration: BoxDecoration(
-                      color: MyColors.backGroundColor,
-                      borderRadius: BorderRadius.circular(5),
-                      boxShadow: [
-                        BoxShadow(
-                            color: Colors.grey,
-                            spreadRadius: 1
-                        )
-                      ]
+                Padding(
+                  padding: const EdgeInsets.only(top: 15.0, bottom: 20),
+                  child: RowWithWidgets(
+                      leftWidget: MainLocalText(text: 'Дата'),
+                      rightWidget: (date != null)
+                          ? DateFormatText(dateTime: date, mode: 'Дата в строке')
+                          : SecondaryLocalText(text: 'Выбирите дату'),
+                      onTap: onDateTap
                   ),
+                ),
+                Container(
+                  decoration: MyColors.boxDecoration,
                   child: Column(
                     children: [
-                      SizedBox(
-                        height: 10,
-                      ),
-                      RowWithButton(
-                        leftText: 'Категория',
-                        rightText: category,
-                        onTap: () =>
-                            Navigator.push(context,
-                              MaterialPageRoute(
-                                  builder: (context) => ListOfIncomesCategories(
-                                      callback: updateCategory,
-                                      cat: category
-                                  )
+                      Padding(
+                        padding: const EdgeInsets.only(top: 15.0),
+                        child: RowWithButton(
+                          leftText: 'Категория',
+                          rightText: category,
+                          onTap: () =>
+                              Navigator.push(context,
+                                MaterialPageRoute(
+                                    builder: (context) => ListOfIncomesCategories(
+                                        callback: updateCategory,
+                                        cat: category
+                                    )
+                                ),
                               ),
-                            ),
+                        ),
                       ),
                       Container(
                         height: 175,
@@ -222,83 +209,85 @@ class _AddIncomeState extends State<AddIncome> {
                     ],
                   ),
                 ),
-                SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      height: 60,
-                      decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.grey,
-                          ),
-                          borderRadius: BorderRadius.all(Radius.circular(5))
-                      ),
-                      child: Row(
-                        children: [
-                          GestureDetector(
-                            onTap: () => sumFocusNode.requestFocus(),
-                            child: Container(
-                              width: MediaQuery.of(context).size.width - 100,
-                              child:  TextFormField(
-                                focusNode: sumFocusNode,
-                                keyboardType: TextInputType.number,
-                                controller: calcController,
-                                decoration: InputDecoration(
-                                    hintText: AppLocalizations.of(context).translate('Введите сумму'),
-                                    contentPadding: EdgeInsets.all(20.0),
-                                    border: sumFocusNode.hasFocus
-                                        ? OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(Radius.circular(5)),
-                                        borderSide: BorderSide(color: Colors.blue)
-                                    ) : InputBorder.none
+
+                Padding(
+                  padding: const EdgeInsets.only(top: 25),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        height: 60,
+                        decoration: MyColors.boxDecoration,
+                        child: Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () => sumFocusNode.requestFocus(),
+                              child: Container(
+                                width: MediaQuery.of(context).size.width - 100,
+                                child:  TextFormField(
+                                  inputFormatters: [
+                                    new LengthLimitingTextInputFormatter(10),// for mobile
+                                  ],
+                                  style: TextStyle(color: MyColors.textColor2),
+                                  focusNode: sumFocusNode,
+                                  keyboardType: TextInputType.number,
+                                  controller: calcController,
+                                  decoration: InputDecoration(
+                                      hintText: AppLocalizations.of(context).translate('Введите сумму'),
+                                      contentPadding: EdgeInsets.all(20.0),
+                                      border: sumFocusNode.hasFocus
+                                          ? OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                                          borderSide: BorderSide(color: Colors.blue)
+                                      ) : InputBorder.none
+                                  ),
+                                  onChanged: (v) => sum = double.parse(v),
                                 ),
-                                onChanged: (v) => sum = double.parse(v),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-
-                    Container(
-                      height: 60,
-                      width: 60,
-                      decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.grey,
-                          ),
-                          borderRadius: BorderRadius.all(Radius.circular(5))
+                      Container(
+                        height: 60,
+                        width: 60,
+                        decoration: MyColors.boxDecoration,
+                        child: IconButton(
+                            icon: Icon(
+                                Icons.calculate_outlined,
+                                color: MyColors.textColor2,
+                                size: 40
+                            ),
+                            onPressed: () => goToCalculator(context)
+                        ),
                       ),
-                      child: IconButton(
-                          icon: Icon(
-                              Icons.calculate_outlined,
-                              color: MyColors.textColor,
-                              size: 40
-                          ),
-                          onPressed: () => goToCalculator(context)
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 20),
-                TextFormField(
-                  focusNode: commentFocusNode,
-                  maxLines: 1,
-                  decoration: InputDecoration(
-                      hintText: AppLocalizations.of(context).translate('Введите коментарий'),
-                      contentPadding: EdgeInsets.all(20.0),
-                      fillColor: Colors.white,
-                      border: commentFocusNode.hasFocus
-                          ? OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                          borderSide: BorderSide(color: Colors.blue)
-                      ) : OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                          borderSide: BorderSide(color: Colors.grey)
-                      )
+                    ],
                   ),
-                  onChanged: (v) => comment = v,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 25),
+                  child: Container(
+                    decoration: MyColors.boxDecoration,
+                    child: TextFormField(
+                      inputFormatters: [
+                        new LengthLimitingTextInputFormatter(20),// for mobile
+                      ],
+                      style: TextStyle(color: MyColors.textColor2),
+                      focusNode: commentFocusNode,
+                      maxLines: 1,
+                      decoration: InputDecoration(
+                          hintText: AppLocalizations.of(context).translate('Введите коментарий'),
+                          contentPadding: EdgeInsets.all(20.0),
+                          fillColor: Colors.white,
+                          border: commentFocusNode.hasFocus
+                              ? OutlineInputBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                              borderSide: BorderSide(color: Colors.blue)
+                          ) : InputBorder.none,
+                      ),
+                      onChanged: (v) => comment = v,
+                    ),
+                  ),
                 ),
               ],
             ),

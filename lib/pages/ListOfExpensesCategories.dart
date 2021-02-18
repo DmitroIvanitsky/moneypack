@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import '../setting/SecondaryText.dart';
 import '../Utility/appLocalizations.dart';
@@ -20,11 +21,18 @@ class _ListOfExpensesCategoriesState extends State<ListOfExpensesCategories> {
   List<String> list = [];
   String tempField = '';
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
+  FocusNode addCatFocusNode;
 
   @override
   void initState() {
     initList();
+    addCatFocusNode = FocusNode();
     super.initState();
+  }
+
+  void dispose() {
+    addCatFocusNode.dispose();
+    super.dispose();
   }
 
   initList() async {
@@ -59,11 +67,10 @@ class _ListOfExpensesCategoriesState extends State<ListOfExpensesCategories> {
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: MyColors.backGroundColor,
-        //bottomNavigationBar: buildBottomAppBar(),
         appBar: AppBar(
-          shadowColor: Colors.black,
-          backgroundColor: MyColors.mainColor,
-          iconTheme: IconThemeData(color: MyColors.textColor),
+          shadowColor: MyColors.backGroundColor.withOpacity(.001),
+          backgroundColor: MyColors.backGroundColor,
+          iconTheme: IconThemeData(color: MyColors.textColor2),
           title: MainLocalText(text: 'Категории расходов'),
         ),
         body: Column(
@@ -127,48 +134,56 @@ class _ListOfExpensesCategoriesState extends State<ListOfExpensesCategories> {
                 },
               ),
             ),
-            // create a new Expense category
             Padding(
-              padding: EdgeInsets.only(left: 10, right: 10),
-              child: Column(children: [
-                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+              padding: EdgeInsets.only(left: 15, right: 15, bottom: 15),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
                   Expanded(
-                    child: TextFormField(
-                      controller: TextEditingController(),
-                      decoration: InputDecoration(
-                        hintText: AppLocalizations.of(context)
-                            .translate('Добавьте новую категорию'),
-                        contentPadding: EdgeInsets.all(20.0),
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(5)),
-                            borderSide: BorderSide(color: Colors.blue)),
+                    child: Container(
+                      decoration: MyColors.boxDecoration,
+                      child: TextFormField(
+                        inputFormatters: [
+                          new LengthLimitingTextInputFormatter(10),// for mobile
+                        ],
+                        style: TextStyle(color: MyColors.textColor2),
+                        controller: TextEditingController(),
+                        decoration: InputDecoration(
+                          hintText: AppLocalizations.of(context).translate('Добавьте новую категорию'),
+                          contentPadding: EdgeInsets.all(20.0),
+                          border: addCatFocusNode.hasFocus
+                            ? OutlineInputBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(15)),
+                              borderSide: BorderSide(color: Colors.blue)
+                              )
+                            : InputBorder.none,
+                        ),
+                        onChanged: (v) => tempField = v,
                       ),
-                      onChanged: (v) => tempField = v,
                     ),
                   ),
-                  IconButton(
-                    icon: Icon(Icons.add),
-                    onPressed: () async {
-                      if (tempField == '') return;
-                      list.add(tempField);
-                      tempField = '';
-                      TextEditingController().clear();
-                      await Storage.saveList(list, "Expenses");
-                      updateList();
-                    },
+                  Padding(
+                    padding: const EdgeInsets.only(left: 25),
+                    child: Container(
+                      height: 60,
+                      width: 60,
+                      decoration: MyColors.boxDecoration,
+                      child: IconButton(
+                        icon: Icon(Icons.add, color: MyColors.textColor2,),
+                        onPressed: () async {
+                          if (tempField == '') return;
+                          list.add(tempField);
+                          tempField = '';
+                          TextEditingController().clear();
+                          await Storage.saveList(list, "Expenses");
+                          updateList();
+                        },
+                      ),
+                    ),
                   )
-                ]),
-                Divider()
-              ]),
+                ]
+              ),
             )
-            //   IconButton(
-            //     icon: Icon(Icons.ac_unit),
-            //     onPressed: () async{
-            //       await Storage.saveList(list, 'Expenses');
-            //       list = await Storage.getList('Expenses');
-            //       print(list[0]);
-            //     },
-            //   )
           ],
         ),
       ),

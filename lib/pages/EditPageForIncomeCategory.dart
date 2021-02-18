@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../Utility/appLocalizations.dart';
 import '../pages/Calculator.dart';
 import '../setting/DateFormatText.dart';
@@ -117,9 +118,9 @@ class _EditPageForIncomeCategoryState extends State<EditPageForIncomeCategory> {
       data: ThemeData.dark().copyWith(
         colorScheme: ColorScheme.dark(
           primary: MyColors.mainColor,
-          onPrimary: MyColors.textColor,
+          onPrimary: MyColors.textColor2,
           surface: MyColors.mainColor,
-          onSurface: MyColors.textColor,
+          onSurface: MyColors.textColor2,
         ),
         dialogBackgroundColor: MyColors.backGroundColor,
       ),
@@ -139,20 +140,17 @@ class _EditPageForIncomeCategoryState extends State<EditPageForIncomeCategory> {
     return SafeArea(
       child: Scaffold(
           backgroundColor: MyColors.backGroundColor,
-          //bottomNavigationBar: buildBottomAppBar(),
           appBar: AppBar(
-            shadowColor: Colors.black,
-            iconTheme: IconThemeData(
-              color: MyColors.textColor,
-            ),
-            backgroundColor: MyColors.mainColor,
+            shadowColor: MyColors.backGroundColor.withOpacity(.001),
+            iconTheme: IconThemeData(color: MyColors.textColor2,),
+            backgroundColor: MyColors.backGroundColor,
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 MainLocalText(text: "Редактирование"),
                 IconButton(
                     iconSize: 35,
-                    icon: Icon(Icons.done, color: MyColors.textColor),
+                    icon: Icon(Icons.done, color: MyColors.textColor2),
                     onPressed: (){
                       updateListOfIncomes();
                       widget.updateIncomePage();
@@ -170,89 +168,96 @@ class _EditPageForIncomeCategoryState extends State<EditPageForIncomeCategory> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  SizedBox(height: 35),
-                  // date widget row
-                  RowWithWidgets(
-                      leftWidget: MainLocalText(text: 'Дата'),
-                      rightWidget: (currentNote.date != null)?
-                      DateFormatText(
-                          dateTime: currentNote.date,
-                          mode: 'Дата в строке'
-                      )
-                          : SecondaryLocalText(text: 'Выбирите дату'),
-                      onTap: onDateTap
-                  ),
-                  SizedBox(height: 30),
-                  RowWithButton(
-                    leftText: 'Категория',
-                    rightText: currentNote.category,
-                    onTap: () => onCategoryTap(context),
-                  ),
-                  SizedBox(height: 30),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        height: 60,
-                        decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(5)
-                        ),
-                        width:  MediaQuery.of(context).size.width - 100,
-                        child: TextFormField(
-                          onTap: () => sumFocusNode.requestFocus(),
-                          focusNode: sumFocusNode,
-                          keyboardType: TextInputType.number,
-                          controller: calcController,
-                          decoration: InputDecoration(
-                              contentPadding: EdgeInsets.all(20),
-                              hintText: AppLocalizations.of(context).translate('Введите сумму'),
-                              border: sumFocusNode.hasFocus ?
-                              OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(5),
-                                  borderSide: BorderSide(color: Colors.blue)
-                              ) : InputBorder.none
-                          ),
-                          onChanged: (v) => currentNote.sum = double.parse(v),
-                        ),
-                      ),
-                      Container(
-                        height: 60,
-                        width: 60,
-                        decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.all(Radius.circular(5))
-                        ),
-                        child: IconButton(
-                            icon: Icon(
-                                Icons.calculate_outlined,
-                                color: MyColors.textColor,
-                                size: 40
-                            ),
-                            onPressed: () => goToCalculator(context)
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 20),
-                  TextFormField(
-                    focusNode: commentFocusNode,
-                    maxLines: 1,
-                    initialValue: currentNote.comment,
-                    decoration: InputDecoration(
-                        hintText: AppLocalizations.of(context).translate('Введите коментарий'),
-                        contentPadding: EdgeInsets.all(20),
-                        fillColor: Colors.white,
-                        border: commentFocusNode.hasFocus ?
-                        OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                            borderSide: BorderSide(color: Colors.blue)
-                        ) : OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                            borderSide: BorderSide(color: Colors.grey)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 25),
+                    child: RowWithWidgets(
+                        leftWidget: MainLocalText(text: 'Дата'),
+                        rightWidget: (currentNote.date != null)?
+                        DateFormatText(
+                            dateTime: currentNote.date,
+                            mode: 'Дата в строке'
                         )
+                            : SecondaryLocalText(text: 'Выбирите дату'),
+                        onTap: onDateTap
                     ),
-                    onChanged: (v) => currentNote.comment = v,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 25),
+                    child: RowWithButton(
+                      leftText: 'Категория',
+                      rightText: currentNote.category,
+                      onTap: () => onCategoryTap(context),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 25),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          height: 60,
+                          decoration: MyColors.boxDecoration,
+                          width:  MediaQuery.of(context).size.width - 100,
+                          child: TextFormField(
+                            inputFormatters: [
+                              new LengthLimitingTextInputFormatter(10),// for mobile
+                            ],
+                            onTap: () => sumFocusNode.requestFocus(),
+                            focusNode: sumFocusNode,
+                            keyboardType: TextInputType.number,
+                            controller: calcController,
+                            decoration: InputDecoration(
+                                contentPadding: EdgeInsets.all(20),
+                                hintText: AppLocalizations.of(context).translate('Введите сумму'),
+                                border: sumFocusNode.hasFocus ?
+                                OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                    borderSide: BorderSide(color: Colors.blue)
+                                ) : InputBorder.none
+                            ),
+                            onChanged: (v) => currentNote.sum = double.parse(v),
+                          ),
+                        ),
+                        Container(
+                          height: 60,
+                          width: 60,
+                          decoration: MyColors.boxDecoration,
+                          child: IconButton(
+                              icon: Icon(
+                                  Icons.calculate_outlined,
+                                  color: MyColors.textColor2,
+                                  size: 40
+                              ),
+                              onPressed: () => goToCalculator(context)
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 25),
+                    child: Container(
+                      decoration: MyColors.boxDecoration,
+                      child: TextFormField(
+                        inputFormatters: [
+                          new LengthLimitingTextInputFormatter(20),// for mobile
+                        ],
+                        focusNode: commentFocusNode,
+                        maxLines: 1,
+                        initialValue: currentNote.comment,
+                        decoration: InputDecoration(
+                            hintText: AppLocalizations.of(context).translate('Введите коментарий'),
+                            contentPadding: EdgeInsets.all(20),
+                            fillColor: Colors.white,
+                            border: commentFocusNode.hasFocus ?
+                            OutlineInputBorder(
+                                borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                                borderSide: BorderSide(color: Colors.blue)
+                            ) : InputBorder.none
+                        ),
+                        onChanged: (v) => currentNote.comment = v,
+                      ),
+                    ),
                   ),
                   // ),
                 ],

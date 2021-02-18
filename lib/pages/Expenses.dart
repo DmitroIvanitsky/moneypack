@@ -25,8 +25,7 @@ class Expenses extends StatefulWidget {
 }
 
 class _ExpensesState extends State<Expenses> {
-  DateTime date = new DateTime(
-      DateTime.now().year, DateTime.now().month, DateTime.now().day);
+  DateTime date = new DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
   String selectedMode = 'День';
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
   List <ExpenseNote> expensesSortedByCategory = [];
@@ -324,7 +323,7 @@ class _ExpensesState extends State<Expenses> {
         });
   }
 
-  ListView getExpandedChildrenForDay(List list, int day) {
+  ListView getExpandedChildrenForDay(List list) {
     return ListView.builder(
         itemCount: list.length,
         itemBuilder: (context, index) {
@@ -337,10 +336,10 @@ class _ExpensesState extends State<Expenses> {
                 children: [
                   SecondaryText(
                       text: list[index].category,
-                      color: MyColors.secondTextColor),
+                      color: MyColors.textColor2),
                   SecondaryText(
                       text: list[index].sum.toStringAsFixed(2),
-                      color: MyColors.secondTextColor),
+                      color: MyColors.textColor2),
                 ],
               ),
             ),
@@ -388,13 +387,14 @@ class _ExpensesState extends State<Expenses> {
   // dropdown menu button
   Widget buildDropdownButton() {
     return DropdownButton(
+        iconEnabledColor: MyColors.textColor2,
+        iconDisabledColor: MyColors.textColor2,
+        dropdownColor: MyColors.backGroundColor,
         hint: MainLocalText(text: selectedMode),
         items: [
           DropdownMenuItem(value: 'День', child: MainLocalText(text: 'День')),
-          DropdownMenuItem(
-              value: 'Неделя', child: MainLocalText(text: 'Неделя')),
-          DropdownMenuItem(
-              value: 'Неделя(Д)', child: MainLocalText(text: 'Неделя(Д)')),
+          DropdownMenuItem(value: 'Неделя', child: MainLocalText(text: 'Неделя')),
+          DropdownMenuItem(value: 'Неделя(Д)', child: MainLocalText(text: 'Неделя(Д)')),
           DropdownMenuItem(value: 'Месяц', child: MainLocalText(text: 'Месяц')),
           DropdownMenuItem(value: 'Год', child: MainLocalText(text: 'Год')),
         ],
@@ -411,9 +411,9 @@ class _ExpensesState extends State<Expenses> {
         key: scaffoldKey,
         backgroundColor: MyColors.backGroundColor,
         appBar: AppBar(
-          shadowColor: Colors.black,
-          iconTheme: IconThemeData(color: MyColors.textColor),
-          backgroundColor: MyColors.mainColor,
+          shadowColor: MyColors.backGroundColor.withOpacity(.001),
+          iconTheme: IconThemeData(color: MyColors.textColor2),
+          backgroundColor: MyColors.backGroundColor,
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [MainLocalText(text: 'Расход'), buildDropdownButton()],
@@ -421,9 +421,15 @@ class _ExpensesState extends State<Expenses> {
         ),
         body: Column(
           children: [
-            DateWidget.getDate(
-                selectedMode: selectedMode, date: date, update: updateDate),
-            Divider(),
+            Padding(
+              padding: const EdgeInsets.only(top: 15.0, bottom: 10),
+              child: Container(
+                height: 50,
+                width: 300,
+                decoration: MyColors.boxDecoration,
+                child: DateWidget.getDate(selMode: selectedMode, date: date, update: updateDate, color: MyColors.textColor2),
+              ),
+            ),
             expensesSortedByCategory.isEmpty ?
             Expanded(
               child: Center(child: MainLocalText(text: 'Расходов нет'))
@@ -463,8 +469,8 @@ class _ExpensesState extends State<Expenses> {
                         onExpansionChanged: (e) {},
                         children: [
                           Container(
-                            height: _calcHeightOnChildrenListLength(getFilteredChildrenListByDay(index + 1,)),
-                            child: getExpandedChildrenForDay(getFilteredChildrenListByDay(index + 1), index + 1),
+                            height: _calcHeightOnChildrenListLength(getFilteredChildrenListByDay(Storage.langCode == 'en' ? index : index + 1)),
+                            child: getExpandedChildrenForDay(getFilteredChildrenListByDay(Storage.langCode == 'en' ? index : index + 1)),
                           )
                         ],
                       );

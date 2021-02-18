@@ -1,8 +1,9 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '../widgets/DateWidget.dart';
 import '../setting/SecondaryLocalText.dart';
 import '../setting/SecondaryText.dart';
-import '../widgets/DateWidget.dart';
 import '../Utility/appLocalizations.dart';
 import '../widgets/customSnackBar.dart';
 import '../setting/MainLocalText.dart';
@@ -14,6 +15,7 @@ import '../Objects/ListOfIncomes.dart';
 import '../Utility/Storage.dart';
 import '../setting/MyColors.dart';
 import '../setting/MainRowText.dart';
+
 
 class Incomes extends StatefulWidget {
   final Function updateMainPage;
@@ -328,7 +330,7 @@ class _IncomesState extends State<Incomes> {
     );
   }
 
-  ListView getExpandedChildrenForDay(List list, int day) {
+  ListView getExpandedChildrenForDay(List list) {
     return ListView.builder(
       itemCount: list.length,
       itemBuilder: (context, index) {
@@ -341,10 +343,10 @@ class _IncomesState extends State<Incomes> {
               children: [
                 SecondaryText(
                   text: list[index].category,
-                  color: MyColors.secondTextColor),
+                  color: MyColors.textColor2),
                 SecondaryText(
                   text: list[index].sum.toStringAsFixed(2),
-                  color: MyColors.secondTextColor),
+                  color: MyColors.textColor2),
               ],
             ),
           ),
@@ -392,6 +394,9 @@ class _IncomesState extends State<Incomes> {
 
   Widget buildDropdownButton() {
     return DropdownButton(
+      iconEnabledColor: MyColors.textColor2,
+      iconDisabledColor: MyColors.textColor2,
+      dropdownColor: MyColors.backGroundColor,
       hint: MainLocalText(text: selectedMode),
       items: [
         DropdownMenuItem(value: 'День', child: MainLocalText(text: 'День')),
@@ -414,9 +419,9 @@ class _IncomesState extends State<Incomes> {
         key: scaffoldKey,
         backgroundColor: MyColors.backGroundColor,
         appBar: AppBar(
-          shadowColor: Colors.black,
-          iconTheme: IconThemeData(color: MyColors.textColor),
-          backgroundColor: MyColors.mainColor,
+          shadowColor: MyColors.backGroundColor.withOpacity(.001),
+          iconTheme: IconThemeData(color: MyColors.textColor2),
+          backgroundColor: MyColors.backGroundColor,
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -427,9 +432,15 @@ class _IncomesState extends State<Incomes> {
         ),
         body: Column(
           children: [
-            DateWidget.getDate(
-              selectedMode: selectedMode, date: date, update: updateDate),
-            Divider(),
+            Padding(
+              padding: const EdgeInsets.only(top: 15.0, bottom: 10),
+              child: Container(
+                height: 50,
+                width: 300,
+                decoration: MyColors.boxDecoration,
+                child: DateWidget.getDate(selMode: selectedMode, date: date, update: updateDate, color: MyColors.textColor2),
+              ),
+            ),
             incomesSortedByCategory.isEmpty ?
             Expanded(
               child: Center(child: MainLocalText(text: 'Доходов нет')))
@@ -447,8 +458,8 @@ class _IncomesState extends State<Incomes> {
                   ),
                 ),
               ),
-            selectedMode == 'Неделя(Д)' && incomesSortedByCategory.isNotEmpty ?
-            Expanded(
+            selectedMode == 'Неделя(Д)' && incomesSortedByCategory.isNotEmpty
+            ? Expanded(
               child: Column(
                 children: [
                   Expanded(
@@ -467,8 +478,8 @@ class _IncomesState extends State<Incomes> {
                           onExpansionChanged: (e) {},
                           children: [
                             Container(
-                              height: _calcHeightOnChildrenListLength(getFilteredChildrenListByDay(index + 1)),
-                              child: getExpandedChildrenForDay(getFilteredChildrenListByDay(index + 1), index + 1),
+                              height: _calcHeightOnChildrenListLength(getFilteredChildrenListByDay(Storage.langCode == 'en' ? index : index + 1)),
+                              child: getExpandedChildrenForDay(getFilteredChildrenListByDay(Storage.langCode == 'en' ? index : index + 1)),
                             )
                           ],
                         );

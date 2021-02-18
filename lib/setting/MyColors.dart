@@ -18,8 +18,29 @@ class MyColors{
   static Color delete = Colors.redAccent;
   static Color backGroundColor = Colors.brown[50];
   static Color rowColor = Colors.brown[100];
+  static Color lightBrown = Color.fromARGB(255, 247, 245, 244);
 
   static Color buttonColor = Colors.black54;
   static Color secondTextColor = Colors.black54;
   static Color textColor = Colors.black;
+  static Color textColor2 = Color.fromARGB(255, 98,106,108);
+
+  static List<BoxShadow> shadow = [
+    BoxShadow(
+        color: Colors.white,
+        offset: Offset(-7.5, -7.5),
+        blurRadius: 10
+    ),
+    BoxShadow(
+        color: Colors.brown[100],
+        offset: Offset(7.5, 7.5),
+        blurRadius: 10
+    )
+  ];
+
+  static BoxDecoration boxDecoration = BoxDecoration(
+    color: MyColors.backGroundColor,
+    borderRadius: BorderRadius.circular(15),
+    boxShadow: MyColors.shadow
+  );
 }

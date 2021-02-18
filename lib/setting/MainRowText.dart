@@ -1,26 +1,29 @@
 import 'package:flutter/material.dart';
+import '../setting/MyColors.dart';
 
 class MainRowText extends StatelessWidget{
   final String text;
   final TextAlign align;
-  Color color;
+  final Color color;
 
   MainRowText({this.text, this.align, this.color});
 
   @override
   Widget build(BuildContext context) {
+    Color _color;
     if (color == null)
-      color = Colors.black;
-
+      _color = MyColors.textColor2;
+    else
+      _color = color;
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Text(
         text,
         textAlign: align,
         style: TextStyle(
-          color: color,
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
+          color: _color,
+          fontSize: 18,
+          //fontWeight: FontWeight.bold,
         ),
       ),
     );

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import '../setting/ThirdText.dart';
 import '../pages/ListOfExpensesCategories.dart';
 import '../Utility/appLocalizations.dart';
 import '../setting/MainLocalText.dart';
@@ -9,7 +11,6 @@ import '../setting/DateFormatText.dart';
 import '../Objects/ExpenseNote.dart';
 import '../Utility/Storage.dart';
 import '../pages/Calculator.dart';
-import '../pages/ListOfExpensesCategories.dart';
 import '../setting/MyColors.dart';
 
 class AddExpenses extends StatefulWidget{
@@ -73,12 +74,7 @@ class _AddExpensesState extends State<AddExpenses> {
     for (String catName in lastCategories) {
       result.add(
         RadioListTile<String>(
-          title: Text(
-            catName,
-            style: TextStyle(
-                fontWeight: catName == category? FontWeight.bold : FontWeight.normal
-            ),
-          ),
+          title: ThirdText(catName,),
           groupValue: category,
           value: catName,
           onChanged: (String value) {
@@ -131,9 +127,9 @@ class _AddExpensesState extends State<AddExpenses> {
       data: ThemeData.dark().copyWith(
         colorScheme: ColorScheme.dark(
           primary: MyColors.mainColor,
-          onPrimary: MyColors.textColor,
+          onPrimary: MyColors.textColor2,
           surface: MyColors.mainColor,
-          onSurface: MyColors.textColor,
+          onSurface: MyColors.textColor2,
         ),
         dialogBackgroundColor: MyColors.backGroundColor,
       ),
@@ -146,20 +142,17 @@ class _AddExpensesState extends State<AddExpenses> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: MyColors.backGroundColor,
-        //bottomNavigationBar: buildBottomAppBar(),
         appBar: AppBar(
-          iconTheme: IconThemeData(
-              color: MyColors.textColor
-          ),
-          shadowColor: Colors.black,
-          backgroundColor: MyColors.mainColor,
+          iconTheme: IconThemeData(color: MyColors.textColor2),
+          shadowColor: MyColors.backGroundColor.withOpacity(.001),
+          backgroundColor: MyColors.backGroundColor,
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               MainLocalText(text: 'Добавить расход'),
               IconButton(
                 iconSize: 35,
-                icon: Icon(Icons.done, color: MyColors.textColor),
+                icon: Icon(Icons.done, color: MyColors.textColor2),
                 onPressed: (){
                   if (category == 'Выбирите категорию' ||
                       category == 'Choose category' ||
@@ -187,40 +180,32 @@ class _AddExpensesState extends State<AddExpenses> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                SizedBox(height: 35),
-                RowWithWidgets(
-                    leftWidget: MainLocalText(text: 'Дата'),
-                    rightWidget: (date != null) ?
-                    DateFormatText(dateTime: date, mode: 'Дата в строке', color: MyColors.textColor) :
-                    SecondaryLocalText(text: 'Выбирите дату'),
-                    onTap: onDateTap
-                ),
-                Divider(color: MyColors.backGroundColor),
-                Container(
-                  decoration: BoxDecoration(
-                      color: MyColors.backGroundColor,
-                      borderRadius: BorderRadius.circular(5),
-                      boxShadow: [
-                        BoxShadow(
-                            color: Colors.grey,
-                            spreadRadius: 1
-                        )
-                      ]
+                Padding(
+                  padding: const EdgeInsets.only(top: 15, bottom: 20),
+                  child: RowWithWidgets(
+                      leftWidget: MainLocalText(text: 'Дата'),
+                      rightWidget: (date != null) ?
+                      DateFormatText(dateTime: date, mode: 'Дата в строке') :
+                      SecondaryLocalText(text: 'Выбирите дату'),
+                      onTap: onDateTap
                   ),
+                ),
+                Container(
+                  decoration: MyColors.boxDecoration,
                   child: Column(
                     children: [
-                      SizedBox(
-                        height: 10,
-                      ),
-                      RowWithButton(
-                        leftText: 'Категория',
-                        rightText: category,
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ListOfExpensesCategories(
-                                  callback: updateCategory,
-                                  cat: category)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 15.0),
+                        child: RowWithButton(
+                          leftText: 'Категория',
+                          rightText: category,
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ListOfExpensesCategories(
+                                    callback: updateCategory,
+                                    cat: category)
+                            ),
                           ),
                         ),
                       ),
@@ -234,73 +219,77 @@ class _AddExpensesState extends State<AddExpenses> {
                     ],
                   ),
                 ),
-                SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      height: 60,
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey),
-                          borderRadius: BorderRadius.all(Radius.circular(5))
-                      ),
-                      width: MediaQuery.of(context).size.width - 100,
-                      child:  TextFormField(
-                        onTap: () => sumFocusNode.requestFocus(),
-                        focusNode: sumFocusNode,
-                        keyboardType: TextInputType.number,
-                        controller: calcController,
-                        decoration: InputDecoration(
-                            contentPadding: EdgeInsets.all(20.0),
-                            hintText: AppLocalizations.of(context).translate('Введите сумму'),
-                            border: sumFocusNode.hasFocus ?
-                            OutlineInputBorder(
-                                borderRadius: BorderRadius.all(Radius.circular(5)),
-                                borderSide: BorderSide(color: Colors.blue)
-                            ) :
-                            InputBorder.none
+                Padding(
+                  padding: const EdgeInsets.only(top: 25),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        height: 60,
+                        decoration: MyColors.boxDecoration,
+                        width: MediaQuery.of(context).size.width - 100,
+                        child:  TextFormField(
+                          inputFormatters: [
+                            new LengthLimitingTextInputFormatter(10),// for mobile
+                          ],
+                          style: TextStyle(color: MyColors.textColor2),
+                          onTap: () => sumFocusNode.requestFocus(),
+                          focusNode: sumFocusNode,
+                          keyboardType: TextInputType.number,
+                          controller: calcController,
+                          decoration: InputDecoration(
+                              contentPadding: EdgeInsets.all(20.0),
+                              hintText: AppLocalizations.of(context).translate('Введите сумму'),
+                              border: sumFocusNode.hasFocus ?
+                              OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(Radius.circular(15)),
+                                  borderSide: BorderSide(color: Colors.blue)
+                              ) :
+                              InputBorder.none
+                          ),
+                          onChanged: (v) => sum = double.parse(v),
                         ),
-                        onChanged: (v) => sum = double.parse(v),
                       ),
-                    ),
-                    Container(
-                      height: 60,
-                      width: 60,
-                      decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.grey,
-                          ),
-                          borderRadius: BorderRadius.all(Radius.circular(5))
+                      Container(
+                        height: 60,
+                        width: 60,
+                        decoration: MyColors.boxDecoration,
+                        child: IconButton(
+                            icon: Icon(
+                                Icons.calculate_outlined,
+                                color: MyColors.textColor2,
+                                size: 40
+                            ),
+                            onPressed: () => goToCalculator(context)
+                        ),
                       ),
-                      child: IconButton(
-                          icon: Icon(
-                              Icons.calculate_outlined,
-                              color: MyColors.textColor,
-                              size: 40
-                          ),
-                          onPressed: () => goToCalculator(context)
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 20),
-                TextFormField(
-                  focusNode: commentFocusNode,
-                  maxLines: 1,
-                  decoration: InputDecoration(
-                      hintText: AppLocalizations.of(context).translate('Введите коментарий'),
-                      contentPadding: EdgeInsets.all(20.0),
-                      fillColor: Colors.white,
-                      border: commentFocusNode.hasFocus
-                          ? OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                          borderSide: BorderSide(color: Colors.blue)
-                      ) : OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                          borderSide: BorderSide(color: Colors.grey)
-                      )
+                    ],
                   ),
-                  onChanged: (v) => comment = v,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 25),
+                  child: Container(
+                    decoration: MyColors.boxDecoration,
+                    child: TextFormField(
+                      inputFormatters: [
+                        new LengthLimitingTextInputFormatter(20),// for mobile
+                      ],
+                      style: TextStyle(color: MyColors.textColor2),
+                      focusNode: commentFocusNode,
+                      maxLines: 1,
+                      decoration: InputDecoration(
+                          hintText: AppLocalizations.of(context).translate('Введите коментарий'),
+                          contentPadding: EdgeInsets.all(20.0),
+                          fillColor: Colors.white,
+                          border: commentFocusNode.hasFocus
+                              ? OutlineInputBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                              borderSide: BorderSide(color: Colors.blue)
+                          ) : InputBorder.none,
+                      ),
+                      onChanged: (v) => comment = v,
+                    ),
+                  ),
                 ),
               ],
             ),

@@ -16,7 +16,7 @@ class DateFormatText extends StatelessWidget {
   Widget build(BuildContext context) {
     Color _color;
     if (color == null)
-      _color = null;
+      _color = MyColors.textColor2;
     else
       _color = color;
     switch(mode){

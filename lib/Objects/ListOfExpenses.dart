@@ -4,6 +4,8 @@ import 'ExpenseNote.dart';
 class ListOfExpenses {
   static List<ExpenseNote> list = List();
 
+  get getList => list;
+
   ListOfExpenses();
 
   static add(ExpenseNote item) {
@@ -19,8 +21,8 @@ class ListOfExpenses {
   }
 
   ListOfExpenses.fromJson(Map<String, dynamic> json){
-    if (json['list'] != null)
-    list = List<ExpenseNote>.from(json['list'].map((i) => ExpenseNote.fromJson(i)));
+    if (json != null && json['list'] != null)
+     list = List<ExpenseNote>.from(json['list'].map((i) => ExpenseNote.fromJson(i)));
   }
 
   toJson() {

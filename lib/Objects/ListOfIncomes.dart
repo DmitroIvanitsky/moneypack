@@ -19,7 +19,7 @@ class ListOfIncomes {
   }
 
   ListOfIncomes.fromJson(Map<String, dynamic> json){
-    if (json['list'] != null)
+    if (json != null && json['list'] != null)
       list = List<IncomeNote>.from(json['list'].map((i) => IncomeNote.fromJson(i)));
   }
 
