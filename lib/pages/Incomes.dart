@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:money_pack/setting/expansionTileTheme.dart';
+import '../setting/AppDecoration.dart';
+import '../widgets/AppDropdownButton.dart';
 import '../widgets/DateWidget.dart';
 import '../setting/SecondaryLocalText.dart';
 import '../setting/SecondaryText.dart';
@@ -13,7 +16,7 @@ import '../pages/EditPageForIncomeCategory.dart';
 import '../Objects/IncomeNote.dart';
 import '../Objects/ListOfIncomes.dart';
 import '../Utility/Storage.dart';
-import '../setting/MyColors.dart';
+import '../setting/AppColors.dart';
 import '../setting/MainRowText.dart';
 
 
@@ -93,6 +96,11 @@ class _IncomesState extends State<Incomes> {
     setState(() {
       setIncSortCatList();
     });
+  }
+
+  void updateSelectedMode(String selMode){
+    selectedMode = selMode;
+    updateIncomesPage();
   }
 
   void updateDate(DateTime dateTime) {
@@ -267,12 +275,8 @@ class _IncomesState extends State<Incomes> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Expanded(
-                    child: boolComment(middleList[index]),
-                  ),
-                  SecondaryText(
-                    text: middleList[index].sum.toStringAsFixed(2),
-                    color: Colors.black54),
+                  Expanded(child: boolComment(middleList[index])),
+                  SecondaryText(text: middleList[index].sum.toStringAsFixed(2)),
                 ],
               ),
             ),
@@ -305,7 +309,7 @@ class _IncomesState extends State<Incomes> {
           },
           background: Container(
             alignment: Alignment.centerLeft,
-            color: MyColors.edit,
+            color: AppColors.edit,
             child: Padding(
               padding: EdgeInsets.only(left: 15),
               child: Icon(
@@ -341,12 +345,8 @@ class _IncomesState extends State<Incomes> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SecondaryText(
-                  text: list[index].category,
-                  color: MyColors.textColor2),
-                SecondaryText(
-                  text: list[index].sum.toStringAsFixed(2),
-                  color: MyColors.textColor2),
+                SecondaryText(text: list[index].category),
+                SecondaryText(text: list[index].sum.toStringAsFixed(2)),
               ],
             ),
           ),
@@ -360,7 +360,7 @@ class _IncomesState extends State<Incomes> {
       return DateFormatText(
         dateTime: note.date,
         mode: 'Дата в строке',
-        color: MyColors.secondTextColor);
+        color: AppColors.textColor());
     } else {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -368,7 +368,7 @@ class _IncomesState extends State<Incomes> {
           DateFormatText(
             dateTime: note.date,
             mode: 'Дата в строке',
-            color: MyColors.secondTextColor),
+            color: AppColors.textColor()),
           comment(note),
         ],
       );
@@ -392,41 +392,21 @@ class _IncomesState extends State<Incomes> {
       return ThirdText(note.comment);
   }
 
-  Widget buildDropdownButton() {
-    return DropdownButton(
-      iconEnabledColor: MyColors.textColor2,
-      iconDisabledColor: MyColors.textColor2,
-      dropdownColor: MyColors.backGroundColor,
-      hint: MainLocalText(text: selectedMode),
-      items: [
-        DropdownMenuItem(value: 'День', child: MainLocalText(text: 'День')),
-        DropdownMenuItem(value: 'Неделя', child: MainLocalText(text: 'Неделя')),
-        DropdownMenuItem(value: 'Неделя(Д)', child: MainLocalText(text: 'Неделя(Д)')),
-        DropdownMenuItem(value: 'Месяц', child: MainLocalText(text: 'Месяц')),
-        DropdownMenuItem(value: 'Год', child: MainLocalText(text: 'Год')),
-      ],
-      onChanged: (String newValue) {
-        selectedMode = newValue;
-        updateIncomesPage();
-      }
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         key: scaffoldKey,
-        backgroundColor: MyColors.backGroundColor,
+        backgroundColor: AppColors.backGroundColor(),
         appBar: AppBar(
-          shadowColor: MyColors.backGroundColor.withOpacity(.001),
-          iconTheme: IconThemeData(color: MyColors.textColor2),
-          backgroundColor: MyColors.backGroundColor,
+          shadowColor: AppColors.backGroundColor().withOpacity(.001),
+          iconTheme: IconThemeData(color: AppColors.textColor()),
+          backgroundColor: AppColors.backGroundColor(),
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               MainLocalText(text: 'Доход'),
-              buildDropdownButton(),
+              AppDropdownButton(page: 'income', selectedMode: selectedMode, updateSelMode: updateSelectedMode),
             ],
           ),
         ),
@@ -437,8 +417,8 @@ class _IncomesState extends State<Incomes> {
               child: Container(
                 height: 50,
                 width: 300,
-                decoration: MyColors.boxDecoration,
-                child: DateWidget.getDate(selMode: selectedMode, date: date, update: updateDate, color: MyColors.textColor2),
+                decoration: AppDecoration.boxDecoration(context),
+                child: DateWidget.getDate(selMode: selectedMode, date: date, update: updateDate, color: AppColors.textColor()),
               ),
             ),
             incomesSortedByCategory.isEmpty ?
@@ -466,22 +446,24 @@ class _IncomesState extends State<Incomes> {
                     child: ListView.builder(
                       itemCount: 7,
                       itemBuilder: (context, index) {
-                        return ExpansionTile(
-                          title: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        return ExpansionTileTheme(
+                          child: ExpansionTile(
+                            title: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                SecondaryLocalText(text: toDateFormatDay(index + 1)),
+                                SecondaryText(text: getSumByDayLIst(index + 1)),
+                              ],
+                            ),
+                            backgroundColor: AppColors.backGroundColor(),
+                            onExpansionChanged: (e) {},
                             children: [
-                              SecondaryLocalText(text: toDateFormatDay(index + 1)),
-                              SecondaryText(text: getSumByDayLIst(index + 1)),
+                              Container(
+                                height: _calcHeightOnChildrenListLength(getFilteredChildrenListByDay(Storage.langCode == 'en' ? index : index + 1)),
+                                child: getExpandedChildrenForDay(getFilteredChildrenListByDay(Storage.langCode == 'en' ? index : index + 1)),
+                              )
                             ],
                           ),
-                          backgroundColor: MyColors.backGroundColor,
-                          onExpansionChanged: (e) {},
-                          children: [
-                            Container(
-                              height: _calcHeightOnChildrenListLength(getFilteredChildrenListByDay(Storage.langCode == 'en' ? index : index + 1)),
-                              child: getExpandedChildrenForDay(getFilteredChildrenListByDay(Storage.langCode == 'en' ? index : index + 1)),
-                            )
-                          ],
                         );
                       },
                     )
@@ -511,29 +493,31 @@ class _IncomesState extends State<Incomes> {
 
                     return Column(
                       children: [
-                        ExpansionTile(
-                          title: Column(
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.only(left: 5),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    SecondaryText(text: incomesSortedByCategory[index].category),
-                                    SecondaryText(text: incomesSortedByCategory[index].sum.toStringAsFixed(2)),
-                                  ],
+                        ExpansionTileTheme(
+                          child: ExpansionTile(
+                            title: Column(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.only(left: 5),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      SecondaryText(text: incomesSortedByCategory[index].category),
+                                      SecondaryText(text: incomesSortedByCategory[index].sum.toStringAsFixed(2)),
+                                    ],
+                                  ),
                                 ),
-                              ),
+                              ],
+                            ),
+                            backgroundColor: AppColors.backGroundColor(),
+                            onExpansionChanged: (e) {},
+                            children: [
+                              Container(
+                                height: _calcHeightOnChildrenListLength(childrenList),
+                                child: getExpandedChildrenForCategory(childrenList),
+                              )
                             ],
                           ),
-                          backgroundColor: MyColors.backGroundColor,
-                          onExpansionChanged: (e) {},
-                          children: [
-                            Container(
-                              height: _calcHeightOnChildrenListLength(childrenList),
-                              child: getExpandedChildrenForCategory(childrenList),
-                            )
-                          ],
                         ),
                       ],
                     );

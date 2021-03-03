@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:money_pack/setting/expansionTileTheme.dart';
+import '../setting/AppDecoration.dart';
+import '../setting/calendarTheme.dart';
 import '../setting/ThirdText.dart';
 import '../pages/ListOfExpensesCategories.dart';
 import '../Utility/appLocalizations.dart';
@@ -11,7 +14,7 @@ import '../setting/DateFormatText.dart';
 import '../Objects/ExpenseNote.dart';
 import '../Utility/Storage.dart';
 import '../pages/Calculator.dart';
-import '../setting/MyColors.dart';
+import '../setting/AppColors.dart';
 
 class AddExpenses extends StatefulWidget{
   final Function callBack;
@@ -73,15 +76,18 @@ class _AddExpensesState extends State<AddExpenses> {
     List<Widget> result = [];
     for (String catName in lastCategories) {
       result.add(
-        RadioListTile<String>(
-          title: ThirdText(catName,),
-          groupValue: category,
-          value: catName,
-          onChanged: (String value) {
-            setState(() {
-              category = value;
-            });
-          },
+        ExpansionTileTheme(
+          child: RadioListTile<String>(
+            activeColor: AppColors.textColor(),
+            title: ThirdText(catName,),
+            groupValue: category,
+            value: catName,
+            onChanged: (String value) {
+              setState(() {
+                category = value;
+              });
+            },
+          ),
         ),
       );
     }
@@ -114,7 +120,7 @@ class _AddExpensesState extends State<AddExpenses> {
       lastDate: DateTime.now().add(Duration(days: 184)),
       firstDate: DateTime.now().subtract(Duration(days: 184)),
       builder:(BuildContext context, Widget child) {
-        return theme(child);
+        return CalendarTheme.theme(child);
         },
     );
     setState(() {
@@ -122,37 +128,22 @@ class _AddExpensesState extends State<AddExpenses> {
     });
   }
 
-  theme(Widget child){
-    return Theme(
-      data: ThemeData.dark().copyWith(
-        colorScheme: ColorScheme.dark(
-          primary: MyColors.mainColor,
-          onPrimary: MyColors.textColor2,
-          surface: MyColors.mainColor,
-          onSurface: MyColors.textColor2,
-        ),
-        dialogBackgroundColor: MyColors.backGroundColor,
-      ),
-      child: child,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: MyColors.backGroundColor,
+        backgroundColor: AppColors.backGroundColor(),
         appBar: AppBar(
-          iconTheme: IconThemeData(color: MyColors.textColor2),
-          shadowColor: MyColors.backGroundColor.withOpacity(.001),
-          backgroundColor: MyColors.backGroundColor,
+          iconTheme: IconThemeData(color: AppColors.textColor()),
+          shadowColor: AppColors.backGroundColor().withOpacity(.001),
+          backgroundColor: AppColors.backGroundColor(),
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               MainLocalText(text: 'Добавить расход'),
               IconButton(
                 iconSize: 35,
-                icon: Icon(Icons.done, color: MyColors.textColor2),
+                icon: Icon(Icons.done, color: AppColors.textColor()),
                 onPressed: (){
                   if (category == 'Выбирите категорию' ||
                       category == 'Choose category' ||
@@ -191,7 +182,7 @@ class _AddExpensesState extends State<AddExpenses> {
                   ),
                 ),
                 Container(
-                  decoration: MyColors.boxDecoration,
+                  decoration: AppDecoration.boxDecoration(context),
                   child: Column(
                     children: [
                       Padding(
@@ -226,13 +217,13 @@ class _AddExpensesState extends State<AddExpenses> {
                     children: [
                       Container(
                         height: 60,
-                        decoration: MyColors.boxDecoration,
+                        decoration: AppDecoration.boxDecoration(context),
                         width: MediaQuery.of(context).size.width - 100,
                         child:  TextFormField(
                           inputFormatters: [
                             new LengthLimitingTextInputFormatter(10),// for mobile
                           ],
-                          style: TextStyle(color: MyColors.textColor2),
+                          style: TextStyle(color: AppColors.textColor()),
                           onTap: () => sumFocusNode.requestFocus(),
                           focusNode: sumFocusNode,
                           keyboardType: TextInputType.number,
@@ -240,6 +231,7 @@ class _AddExpensesState extends State<AddExpenses> {
                           decoration: InputDecoration(
                               contentPadding: EdgeInsets.all(20.0),
                               hintText: AppLocalizations.of(context).translate('Введите сумму'),
+                              hintStyle: TextStyle(color: AppColors.textColor()),
                               border: sumFocusNode.hasFocus ?
                               OutlineInputBorder(
                                   borderRadius: BorderRadius.all(Radius.circular(15)),
@@ -253,11 +245,11 @@ class _AddExpensesState extends State<AddExpenses> {
                       Container(
                         height: 60,
                         width: 60,
-                        decoration: MyColors.boxDecoration,
+                        decoration: AppDecoration.boxDecoration(context),
                         child: IconButton(
                             icon: Icon(
                                 Icons.calculate_outlined,
-                                color: MyColors.textColor2,
+                                color: AppColors.textColor(),
                                 size: 40
                             ),
                             onPressed: () => goToCalculator(context)
@@ -269,23 +261,24 @@ class _AddExpensesState extends State<AddExpenses> {
                 Padding(
                   padding: const EdgeInsets.only(top: 25),
                   child: Container(
-                    decoration: MyColors.boxDecoration,
+                    decoration: AppDecoration.boxDecoration(context),
                     child: TextFormField(
                       inputFormatters: [
                         new LengthLimitingTextInputFormatter(20),// for mobile
                       ],
-                      style: TextStyle(color: MyColors.textColor2),
+                      style: TextStyle(color: AppColors.textColor()),
                       focusNode: commentFocusNode,
                       maxLines: 1,
                       decoration: InputDecoration(
-                          hintText: AppLocalizations.of(context).translate('Введите коментарий'),
-                          contentPadding: EdgeInsets.all(20.0),
-                          fillColor: Colors.white,
-                          border: commentFocusNode.hasFocus
-                              ? OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                              borderSide: BorderSide(color: Colors.blue)
-                          ) : InputBorder.none,
+                        hintText: AppLocalizations.of(context).translate('Введите коментарий'),
+                        hintStyle: TextStyle(color: AppColors.textColor()),
+                        contentPadding: EdgeInsets.all(20.0),
+                        fillColor: Colors.white,
+                        border: commentFocusNode.hasFocus
+                            ? OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                            borderSide: BorderSide(color: Colors.blue)
+                        ) : InputBorder.none,
                       ),
                       onChanged: (v) => comment = v,
                     ),

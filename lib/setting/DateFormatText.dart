@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:money_pack/setting/MyColors.dart';
+import 'package:money_pack/setting/AppColors.dart';
 import '../Utility/appLocalizations.dart';
 import '../setting/MainRowText.dart';
 import '../setting/SecondaryText.dart';
@@ -16,7 +16,7 @@ class DateFormatText extends StatelessWidget {
   Widget build(BuildContext context) {
     Color _color;
     if (color == null)
-      _color = MyColors.textColor2;
+      _color = AppColors.textColor();
     else
       _color = color;
     switch(mode){

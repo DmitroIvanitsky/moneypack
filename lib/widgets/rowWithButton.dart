@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:money_pack/Utility/Storage.dart';
+import 'package:money_pack/setting/AppDecoration.dart';
+import '../setting/AppShadow.dart';
 import '../setting/MainLocalText.dart';
-import '../setting/MyColors.dart';
+import '../setting/AppColors.dart';
 import '../setting/SecondaryText.dart';
 
 class RowWithButton extends StatelessWidget{
@@ -15,11 +18,7 @@ class RowWithButton extends StatelessWidget{
   Widget build(BuildContext context) {
     return
       Container(
-        decoration: BoxDecoration(
-          color: MyColors.backGroundColor,
-          borderRadius: BorderRadius.circular(15),
-            boxShadow: MyColors.shadow
-        ),
+        decoration: AppDecoration.boxDecoration(context),
         height: 50,
         margin: EdgeInsets.only(left: 20, right: 20),
         child: Padding(
@@ -28,33 +27,29 @@ class RowWithButton extends StatelessWidget{
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                decoration: BoxDecoration(
-                  color: MyColors.mainColor,
-                  borderRadius: BorderRadius.circular(15),
-                ),
+                decoration: AppDecoration.buttonDecoration(context),
                 height: 50,
                 width: 160,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: MyColors.mainColor,
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: FlatButton(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(child: MainLocalText(text: leftText, color: MyColors.textColor2,)),
-                          Icon(Icons.arrow_drop_down, color: MyColors.textColor2)
-                        ],
-                      ),
-                      onPressed: () => onTap(),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: FlatButton(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                            child: MainLocalText(
+                              text: leftText,
+                              //color: Storage.brightness == Brightness.light ? AppColors.textColor() : AppColors.mainColor,
+                            )
+                        ),
+                        Icon(Icons.arrow_drop_down, color: AppColors.textColor())
+                      ],
                     ),
+                    onPressed: () => onTap(),
                   ),
                 ),
               ),
-              Expanded(child: SecondaryText(text: rightText.toString(), align: TextAlign.right, color: MyColors.textColor2,))
+              Expanded(child: SecondaryText(text: rightText.toString(), align: TextAlign.right,))
             ],
           ),
         ),

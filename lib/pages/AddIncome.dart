@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:money_pack/setting/ThirdText.dart';
+import 'package:money_pack/setting/calendarTheme.dart';
+import 'package:money_pack/setting/expansionTileTheme.dart';
 import '../Utility/appLocalizations.dart';
 import '../setting/MainLocalText.dart';
 import '../setting/SecondaryLocalText.dart';
@@ -10,8 +12,9 @@ import '../setting/DateFormatText.dart';
 import '../pages/Calculator.dart';
 import '../Objects/IncomeNote.dart';
 import '../Utility/Storage.dart';
-import '../setting/MyColors.dart';
+import '../setting/AppColors.dart';
 import '../pages/ListOfIncomesCategories.dart';
+import 'package:money_pack/setting/AppDecoration.dart';
 
 class AddIncome extends StatefulWidget{
   final Function callback;
@@ -73,15 +76,18 @@ class _AddIncomeState extends State<AddIncome> {
     List<Widget> result = [];
     for (String catName in lastCategories) {
       result.add(
-        RadioListTile<String>(
-          title: ThirdText(catName,),
-          groupValue: category,
-          value: catName,
-          onChanged: (String value) {
-            setState(() {
-              category = value;
-            });
-          },
+        ExpansionTileTheme(
+          child: RadioListTile<String>(
+            activeColor: AppColors.textColor(),
+            title: ThirdText(catName,),
+            groupValue: category,
+            value: catName,
+            onChanged: (String value) {
+              setState(() {
+                category = value;
+              });
+            },
+          ),
         ),
       );
     }
@@ -107,7 +113,7 @@ class _AddIncomeState extends State<AddIncome> {
       lastDate: DateTime.now().add(Duration(days: 184)),
       firstDate: DateTime.now().subtract(Duration(days: 184)),
       builder:(BuildContext context, Widget child) {
-        return _theme(child);
+        return CalendarTheme.theme(child);
       },
     );
     setState(() {
@@ -115,30 +121,15 @@ class _AddIncomeState extends State<AddIncome> {
     });
   }
 
-  _theme(Widget child){
-    return Theme(
-      data: ThemeData.dark().copyWith(
-        colorScheme: ColorScheme.dark(
-          primary: MyColors.mainColor,
-          onPrimary: MyColors.textColor2,
-          surface: MyColors.mainColor,
-          onSurface: MyColors.textColor2,
-        ),
-        dialogBackgroundColor: MyColors.backGroundColor,
-      ),
-      child: child,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: MyColors.backGroundColor,
+        backgroundColor: AppColors.backGroundColor(),
         appBar: AppBar(
-          iconTheme: IconThemeData(color: MyColors.textColor2),
-          shadowColor: MyColors.backGroundColor.withOpacity(.001),
-          backgroundColor: MyColors.backGroundColor,
+          iconTheme: IconThemeData(color: AppColors.textColor()),
+          shadowColor: AppColors.backGroundColor().withOpacity(.001),
+          backgroundColor: AppColors.backGroundColor(),
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children:[
@@ -147,7 +138,7 @@ class _AddIncomeState extends State<AddIncome> {
                 iconSize: 35,
                 icon: Icon(
                   Icons.done,
-                  color: MyColors.textColor2,
+                  color: AppColors.textColor(),
                 ),
                 onPressed: (){
                   if (category == 'Выбирите категорию' ||
@@ -180,7 +171,7 @@ class _AddIncomeState extends State<AddIncome> {
                   ),
                 ),
                 Container(
-                  decoration: MyColors.boxDecoration,
+                  decoration: AppDecoration.boxDecoration(context),
                   child: Column(
                     children: [
                       Padding(
@@ -217,7 +208,7 @@ class _AddIncomeState extends State<AddIncome> {
                     children: [
                       Container(
                         height: 60,
-                        decoration: MyColors.boxDecoration,
+                        decoration: AppDecoration.boxDecoration(context),
                         child: Row(
                           children: [
                             GestureDetector(
@@ -228,12 +219,13 @@ class _AddIncomeState extends State<AddIncome> {
                                   inputFormatters: [
                                     new LengthLimitingTextInputFormatter(10),// for mobile
                                   ],
-                                  style: TextStyle(color: MyColors.textColor2),
+                                  style: TextStyle(color: AppColors.textColor()),
                                   focusNode: sumFocusNode,
                                   keyboardType: TextInputType.number,
                                   controller: calcController,
                                   decoration: InputDecoration(
                                       hintText: AppLocalizations.of(context).translate('Введите сумму'),
+                                      hintStyle: TextStyle(color: AppColors.textColor()),
                                       contentPadding: EdgeInsets.all(20.0),
                                       border: sumFocusNode.hasFocus
                                           ? OutlineInputBorder(
@@ -251,11 +243,11 @@ class _AddIncomeState extends State<AddIncome> {
                       Container(
                         height: 60,
                         width: 60,
-                        decoration: MyColors.boxDecoration,
+                        decoration: AppDecoration.boxDecoration(context),
                         child: IconButton(
                             icon: Icon(
                                 Icons.calculate_outlined,
-                                color: MyColors.textColor2,
+                                color: AppColors.textColor(),
                                 size: 40
                             ),
                             onPressed: () => goToCalculator(context)
@@ -267,23 +259,24 @@ class _AddIncomeState extends State<AddIncome> {
                 Padding(
                   padding: const EdgeInsets.only(top: 25),
                   child: Container(
-                    decoration: MyColors.boxDecoration,
+                    decoration: AppDecoration.boxDecoration(context),
                     child: TextFormField(
                       inputFormatters: [
                         new LengthLimitingTextInputFormatter(20),// for mobile
                       ],
-                      style: TextStyle(color: MyColors.textColor2),
+                      style: TextStyle(color: AppColors.textColor()),
                       focusNode: commentFocusNode,
                       maxLines: 1,
                       decoration: InputDecoration(
-                          hintText: AppLocalizations.of(context).translate('Введите коментарий'),
-                          contentPadding: EdgeInsets.all(20.0),
-                          fillColor: Colors.white,
-                          border: commentFocusNode.hasFocus
-                              ? OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                              borderSide: BorderSide(color: Colors.blue)
-                          ) : InputBorder.none,
+                        hintText: AppLocalizations.of(context).translate('Введите коментарий'),
+                        hintStyle: TextStyle(color: AppColors.textColor()),
+                        contentPadding: EdgeInsets.all(20.0),
+                        fillColor: Colors.white,
+                        border: commentFocusNode.hasFocus
+                            ? OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                            borderSide: BorderSide(color: Colors.blue)
+                        ) : InputBorder.none,
                       ),
                       onChanged: (v) => comment = v,
                     ),

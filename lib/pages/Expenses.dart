@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:money_pack/setting/expansionTileTheme.dart';
+import 'package:money_pack/widgets/AppDropdownButton.dart';
 import '../widgets/DateWidget.dart';
 import '../setting/SecondaryLocalText.dart';
 import '../setting/SecondaryText.dart';
@@ -12,8 +14,9 @@ import '../pages/EditPageForExpenseCategory.dart';
 import '../Objects/ExpenseNote.dart';
 import '../Objects/ListOfExpenses.dart';
 import '../Utility/Storage.dart';
-import '../setting/MyColors.dart';
+import '../setting/AppColors.dart';
 import '../setting/MainRowText.dart';
+import '../setting/AppDecoration.dart';
 
 class Expenses extends StatefulWidget {
   final Function updateMainPage;
@@ -91,6 +94,11 @@ class _ExpensesState extends State<Expenses> {
     setState(() {
       setExpSortCatList();
     });
+  }
+
+  void updateSelectedMode(String selMode){
+    selectedMode = selMode;
+    updateExpensesPage();
   }
 
   void updateDate(DateTime dateTime) {
@@ -261,12 +269,8 @@ class _ExpensesState extends State<Expenses> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
-                      child: boolComment(middleList[index]),
-                    ),
-                    SecondaryText(
-                        text: middleList[index].sum.toStringAsFixed(2),
-                        color: Colors.black54),
+                    Expanded(child: boolComment(middleList[index])),
+                    SecondaryText(text: middleList[index].sum.toStringAsFixed(2)),
                   ],
                 ),
               ),
@@ -299,7 +303,7 @@ class _ExpensesState extends State<Expenses> {
             },
             background: Container(
               alignment: Alignment.centerLeft,
-              color: MyColors.edit,
+              color: AppColors.edit,
               child: Padding(
                 padding: EdgeInsets.only(left: 15),
                 child: Icon(
@@ -336,10 +340,10 @@ class _ExpensesState extends State<Expenses> {
                 children: [
                   SecondaryText(
                       text: list[index].category,
-                      color: MyColors.textColor2),
+                      color: AppColors.textColor()),
                   SecondaryText(
                       text: list[index].sum.toStringAsFixed(2),
-                      color: MyColors.textColor2),
+                      color: AppColors.textColor()),
                 ],
               ),
             ),
@@ -352,7 +356,7 @@ class _ExpensesState extends State<Expenses> {
       return DateFormatText(
           dateTime: note.date,
           mode: 'Дата в строке',
-          color: MyColors.secondTextColor);
+          color: AppColors.textColor());
     } else {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -360,7 +364,7 @@ class _ExpensesState extends State<Expenses> {
           DateFormatText(
               dateTime: note.date,
               mode: 'Дата в строке',
-              color: MyColors.secondTextColor),
+              color: AppColors.textColor()),
           comment(note),
         ],
       );
@@ -384,39 +388,22 @@ class _ExpensesState extends State<Expenses> {
           scrollDirection: Axis.horizontal, child: ThirdText(note.comment));
   }
 
-  // dropdown menu button
-  Widget buildDropdownButton() {
-    return DropdownButton(
-        iconEnabledColor: MyColors.textColor2,
-        iconDisabledColor: MyColors.textColor2,
-        dropdownColor: MyColors.backGroundColor,
-        hint: MainLocalText(text: selectedMode),
-        items: [
-          DropdownMenuItem(value: 'День', child: MainLocalText(text: 'День')),
-          DropdownMenuItem(value: 'Неделя', child: MainLocalText(text: 'Неделя')),
-          DropdownMenuItem(value: 'Неделя(Д)', child: MainLocalText(text: 'Неделя(Д)')),
-          DropdownMenuItem(value: 'Месяц', child: MainLocalText(text: 'Месяц')),
-          DropdownMenuItem(value: 'Год', child: MainLocalText(text: 'Год')),
-        ],
-        onChanged: (String newValue) {
-          selectedMode = newValue;
-          updateExpensesPage();
-        });
-  }
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         key: scaffoldKey,
-        backgroundColor: MyColors.backGroundColor,
+        backgroundColor: AppColors.backGroundColor(),
         appBar: AppBar(
-          shadowColor: MyColors.backGroundColor.withOpacity(.001),
-          iconTheme: IconThemeData(color: MyColors.textColor2),
-          backgroundColor: MyColors.backGroundColor,
+          shadowColor: AppColors.backGroundColor().withOpacity(.001),
+          iconTheme: IconThemeData(color: AppColors.textColor()),
+          backgroundColor: AppColors.backGroundColor(),
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [MainLocalText(text: 'Расход'), buildDropdownButton()],
+            children: [
+              MainLocalText(text: 'Расход'),
+              AppDropdownButton(page: 'expense', selectedMode: selectedMode, updateSelMode: updateSelectedMode,)
+            ],
           ), // dropdown menu button
         ),
         body: Column(
@@ -426,8 +413,8 @@ class _ExpensesState extends State<Expenses> {
               child: Container(
                 height: 50,
                 width: 300,
-                decoration: MyColors.boxDecoration,
-                child: DateWidget.getDate(selMode: selectedMode, date: date, update: updateDate, color: MyColors.textColor2),
+                decoration: AppDecoration.boxDecoration(context),
+                child: DateWidget.getDate(selMode: selectedMode, date: date, update: updateDate, color: AppColors.textColor()),
               ),
             ),
             expensesSortedByCategory.isEmpty ?
@@ -457,22 +444,24 @@ class _ExpensesState extends State<Expenses> {
                     child: ListView.builder(
                     itemCount: 7,
                     itemBuilder: (context, index) {
-                      return ExpansionTile(
-                        title: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      return ExpansionTileTheme(
+                        child: ExpansionTile(
+                          title: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              SecondaryLocalText(text: toDateFormatDay(index + 1)),
+                              SecondaryText(text: getSumByDayLIst(index + 1)),
+                            ],
+                          ),
+                          backgroundColor: AppColors.backGroundColor(),
+                          onExpansionChanged: (e) {},
                           children: [
-                            SecondaryLocalText(text: toDateFormatDay(index + 1)),
-                            SecondaryText(text: getSumByDayLIst(index + 1)),
+                            Container(
+                              height: _calcHeightOnChildrenListLength(getFilteredChildrenListByDay(Storage.langCode == 'en' ? index : index + 1)),
+                              child: getExpandedChildrenForDay(getFilteredChildrenListByDay(Storage.langCode == 'en' ? index : index + 1)),
+                            )
                           ],
                         ),
-                        backgroundColor: MyColors.backGroundColor,
-                        onExpansionChanged: (e) {},
-                        children: [
-                          Container(
-                            height: _calcHeightOnChildrenListLength(getFilteredChildrenListByDay(Storage.langCode == 'en' ? index : index + 1)),
-                            child: getExpandedChildrenForDay(getFilteredChildrenListByDay(Storage.langCode == 'en' ? index : index + 1)),
-                          )
-                        ],
                       );
                     },
                   )),
@@ -499,22 +488,24 @@ class _ExpensesState extends State<Expenses> {
                     ExpenseNote singleCategoryNote = expensesSortedByCategory[index];
                     List<ExpenseNote> childrenList = getFilteredChildrenOfCategory(singleCategoryNote);
 
-                    return ExpansionTile(
-                      title: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    return ExpansionTileTheme(
+                      child: ExpansionTile(
+                        title: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            SecondaryText(text: singleCategoryNote.category),
+                            SecondaryText(text: singleCategoryNote.sum.toStringAsFixed(2)),
+                          ],
+                        ),
+                        backgroundColor: AppColors.backGroundColor(),
+                        onExpansionChanged: (e) {},
                         children: [
-                          SecondaryText(text: singleCategoryNote.category),
-                          SecondaryText(text: singleCategoryNote.sum.toStringAsFixed(2)),
+                          Container(
+                            height: _calcHeightOnChildrenListLength(childrenList),
+                            child: getExpandedChildrenForCategory(childrenList),
+                          )
                         ],
                       ),
-                      backgroundColor: MyColors.backGroundColor,
-                      onExpansionChanged: (e) {},
-                      children: [
-                        Container(
-                          height: _calcHeightOnChildrenListLength(childrenList),
-                          child: getExpandedChildrenForCategory(childrenList),
-                        )
-                      ],
                     );
                   }
                 ),

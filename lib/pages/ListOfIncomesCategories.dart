@@ -1,12 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:money_pack/setting/AppDecoration.dart';
 import '../setting/SecondaryText.dart';
 import '../Utility/appLocalizations.dart';
 import '../widgets/customSnackBar.dart';
 import '../Utility/Storage.dart';
 import '../setting/MainLocalText.dart';
-import '../setting/MyColors.dart';
+import '../setting/AppColors.dart';
 
 class ListOfIncomesCategories extends StatefulWidget{
   final Function callback;
@@ -67,11 +68,11 @@ class _ListOfIncomesCategoriesState extends State<ListOfIncomesCategories> {
     return SafeArea(
       child: Scaffold(
         key: scaffoldKey,
-        backgroundColor: MyColors.backGroundColor,
+        backgroundColor: AppColors.backGroundColor(),
         appBar: AppBar(
-          shadowColor: MyColors.backGroundColor.withOpacity(.001),
-          backgroundColor: MyColors.backGroundColor,
-          iconTheme: IconThemeData(color: MyColors.textColor2),
+          shadowColor: AppColors.backGroundColor().withOpacity(.001),
+          backgroundColor: AppColors.backGroundColor(),
+          iconTheme: IconThemeData(color: AppColors.textColor()),
           title: MainLocalText(text: 'Категории доходов'),
         ),
         body: Column(
@@ -143,12 +144,12 @@ class _ListOfIncomesCategoriesState extends State<ListOfIncomesCategories> {
                 children: [
                   Expanded(
                     child: Container(
-                      decoration: MyColors.boxDecoration,
+                      decoration: AppDecoration.boxDecoration(context),
                       child: TextFormField(
                         inputFormatters: [
                           new LengthLimitingTextInputFormatter(10),// for mobile
                         ],
-                        style: TextStyle(color: MyColors.textColor2),
+                        style: TextStyle(color: AppColors.textColor()),
                         controller: TextEditingController(),
                         decoration: InputDecoration(
                           hintText: AppLocalizations.of(context).translate('Добавьте новую категорию'),
@@ -169,9 +170,9 @@ class _ListOfIncomesCategoriesState extends State<ListOfIncomesCategories> {
                     child: Container(
                       height: 60,
                       width: 60,
-                      decoration: MyColors.boxDecoration,
+                      decoration: AppDecoration.boxDecoration(context),
                       child: IconButton(
-                        icon: Icon(Icons.add, color: MyColors.textColor2,),
+                        icon: Icon(Icons.add, color: AppColors.textColor(),),
                         onPressed: () async{
                           if(tempField == '') return;
                           list.add(tempField);

@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:money_pack/setting/MyColors.dart';
+import 'package:money_pack/setting/AppColors.dart';
 import '../Utility/appLocalizations.dart';
 
 class CustomSnackBar {
@@ -10,7 +10,7 @@ class CustomSnackBar {
         content: Text(text, style: TextStyle(color: textColor)),
         action: SnackBarAction(
           label: AppLocalizations.of(context).translate('ОТМЕНИТЬ'),
-          textColor: MyColors.mainColor,
+          textColor: AppColors.mainColor,
           onPressed: callBack
         ),
       )

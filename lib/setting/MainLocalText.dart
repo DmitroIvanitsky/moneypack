@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../setting/MyColors.dart';
+import '../setting/AppColors.dart';
 import '../Utility/appLocalizations.dart';
 
 class MainLocalText extends StatelessWidget{
@@ -13,7 +13,7 @@ class MainLocalText extends StatelessWidget{
   Widget build(BuildContext context) {
     Color _color;
     if (color == null) {
-      _color = MyColors.textColor2;
+      _color = AppColors.textColor();
     }else{
       _color = color;
     }

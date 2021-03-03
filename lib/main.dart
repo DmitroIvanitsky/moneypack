@@ -12,10 +12,14 @@ import 'package:money_pack/pages/AddIncome.dart';
 import 'package:money_pack/pages/Balance.dart';
 import 'package:money_pack/pages/Expenses.dart';
 import 'package:money_pack/pages/Incomes.dart';
+import 'package:money_pack/setting/AppDecoration.dart';
+import 'package:money_pack/setting/AppShadow.dart';
+import 'package:money_pack/setting/AppTheme.dart';
 import 'package:money_pack/setting/MainLocalText.dart';
-import 'package:money_pack/setting/MyColors.dart';
+import 'package:money_pack/setting/AppColors.dart';
 import 'package:money_pack/setting/SecondaryText.dart';
 import 'package:money_pack/widgets/DateWidget.dart';
+import 'package:money_pack/widgets/AppDropdownButton.dart';
 import 'package:money_pack/widgets/rowWithButton.dart';
 import 'Utility/appLocalizations.dart';
 
@@ -24,7 +28,10 @@ import 'package:gx_file_picker/gx_file_picker.dart';
 
 void main() => runApp(MaterialApp(
   theme: ThemeData(fontFamily: 'main',),
-  debugShowCheckedModeBanner: false,
+  //theme: AppTheme.light,
+  //darkTheme: AppTheme.dark,
+  themeMode: ThemeMode.system,
+  debugShowCheckedModeBanner: true,
   localizationsDelegates: [
     // A class which loads the translations from JSON files
     AppLocalizationsDelegate(),
@@ -81,7 +88,12 @@ class _MoneyPackState extends State<MoneyPack> {
       updateMainPage();
   }
 
-  void updateMainPage() async {
+  void updateSelectedMode(String selMode){
+    selectedMode = selMode;
+    updateMainPage();
+  }
+
+  void updateMainPage({selMode}) async {
     setState(() {
       income = filterSumByPeriod(ListOfIncomes.filtered(selMode: selectedMode, currentDate: date));
       expense = filterSumByPeriod(ListOfExpenses.filtered(selMode: selectedMode, currentDate: date));
@@ -107,12 +119,12 @@ class _MoneyPackState extends State<MoneyPack> {
       width: 350,
       child: Drawer(
         child: Container(
-          color: MyColors.backGroundColor,
+          color: AppColors.backGroundColor(),
           child: Column(
             children: [
               Container(
                 margin: EdgeInsets.only(top: 25),
-                decoration: MyColors.boxDecoration,
+                decoration: AppDecoration.boxDecoration(context),
                 child: FlatButton(
                   child: MainLocalText(text: 'сохранить резервную копию'),
                   onPressed: () => Storage.saveBackup(),
@@ -120,7 +132,7 @@ class _MoneyPackState extends State<MoneyPack> {
               ),
               Container(
                 margin: EdgeInsets.only(top: 25),
-                decoration: MyColors.boxDecoration,
+                decoration: AppDecoration.boxDecoration(context),
                 child: FlatButton(
                   child: MainLocalText(text: 'загрузить резервную копию'),
                   onPressed: () async {
@@ -144,48 +156,30 @@ class _MoneyPackState extends State<MoneyPack> {
     );
   }
 
-  Widget buildDropdownButton() {
-    return DropdownButton(
-      iconEnabledColor: MyColors.textColor2,
-      iconDisabledColor: MyColors.textColor2,
-      dropdownColor: MyColors.backGroundColor,
-      hint: MainLocalText(text: selectedMode),
-      items: [
-        DropdownMenuItem(value: 'День', child: MainLocalText(text: 'День')),
-        DropdownMenuItem(value: 'Неделя', child: MainLocalText(text: 'Неделя')),
-        DropdownMenuItem(value: 'Месяц', child: MainLocalText(text: 'Месяц')),
-        DropdownMenuItem(value: 'Год', child: MainLocalText(text: 'Год')),
-      ],
-        onChanged: (String newValue) {
-          selectedMode = newValue;
-          updateMainPage();
-        }
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     Storage.langCode = AppLocalizations.of(context).locale.toString();
+    Storage.brightness = MediaQuery.of(context).platformBrightness;
 
     return SafeArea(
         child: Scaffold(
             key: scaffoldKey,
             endDrawerEnableOpenDragGesture: true,
             resizeToAvoidBottomInset: false,
-            backgroundColor: MyColors.backGroundColor,
+            backgroundColor: AppColors.backGroundColor(),
             drawer: buildDrawer(),
             appBar: AppBar(
-              shadowColor: MyColors.backGroundColor.withOpacity(.01),
-              iconTheme: IconThemeData(color: MyColors.textColor2),
+              shadowColor: AppColors.backGroundColor().withOpacity(.01),
+              iconTheme: IconThemeData(color: AppColors.textColor()),
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   MainLocalText(text: 'Учёт'),
-                  buildDropdownButton(),
+                  AppDropdownButton(page: 'main', selectedMode: selectedMode, updateSelMode: updateSelectedMode,)
                 ],
               ),
               centerTitle: true,
-              backgroundColor: MyColors.backGroundColor,
+              backgroundColor: AppColors.backGroundColor(),
             ),
             body: Container(
               height: MediaQuery.of(context).size.height,
@@ -197,8 +191,8 @@ class _MoneyPackState extends State<MoneyPack> {
                     child: Container(
                       height: 50,
                       width: 300,
-                      decoration: MyColors.boxDecoration,
-                      child: DateWidget.getDate(selMode: selectedMode, date: date, update: updateDate, color: MyColors.textColor2),
+                      decoration: AppDecoration.boxDecoration(context),
+                      child: DateWidget.getDate(selMode: selectedMode, date: date, update: updateDate, color: AppColors.textColor()),
                     ),
                   ),
                   RowWithButton(
@@ -232,7 +226,7 @@ class _MoneyPackState extends State<MoneyPack> {
                         ),
                   ),
                   Container(
-                      decoration: MyColors.boxDecoration,
+                      decoration: AppDecoration.boxDecoration(context),
                       height: 50,
                       margin: EdgeInsets.only(left: 20, right: 20, top: 0),
                       child: Padding(
@@ -244,7 +238,7 @@ class _MoneyPackState extends State<MoneyPack> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 MainLocalText(text: 'Общий остаток'),
-                                SecondaryText(text: totalBalance.toStringAsFixed(2), color: MyColors.textColor2,),
+                                SecondaryText(text: totalBalance.toStringAsFixed(2), color: AppColors.textColor(),),
                               ],
                             ),
                           ],
@@ -260,49 +254,39 @@ class _MoneyPackState extends State<MoneyPack> {
                         Padding(
                           padding: EdgeInsets.symmetric(vertical: 15),
                           child: Container(
-                            decoration: MyColors.boxDecoration,
+                            decoration: AppDecoration.incomeButtonDecoration(context),
                             height: 70,
                             width: 215,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: MyColors.incomeButton,
-                                borderRadius: BorderRadius.circular(15),
+                            child: FlatButton(
+                              child: MainLocalText(
+                                text: 'Добавить доход',
+                                color: Storage.brightness == Brightness.light ? AppColors.textColor() : AppColors.incomeButton
                               ),
-                              child: FlatButton(
-                                height: 70,
-                                minWidth: 215,
-                                child: MainLocalText(text: 'Добавить доход'),
-                                onPressed: () =>
-                                    Navigator.push(context,
-                                      MaterialPageRoute(
-                                          builder: (context) => AddIncome(callback: updateMainPage)
-                                      ),
+                              onPressed: () =>
+                                  Navigator.push(context,
+                                    MaterialPageRoute(
+                                        builder: (context) => AddIncome(callback: updateMainPage)
                                     ),
-                              ),
+                                  ),
                             ),
                           ),
                         ),
                         Padding(
                           padding: EdgeInsets.symmetric(vertical: 15),
                           child: Container(
-                            decoration: MyColors.boxDecoration,
+                            decoration: AppDecoration.expenseButtonDecoration(context),
                             height: 70,
                             width: 215,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: MyColors.expenseButton,
-                                borderRadius: BorderRadius.circular(15),
+                            child: FlatButton(
+                              child: MainLocalText(
+                                text: 'Добавить расход',
+                                color: Storage.brightness == Brightness.light ? AppColors.textColor() : AppColors.expenseButton
                               ),
-                              child: FlatButton(
-                                height: 70,
-                                minWidth: 215,
-                                child: Center(child: MainLocalText(text: 'Добавить расход')),
-                                onPressed: () =>
-                                    Navigator.push(context,
-                                      MaterialPageRoute(
-                                          builder: (context) => AddExpenses(callBack: updateMainPage)),
-                                    ),
-                              ),
+                              onPressed: () =>
+                                  Navigator.push(context,
+                                    MaterialPageRoute(
+                                        builder: (context) => AddExpenses(callBack: updateMainPage)),
+                                  ),
                             ),
                           ),
                         ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:money_pack/setting/MyColors.dart';
+import 'package:money_pack/setting/AppColors.dart';
 
 class SecondaryText extends StatelessWidget{
   final String text;
@@ -13,7 +13,7 @@ class SecondaryText extends StatelessWidget{
     Color _color;
 
     if (color == null)
-      _color = MyColors.textColor2;
+      _color = AppColors.textColor();
     else
       _color = color;
 

@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../setting/MyColors.dart';
+import 'package:money_pack/setting/AppDecoration.dart';
+import '../setting/AppShadow.dart';
+import '../setting/AppColors.dart';
 
 
 class RowWithWidgets extends StatelessWidget{
@@ -14,11 +16,7 @@ class RowWithWidgets extends StatelessWidget{
     return
       Center(
         child: Container(
-          decoration: BoxDecoration(
-              color: MyColors.backGroundColor,
-              borderRadius: BorderRadius.circular(15),
-              boxShadow: MyColors.shadow,
-          ),
+          decoration: AppDecoration.boxDecoration(context),
           height: 50,
           //width: 350,
           margin: EdgeInsets.only(left: 20, right: 20),
@@ -29,10 +27,7 @@ class RowWithWidgets extends StatelessWidget{
               children: [
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 10),
-                  decoration: BoxDecoration(
-                    color: MyColors.mainColor,
-                    borderRadius: BorderRadius.circular(15),
-                  ),
+                  decoration: AppDecoration.buttonDecoration(context),
                   height: 50,
                   width: 160,
                   child: FlatButton(
@@ -40,7 +35,7 @@ class RowWithWidgets extends StatelessWidget{
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         leftWidget,
-                        Icon(Icons.arrow_drop_down, color: MyColors.textColor2)
+                        Icon(Icons.arrow_drop_down, color: AppColors.textColor())
                       ],
                     ),
                     onPressed: () => onTap()

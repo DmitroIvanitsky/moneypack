@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:money_pack/Objects/IncomeNote.dart';
+import 'package:money_pack/widgets/AppDropdownButton.dart';
 import '../Utility/Storage.dart';
 import '../widgets/DateWidget.dart';
 import '../Objects/ListOfIncomes.dart';
@@ -8,8 +9,9 @@ import '../setting/SecondaryText.dart';
 import '../setting/MainLocalText.dart';
 import '../Objects/ExpenseNote.dart';
 import '../Objects/ListOfExpenses.dart';
-import '../setting/MyColors.dart';
+import '../setting/AppColors.dart';
 import '../setting/MainRowText.dart';
+import '../setting/AppDecoration.dart';
 
 class Balance extends StatefulWidget {
   final Function updateMainPage;
@@ -37,6 +39,11 @@ class _BalanceState extends State<Balance> {
     setState(() {
       loadCategoryList();
     });
+  }
+
+  void updateSelectedMode(String selMode){
+    selectedMode = selMode;
+    updateBalancePage();
   }
 
   void loadCategoryList() {
@@ -186,38 +193,21 @@ class _BalanceState extends State<Balance> {
     return dateFormat;
   }
 
-  // dropdown menu button
-  Widget buildDropdownButton() {
-    return DropdownButton(
-        iconEnabledColor: MyColors.textColor2,
-        iconDisabledColor: MyColors.textColor2,
-        dropdownColor: MyColors.backGroundColor,
-        hint: MainLocalText(text: selectedMode),
-        items: [
-          DropdownMenuItem(value: 'Неделя', child: MainLocalText(text: 'Неделя')),
-          DropdownMenuItem(value: 'Год', child: MainLocalText(text: 'Год')),
-        ],
-        onChanged: (String newValue) {
-          selectedMode = newValue;
-          updateBalancePage();
-        });
-  }
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         key: scaffoldKey,
-        backgroundColor: MyColors.backGroundColor,
+        backgroundColor: AppColors.backGroundColor(),
         appBar: AppBar(
-          shadowColor: MyColors.backGroundColor.withOpacity(.001),
-          iconTheme: IconThemeData(color: MyColors.textColor2),
-          backgroundColor: MyColors.backGroundColor,
+          shadowColor: AppColors.backGroundColor().withOpacity(.001),
+          iconTheme: IconThemeData(color: AppColors.textColor()),
+          backgroundColor: AppColors.backGroundColor(),
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               MainLocalText(text: 'Баланс'),
-              buildDropdownButton()
+              AppDropdownButton(page: 'balance', selectedMode: selectedMode, updateSelMode: updateSelectedMode,)
             ],
           ), // dropdown menu button
         ),
@@ -228,8 +218,8 @@ class _BalanceState extends State<Balance> {
               child: Container(
                 height: 50,
                 width: 300,
-                decoration: MyColors.boxDecoration,
-                child: DateWidget.getDate(selMode: selectedMode, date: date, update: updateDate, color: MyColors.textColor2),
+                decoration: AppDecoration.boxDecoration(context),
+                child: DateWidget.getDate(selMode: selectedMode, date: date, update: updateDate, color: AppColors.textColor()),
               ),
             ),
             categoriesList.isEmpty ?
