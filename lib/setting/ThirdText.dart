@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:money_pack/setting/AppColors.dart';
+import '../setting/AppColors.dart';
 
 class ThirdText extends StatelessWidget{
   final String text;

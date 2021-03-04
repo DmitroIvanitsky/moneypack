@@ -357,18 +357,12 @@ class _IncomesState extends State<Incomes> {
 
   boolComment(IncomeNote note) {
     if (note.comment == '' || note.comment == null) {
-      return DateFormatText(
-        dateTime: note.date,
-        mode: 'Дата в строке',
-        color: AppColors.textColor());
+      return DateFormatText(dateTime: note.date, mode: 'Дата в строке',);
     } else {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          DateFormatText(
-            dateTime: note.date,
-            mode: 'Дата в строке',
-            color: AppColors.textColor()),
+          DateFormatText(dateTime: note.date, mode: 'Дата в строке',),
           comment(note),
         ],
       );

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:money_pack/setting/expansionTileTheme.dart';
+import '../setting/expansionTileTheme.dart';
 import '../setting/AppDecoration.dart';
 import '../setting/calendarTheme.dart';
 import '../setting/ThirdText.dart';

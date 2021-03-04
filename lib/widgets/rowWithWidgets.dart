@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:money_pack/setting/AppDecoration.dart';
-import '../setting/AppShadow.dart';
+import '../setting/AppDecoration.dart';
 import '../setting/AppColors.dart';
 
 
@@ -27,7 +26,7 @@ class RowWithWidgets extends StatelessWidget{
               children: [
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 10),
-                  decoration: AppDecoration.buttonDecoration(context),
+                  decoration: AppDecoration.boxDecoration(context),
                   height: 50,
                   width: 160,
                   child: FlatButton(

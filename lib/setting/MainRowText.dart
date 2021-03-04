@@ -6,23 +6,12 @@ class MainRowText extends StatelessWidget{
   final TextAlign align;
   final Color color;
   final FontWeight fontWeight;
+  final double fontSize;
 
-  MainRowText({this.text, this.align, this.color, this.fontWeight});
+  MainRowText({this.text, this.align, this.color, this.fontWeight, this.fontSize});
 
   @override
   Widget build(BuildContext context) {
-
-    Color _color;
-    if (color == null)
-      _color = AppColors.textColor();
-    else
-      _color = color;
-
-    FontWeight _fontWeight;
-    if (fontWeight == null)
-      _fontWeight = FontWeight.normal;
-    else
-      _fontWeight = fontWeight;
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -30,10 +19,10 @@ class MainRowText extends StatelessWidget{
         text,
         textAlign: align,
         style: TextStyle(
-          color: _color,
-          fontSize: 18,
+          color: color ?? AppColors.textColor(),
+          fontSize: fontSize ?? 18,
           fontFamily: 'main',
-          fontWeight: _fontWeight,
+          fontWeight: fontWeight ?? FontWeight.normal,
         ),
       ),
     );

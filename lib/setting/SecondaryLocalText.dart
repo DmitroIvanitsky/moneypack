@@ -11,12 +11,6 @@ class SecondaryLocalText extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    Color _color;
-    if (color == null) {
-      _color = AppColors.textColor();
-    }else{
-      _color = color;
-    }
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -24,7 +18,7 @@ class SecondaryLocalText extends StatelessWidget{
         AppLocalizations.of(context).translate(text),
         textAlign: align,
         style: TextStyle(
-          color: _color,
+          color: color ?? AppColors.textColor(),
           fontSize: 17,
         ),
       ),

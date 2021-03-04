@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:money_pack/setting/calendarTheme.dart';
+import '../setting/calendarTheme.dart';
 import '../Utility/appLocalizations.dart';
 import '../pages/Calculator.dart';
 import '../setting/DateFormatText.dart';
@@ -15,7 +15,7 @@ import '../Utility/Storage.dart';
 import '../pages/ListOfIncomesCategories.dart';
 import '../setting/AppColors.dart';
 import '../setting/MainRowText.dart';
-import 'package:money_pack/setting/AppDecoration.dart';
+import '../setting/AppDecoration.dart';
 
 class EditPageForIncomeCategory extends StatefulWidget {
   final Function updateIncomePage;

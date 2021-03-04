@@ -13,8 +13,6 @@ import 'package:money_pack/pages/Balance.dart';
 import 'package:money_pack/pages/Expenses.dart';
 import 'package:money_pack/pages/Incomes.dart';
 import 'package:money_pack/setting/AppDecoration.dart';
-import 'package:money_pack/setting/AppShadow.dart';
-import 'package:money_pack/setting/AppTheme.dart';
 import 'package:money_pack/setting/MainLocalText.dart';
 import 'package:money_pack/setting/AppColors.dart';
 import 'package:money_pack/setting/SecondaryText.dart';
@@ -28,8 +26,6 @@ import 'package:gx_file_picker/gx_file_picker.dart';
 
 void main() => runApp(MaterialApp(
   theme: ThemeData(fontFamily: 'main',),
-  //theme: AppTheme.light,
-  //darkTheme: AppTheme.dark,
   themeMode: ThemeMode.system,
   debugShowCheckedModeBanner: true,
   localizationsDelegates: [
@@ -238,7 +234,7 @@ class _MoneyPackState extends State<MoneyPack> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 MainLocalText(text: 'Общий остаток'),
-                                SecondaryText(text: totalBalance.toStringAsFixed(2), color: AppColors.textColor(),),
+                                SecondaryText(text: totalBalance.toStringAsFixed(2),),
                               ],
                             ),
                           ],

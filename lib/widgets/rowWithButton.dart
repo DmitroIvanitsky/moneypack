@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:money_pack/Utility/Storage.dart';
-import 'package:money_pack/setting/AppDecoration.dart';
-import '../setting/AppShadow.dart';
+
+import '../setting/AppDecoration.dart';
+
 import '../setting/MainLocalText.dart';
 import '../setting/AppColors.dart';
 import '../setting/SecondaryText.dart';
@@ -27,7 +27,7 @@ class RowWithButton extends StatelessWidget{
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                decoration: AppDecoration.buttonDecoration(context),
+                decoration: AppDecoration.boxDecoration(context),
                 height: 50,
                 width: 160,
                 child: Padding(

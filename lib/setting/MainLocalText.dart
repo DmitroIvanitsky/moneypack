@@ -11,19 +11,14 @@ class MainLocalText extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    Color _color;
-    if (color == null) {
-      _color = AppColors.textColor();
-    }else{
-      _color = color;
-    }
+
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Text(
-        AppLocalizations.of(context).translate(text) == null? Text('NL::' +text) : AppLocalizations.of(context).translate(text),
+        AppLocalizations.of(context).translate(text),
         textAlign: align,
         style: TextStyle(
-          color: _color,
+          color: color ?? AppColors.textColor(),
           fontSize: 18,
           fontWeight: FontWeight.bold,
         ),

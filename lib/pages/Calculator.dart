@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_calculator/flutter_simple_calculator.dart';
-import 'package:money_pack/Utility/Storage.dart';
 import 'package:money_pack/setting/AppDecoration.dart';
 import '../Utility/appLocalizations.dart';
 import '../setting/MainRowText.dart';
@@ -68,22 +67,18 @@ class _CalculatorState extends State<Calculator> {
                 ],
               )
           ),
-          body: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Padding(
-                  padding: const EdgeInsets.all(25),
-                  child: Container(
-                    decoration: AppDecoration.boxDecoration(context),
-                    height: MediaQuery.of(context).size.height * 0.85,
-                    child: calc
-                  ),
-                ),
-              ),
+          body: Padding(
+            padding: const EdgeInsets.all(25),
+            child: Container(
+              decoration: AppDecoration.boxDecoration(context),
+              height: MediaQuery.of(context).size.height * 0.85,
+              child: calc
+            ),
           ),
         ),
+      ),
     );
   }
-
 }
 
 

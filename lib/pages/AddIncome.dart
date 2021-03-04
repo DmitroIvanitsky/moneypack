@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:money_pack/setting/ThirdText.dart';
-import 'package:money_pack/setting/calendarTheme.dart';
-import 'package:money_pack/setting/expansionTileTheme.dart';
+import '../setting/ThirdText.dart';
+import '../setting/calendarTheme.dart';
+import '../setting/expansionTileTheme.dart';
 import '../Utility/appLocalizations.dart';
 import '../setting/MainLocalText.dart';
 import '../setting/SecondaryLocalText.dart';
@@ -14,7 +14,7 @@ import '../Objects/IncomeNote.dart';
 import '../Utility/Storage.dart';
 import '../setting/AppColors.dart';
 import '../pages/ListOfIncomesCategories.dart';
-import 'package:money_pack/setting/AppDecoration.dart';
+import '../setting/AppDecoration.dart';
 
 class AddIncome extends StatefulWidget{
   final Function callback;

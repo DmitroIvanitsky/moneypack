@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:money_pack/Utility/Storage.dart';
-import 'package:money_pack/setting/AppColors.dart';
+import '../Utility/Storage.dart';
+import '../setting/AppColors.dart';
 import '../setting/AppShadow.dart';
 
 class AppDecoration {
 
+  // morphism decoration for all UI objects
   static BoxDecoration boxDecoration(BuildContext context){
     return BoxDecoration(
         color: AppColors.backGroundColor(),
@@ -13,21 +14,7 @@ class AppDecoration {
     );
   }
 
-  static BoxDecoration expenseButtonDecoration(BuildContext context){
-    Color _boxColor;
-
-    if(Storage.brightness == Brightness.light)
-      _boxColor = AppColors.expenseButton;
-    else
-      _boxColor = AppColors.backGroundColor();
-
-    return BoxDecoration(
-        color: _boxColor,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: AppShadow.shadow(context)
-    );
-  }
-
+  // exception in decoration for income button (light theme color for background)
   static BoxDecoration incomeButtonDecoration(BuildContext context){
     Color _boxColor;
 
@@ -43,19 +30,19 @@ class AppDecoration {
     );
   }
 
-  static BoxDecoration buttonDecoration(BuildContext context){
+  // exception in decoration for expense button (light theme color for background)
+  static BoxDecoration expenseButtonDecoration(BuildContext context){
     Color _boxColor;
 
     if(Storage.brightness == Brightness.light)
-      _boxColor = AppColors.mainColor;
+      _boxColor = AppColors.expenseButton;
     else
       _boxColor = AppColors.backGroundColor();
 
     return BoxDecoration(
-        //color: _boxColor,
-        color: AppColors.backGroundColor(),
+        color: _boxColor,
         borderRadius: BorderRadius.circular(15),
-        boxShadow: AppShadow.shadow(context),
+        boxShadow: AppShadow.shadow(context)
     );
   }
 }

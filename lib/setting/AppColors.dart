@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:money_pack/Utility/Storage.dart';
+import '../Utility/Storage.dart';
 
 
 class AppColors{
