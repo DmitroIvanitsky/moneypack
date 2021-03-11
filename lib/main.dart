@@ -12,11 +12,9 @@ import 'package:money_pack/pages/AddIncome.dart';
 import 'package:money_pack/pages/Balance.dart';
 import 'package:money_pack/pages/Expenses.dart';
 import 'package:money_pack/pages/Incomes.dart';
-import 'package:money_pack/pages/notes.dart';
 import 'package:money_pack/setting/AppDecoration.dart';
 import 'package:money_pack/setting/MainLocalText.dart';
 import 'package:money_pack/setting/AppColors.dart';
-import 'package:money_pack/setting/MainRowText.dart';
 import 'package:money_pack/setting/SecondaryText.dart';
 import 'package:money_pack/widgets/DateWidget.dart';
 import 'package:money_pack/widgets/AppDropdownButton.dart';
@@ -123,7 +121,6 @@ class _MoneyPackState extends State<MoneyPack> {
               Container(
                 margin: EdgeInsets.only(top: 25),
                 decoration: AppDecoration.boxDecoration(context),
-                // ignore: deprecated_member_use
                 child: FlatButton(
                   child: MainLocalText(text: 'сохранить резервную копию'),
                   onPressed: () => Storage.saveBackup(),
