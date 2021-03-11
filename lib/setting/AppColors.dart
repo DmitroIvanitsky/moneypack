@@ -14,6 +14,7 @@ class AppColors{
 
   static Color hintColor = Color.fromARGB(255, 98,106,108);
 
+
   static Color backGroundColor(){
     Color backGroundColor;
     if (Storage.brightness == Brightness.light)
@@ -31,5 +32,4 @@ class AppColors{
       textColor = Color(0xffafb7c3);
     return textColor;
   }
-
 }
