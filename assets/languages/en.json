@@ -21,7 +21,7 @@
   "Доход" : "Income",
   "Расход" : "Expense",
   "Баланс" : "Balance",
-  "Остаток" : "Remain",
+  "Общий остаток" : "Total balance",
   "Учёт" : "Accounting",
   "Добавить расход" : "Add Expense",
   "Добавить доход" : "Add Income",
@@ -48,6 +48,12 @@
   "Добавьте новую категорию" : "Add new category",
   "Удалена категория: " : "Deleted category: ",
   "Заметка удалена" : "Note deleted",
-  "Отменить" : "Undo",
-  "Итого" : "Total"
+  "ОТМЕНИТЬ" : "UNDO",
+  "Итого" : "Total",
+  "Записей нет" : "No entries",
+  "Баланс за период" : "Balance for the period",
+  "Неделя(Д)" : "Week(D)",
+  "Среднее за неделю" : "weekly average",
+  "сохранить резервную копию" : "save backup",
+  "загрузить резервную копию" : "load backup"
 }

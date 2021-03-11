@@ -1,24 +1,21 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:money_pack/setting/AppDecoration.dart';
+import 'package:flutter/widgets.dart';
+import '../setting/AppDecoration.dart';
 import '../setting/SecondaryText.dart';
 import '../Utility/appLocalizations.dart';
 import '../widgets/customSnackBar.dart';
-import '../Utility/Storage.dart';
 import '../setting/MainLocalText.dart';
+import '../Utility/Storage.dart';
 import '../setting/AppColors.dart';
 
-class ListOfIncomesCategories extends StatefulWidget{
-  final Function callback;
-  final String cat;
-  ListOfIncomesCategories({this.callback, this.cat});
+class Notes extends StatefulWidget {
 
   @override
-  _ListOfIncomesCategoriesState createState() => _ListOfIncomesCategoriesState();
+  _NotesState createState() => _NotesState();
 }
 
-class _ListOfIncomesCategoriesState extends State<ListOfIncomesCategories> {
+class _NotesState extends State<Notes> {
   List<String> list = [];
   String tempField = '';
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
@@ -37,13 +34,14 @@ class _ListOfIncomesCategoriesState extends State<ListOfIncomesCategories> {
   }
 
   initList() async {
-    list = await Storage.getList('Incomes');
-    if(list == null) {
-      list = [AppLocalizations.of(context).translate('Зарплата')];
-      await Storage.saveList(list, 'Incomes');
-    }
+    list = await Storage.getList('Notes');
+    // if (list == null)
+    //   list = [AppLocalizations.of(context).translate('1')];
+    // else
+      await Storage.saveList(list, 'Notes');
+
     list.sort();
-    setState(() {});
+    updateList();
   }
 
   void updateList() {
@@ -58,13 +56,12 @@ class _ListOfIncomesCategoriesState extends State<ListOfIncomesCategories> {
     else
       list.add(category);
 
-    await Storage.saveList(list, "Incomes");
+    await Storage.saveList(list, "Notes");
     updateList();
   }
 
   @override
   Widget build(BuildContext context) {
-
     return SafeArea(
       child: Scaffold(
         key: scaffoldKey,
@@ -73,55 +70,46 @@ class _ListOfIncomesCategoriesState extends State<ListOfIncomesCategories> {
           shadowColor: AppColors.backGroundColor().withOpacity(.001),
           backgroundColor: AppColors.backGroundColor(),
           iconTheme: IconThemeData(color: AppColors.textColor()),
-          title: MainLocalText(text: 'Категории доходов'),
+          title: MainLocalText(text: "Заметки"),
         ),
         body: Column(
           children: [
             SizedBox(height: 10),
             Expanded(
               child: list.isEmpty ?
-              Center(child: MainLocalText(text: 'Добавьте категорию')) :
+              Center(child: MainLocalText(text: 'заметок нет')) :
               ListView.builder(
                 itemCount: list.length,
-                itemBuilder: (context, index){
+                itemBuilder: (context, index) {
                   String category = list[index];
                   return Dismissible(
-                      key: ValueKey(category),
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 15, right: 5),
-                        child: Column(
-                          children: [
-                            Container(
-                              height: 50,
-                              child: GestureDetector(
-                                behavior: HitTestBehavior.opaque,
-                                onTap: (){
-                                  widget.callback(category);
-                                  Navigator.pop(context);
-                                },
-                                child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [SecondaryText(text: category),]
-                                ),
-                              ),
+                    key: ValueKey(category),
+                    child: Padding(
+                    padding: EdgeInsets.only(left: 5, right: 5),
+                      child: Column(
+                        children: [
+                          SizedBox(height: 25),
+                          Container(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [Expanded(child: SecondaryText(text: category))]
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
+                    ),
                     direction: DismissDirection.endToStart,
-                    onDismissed: (direction) async{
+                    onDismissed: (direction) async {
                       CustomSnackBar.show(
                           key: scaffoldKey,
                           context: context,
-                          text: AppLocalizations.of(context).translate(
-                              'Удалена категория: ') + category,
+                          text: AppLocalizations.of(context).translate('Удалена заметка: ') + category,
                           textColor: Colors.white,
-                          callBack: (){
+                          callBack: () {
                             undoDelete(category, index);
-                          }
-                      );
+                          });
                       list.remove(category);
-                      await Storage.saveList(list, 'Incomes');
+                      await Storage.saveList(list, 'Notes');
                       updateList();
                     },
                     background: Container(),
@@ -146,13 +134,13 @@ class _ListOfIncomesCategoriesState extends State<ListOfIncomesCategories> {
                     child: Container(
                       decoration: AppDecoration.boxDecoration(context),
                       child: TextFormField(
-                        inputFormatters: [
-                          new LengthLimitingTextInputFormatter(10),// for mobile
-                        ],
+                        // inputFormatters: [
+                        //   new LengthLimitingTextInputFormatter(10),// for mobile
+                        // ],
                         style: TextStyle(color: AppColors.textColor()),
                         controller: TextEditingController(),
                         decoration: InputDecoration(
-                          hintText: AppLocalizations.of(context).translate('Добавьте новую категорию'),
+                          hintText: AppLocalizations.of(context).translate('Добавьте заметку'),
                           hintStyle: TextStyle(color: AppColors.hintColor),
                           contentPadding: EdgeInsets.all(20.0),
                           border: addCatFocusNode.hasFocus
@@ -167,19 +155,19 @@ class _ListOfIncomesCategoriesState extends State<ListOfIncomesCategories> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(left: 25.0),
+                    padding: const EdgeInsets.only(left: 25),
                     child: Container(
                       height: 60,
                       width: 60,
                       decoration: AppDecoration.boxDecoration(context),
                       child: IconButton(
                         icon: Icon(Icons.add, color: AppColors.textColor(),),
-                        onPressed: () async{
-                          if(tempField == '') return;
+                        onPressed: () async {
+                          if (tempField == '') return;
                           list.add(tempField);
                           tempField = '';
                           TextEditingController().clear();
-                          await Storage.saveList(list, "Incomes");
+                          await Storage.saveList(list, "Notes");
                           updateList();
                         },
                       ),
@@ -188,9 +176,10 @@ class _ListOfIncomesCategoriesState extends State<ListOfIncomesCategories> {
                 ]
               ),
             )
-          ]
+          ],
         ),
       ),
     );
   }
+
 }

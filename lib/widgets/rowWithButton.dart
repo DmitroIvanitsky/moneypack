@@ -1,57 +1,55 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import '../setting/AppDecoration.dart';
+
 import '../setting/MainLocalText.dart';
-import '../setting/MyColors.dart';
+import '../setting/AppColors.dart';
 import '../setting/SecondaryText.dart';
 
 class RowWithButton extends StatelessWidget{
   final Function onTap;
   final String leftText;
   final String rightText;
+
   RowWithButton({this.leftText, this.rightText, this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return
       Container(
-        decoration: BoxDecoration(
-          color: MyColors.rowColor,
-          borderRadius: BorderRadius.circular(5),
-            boxShadow: [
-              BoxShadow(
-                  color: Colors.black,
-                  blurRadius: 5
-              )
-            ]
-        ),
+        decoration: AppDecoration.boxDecoration(context),
         height: 50,
-        margin: EdgeInsets.only(left: 10, right: 10),
+        margin: EdgeInsets.only(left: 20, right: 20),
         child: Padding(
           padding: EdgeInsets.only(right: 10),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                decoration: BoxDecoration(
-                  color: MyColors.mainColor,
-                  borderRadius: BorderRadius.circular(5),
-                ),
+                decoration: AppDecoration.boxDecoration(context),
                 height: 50,
                 width: 160,
-                child: FlatButton(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: FlatButton(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Expanded(child: MainLocalText(text: leftText)),
-                        Icon(Icons.arrow_drop_down, color: MyColors.textColor)
+                        Expanded(
+                            child: MainLocalText(
+                              text: leftText,
+                              //color: Storage.brightness == Brightness.light ? AppColors.textColor() : AppColors.mainColor,
+                            )
+                        ),
+                        Icon(Icons.arrow_drop_down, color: AppColors.textColor())
                       ],
                     ),
-                    onPressed: (){
-                      onTap();
-                    }
+                    onPressed: () => onTap(),
+                  ),
                 ),
               ),
-              Expanded(child: SecondaryText(text: rightText.toString(), align: TextAlign.right))
+              Expanded(child: SecondaryText(text: rightText.toString(), align: TextAlign.right,))
             ],
           ),
         ),
@@ -59,3 +57,4 @@ class RowWithButton extends StatelessWidget{
   }
 
 }
+

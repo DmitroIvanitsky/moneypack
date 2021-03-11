@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../setting/AppColors.dart';
 import '../Utility/appLocalizations.dart';
 
 class SecondaryLocalText extends StatelessWidget{
@@ -10,13 +11,14 @@ class SecondaryLocalText extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
+
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Text(
         AppLocalizations.of(context).translate(text),
         textAlign: align,
         style: TextStyle(
-          color: color,
+          color: color ?? AppColors.textColor(),
           fontSize: 17,
         ),
       ),

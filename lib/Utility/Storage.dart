@@ -1,4 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:share/share.dart';
+import 'package:path_provider/path_provider.dart';
+import '../Objects/AllData.dart';
 import '../Objects/IncomeNote.dart';
 import '../Objects/ListOfExpenses.dart';
 import '../Objects/ListOfIncomes.dart';
@@ -6,6 +11,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../Objects/ExpenseNote.dart';
 
 class Storage{
+  static String langCode;
+  static Brightness brightness;
+  static ThemeMode M = ThemeMode.light;
 
   static Future<bool> saveList(list, key) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -91,4 +99,43 @@ class Storage{
       await saveList(incCategories, 'Incomes');
     }
   }
+
+  static void saveBackup() async {
+    List<String> expenseCatList = await Storage.getList('Expenses');
+    List<String> incomeCatList = await Storage.getList('Incomes');
+    ListOfExpenses listOfExpenses = ListOfExpenses.fromJson(jsonDecode(await Storage.getString('ExpenseNote')));
+    ListOfIncomes listOfIncomes = ListOfIncomes.fromJson(jsonDecode(await Storage.getString('IncomeNote')));
+
+    AllData backupObject = AllData(
+      expenseCatList: expenseCatList == null ? null : expenseCatList,
+      incomeCatList: incomeCatList == null ? null : incomeCatList,
+      listOfExpenses: listOfExpenses == null ? null : listOfExpenses,
+      listOfIncomes: listOfIncomes == null ? null : listOfIncomes,
+    );
+
+    String appDir = (await getApplicationDocumentsDirectory()).path;//Get app directory path
+    File file = File(appDir + '/MPBackup.json');
+    await file.writeAsString(jsonEncode(backupObject.toJson()));
+    await Share.shareFiles([file.path]);
+  }
+
+  static void loadBackup(File file) async {
+    //String appDir = (await getApplicationDocumentsDirectory()).path;//Get app directory path
+    //File file = File(appDir + '/MPKbackup.json');
+    String res = await file.readAsString();
+    AllData backupObject = AllData.fromJson(jsonDecode(res));
+
+    //list of incomes categories
+    await Storage.saveList(backupObject.incomeCatList, "Incomes");
+
+    //list of expenses categories
+    await Storage.saveList(backupObject.expenseCatList, 'Expenses');
+
+    //list of expenseNotes
+    await Storage.saveString(jsonEncode(ListOfExpenses().toJson()), 'ExpenseNote');
+
+    //list of incomeNotes
+    await Storage.saveString(jsonEncode(ListOfIncomes().toJson()), 'IncomeNote');
+  }
+
 }

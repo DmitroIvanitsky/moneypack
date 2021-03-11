@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
-import '../Objects/ListOfExpenses.dart';
+import 'package:flutter/services.dart';
+import '../setting/expansionTileTheme.dart';
+import '../setting/AppDecoration.dart';
+import '../setting/calendarTheme.dart';
+import '../setting/ThirdText.dart';
+import '../pages/ListOfExpensesCategories.dart';
 import '../Utility/appLocalizations.dart';
 import '../setting/MainLocalText.dart';
 import '../setting/SecondaryLocalText.dart';
@@ -9,9 +14,7 @@ import '../setting/DateFormatText.dart';
 import '../Objects/ExpenseNote.dart';
 import '../Utility/Storage.dart';
 import '../pages/Calculator.dart';
-import '../pages/ListOfExpensesCategories.dart';
-import '../setting/MyColors.dart';
-import '../setting/MainRowText.dart';
+import '../setting/AppColors.dart';
 
 class AddExpenses extends StatefulWidget{
   final Function callBack;
@@ -23,7 +26,7 @@ class AddExpenses extends StatefulWidget{
 
 class _AddExpensesState extends State<AddExpenses> {
 
-  DateTime date = DateTime.now();
+  DateTime date = new DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
   String category = '';
   double sum;
   String comment;
@@ -63,229 +66,9 @@ class _AddExpensesState extends State<AddExpenses> {
 
   void updateSum(double result){
     setState(() {
-      if (calcController != null) calcController.text = result.toString();
+      if (calcController != null) calcController.text = result.toStringAsFixed(2);
       sum = result;
     });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: MyColors.backGroundColor,
-        //bottomNavigationBar: buildBottomAppBar(),
-        appBar: buildAppBar(),
-        body: buildBody(),
-      ),
-    );
-  }
-
-  Widget buildBottomAppBar() {
-    return BottomAppBar(
-      child: Container(
-        decoration: BoxDecoration(
-            color: MyColors.mainColor,
-            boxShadow: [
-              BoxShadow(
-                  color: Colors.black,
-                  blurRadius: 5
-              )
-            ]
-        ),
-        height: 60,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            IconButton(
-                icon: Icon(Icons.arrow_back, color: Colors.black),
-                onPressed: () => Navigator.pop(context)
-            ),
-            MainLocalText(text: 'Добавить расход'),
-            IconButton(
-              iconSize: 35,
-              icon: Icon(Icons.done, color: MyColors.textColor),
-              onPressed: () async{
-                if (category == AppLocalizations.of(context).translate('Выбирите категорию')
-                    || sum == null
-                ) return; // to not add empty sum note
-                Storage.saveExpenseCategory(category);
-                Storage.saveExpenseNote(
-                    ExpenseNote(
-                        date: date,
-                        category: category,
-                        sum: sum,
-                        comment: comment),
-                    category
-                );
-                widget.callBack();
-                Navigator.pop(context);
-              },
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget buildAppBar() {
-    return AppBar(
-      iconTheme: IconThemeData(
-          color: MyColors.textColor
-      ),
-      backgroundColor: MyColors.mainColor,
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          MainLocalText(text: 'Добавить расход'),
-          IconButton(
-            iconSize: 35,
-            icon: Icon(Icons.done, color: MyColors.textColor),
-            onPressed: (){
-              if (category == 'Выбирите категорию' || sum == null) return; // to not add empty sum note
-              Storage.saveExpenseNote(
-                  ExpenseNote(
-                      date: date,
-                      category: category,
-                      sum: sum,
-                      comment: comment),
-                  category
-              ); // function to create note object
-              widget.callBack();
-              Navigator.pop(context);
-            },
-          )
-        ],
-      ),
-    );
-  }
-
-  Widget buildBody() {
-    return Padding(
-      padding: EdgeInsets.only(left: 10, right: 10),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            SizedBox(height: 35),
-            RowWithWidgets(
-              leftWidget: MainLocalText(text: 'Дата'),
-              rightWidget: (date != null) ?
-                DateFormatText(dateTime: date, mode: 'Дата в строке', color: MyColors.textColor) :
-                SecondaryLocalText(text: 'Выбирите дату'),
-              onTap: onDateTap
-            ),
-            Divider(color: MyColors.backGroundColor),
-            Container(
-              decoration: BoxDecoration(
-                color: MyColors.backGroundColor,
-                borderRadius: BorderRadius.circular(5),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey,
-                    spreadRadius: 1
-                  )
-                ]
-              ),
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 10,
-                  ),
-                  RowWithButton(
-                    leftText: 'Категория',
-                    rightText: category,
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ListOfExpensesCategories(
-                          callback: updateCategory,
-                          cat: category)
-                      ),
-                    ),
-                  ),
-                  Container(
-                    height: 175,
-                    child: ListView(
-                      physics: NeverScrollableScrollPhysics(),
-                      children: getLastCategories(),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                 Container(
-                   height: 60,
-                   decoration: BoxDecoration(
-                     border: Border.all(color: Colors.grey),
-                     borderRadius: BorderRadius.all(Radius.circular(5))
-                   ),
-                   width: MediaQuery.of(context).size.width - 100,
-                   child:  TextFormField(
-                     onTap: () => sumFocusNode.requestFocus(),
-                     focusNode: sumFocusNode,
-                     keyboardType: TextInputType.number,
-                     controller: calcController,
-                     decoration: InputDecoration(
-                       contentPadding: EdgeInsets.all(20.0),
-                       hintText: AppLocalizations.of(context).translate('Введите сумму'),
-                       border: sumFocusNode.hasFocus ?
-                         OutlineInputBorder(
-                           borderRadius: BorderRadius.all(Radius.circular(5)),
-                           borderSide: BorderSide(color: Colors.blue)
-                         ) :
-                         InputBorder.none
-                     ),
-                     onChanged: (v) => sum = double.parse(v),
-                   ),
-                 ),
-                Container(
-                  height: 60,
-                  width: 60,
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.grey,
-                      ),
-                      borderRadius: BorderRadius.all(Radius.circular(5))
-                  ),
-                  child: IconButton(
-                      icon: Icon(
-                          Icons.calculate_outlined,
-                          color: MyColors.textColor,
-                          size: 40
-                      ),
-                      onPressed: () => goToCalculator(context)
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 20),
-            TextFormField(
-              focusNode: commentFocusNode,
-              maxLines: 3,
-              decoration: InputDecoration(
-                hintText: AppLocalizations.of(context).translate('Введите коментарий'),
-                contentPadding: EdgeInsets.all(20.0),
-                fillColor: Colors.white,
-                border: commentFocusNode.hasFocus
-                    ? OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                    borderSide: BorderSide(color: Colors.blue)
-                ) : OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                    borderSide: BorderSide(color: Colors.grey)
-                )
-              ),
-              onChanged: (v) => comment = v,
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   List<Widget> getLastCategories(){
@@ -293,20 +76,18 @@ class _AddExpensesState extends State<AddExpenses> {
     List<Widget> result = [];
     for (String catName in lastCategories) {
       result.add(
-        RadioListTile<String>(
-          title: Text(
-            catName,
-            style: TextStyle(
-                fontWeight: catName == category? FontWeight.bold : FontWeight.normal
-            ),
+        ExpansionTileTheme(
+          child: RadioListTile<String>(
+            activeColor: AppColors.textColor(),
+            title: ThirdText(catName,),
+            groupValue: category,
+            value: catName,
+            onChanged: (String value) {
+              setState(() {
+                category = value;
+              });
+            },
           ),
-          groupValue: category,
-          value: catName,
-          onChanged: (String value) {
-            setState(() {
-              category = value;
-            });
-          },
         ),
       );
     }
@@ -339,7 +120,7 @@ class _AddExpensesState extends State<AddExpenses> {
       lastDate: DateTime.now().add(Duration(days: 184)),
       firstDate: DateTime.now().subtract(Duration(days: 184)),
       builder:(BuildContext context, Widget child) {
-        return theme(child);
+        return CalendarTheme.theme(child);
         },
     );
     setState(() {
@@ -347,18 +128,167 @@ class _AddExpensesState extends State<AddExpenses> {
     });
   }
 
-  theme(Widget child){
-    return Theme(
-      data: ThemeData.dark().copyWith(
-        colorScheme: ColorScheme.dark(
-          primary: MyColors.mainColor,
-          onPrimary: MyColors.textColor,
-          surface: MyColors.mainColor,
-          onSurface: MyColors.textColor,
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: AppColors.backGroundColor(),
+        appBar: AppBar(
+          iconTheme: IconThemeData(color: AppColors.textColor()),
+          shadowColor: AppColors.backGroundColor().withOpacity(.001),
+          backgroundColor: AppColors.backGroundColor(),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              MainLocalText(text: 'Добавить расход'),
+              IconButton(
+                iconSize: 35,
+                icon: Icon(Icons.done, color: AppColors.textColor()),
+                onPressed: (){
+                  if (category == 'Выбирите категорию' ||
+                      category == 'Choose category' ||
+                      category == 'Оберіть категорію' ||
+                      sum == null) return; // to not add empty sum note
+                  Storage.saveExpenseNote(
+                      ExpenseNote(
+                          date: date,
+                          category: category,
+                          sum: sum,
+                          comment: comment),
+                      category
+                  ); // function to create note object
+                  widget.callBack();
+                  Navigator.pop(context);
+                },
+              )
+            ],
+          ),
         ),
-        dialogBackgroundColor: MyColors.backGroundColor,
+        body: Padding(
+          padding: EdgeInsets.only(left: 10, right: 10),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(top: 15, bottom: 20),
+                  child: RowWithWidgets(
+                      leftWidget: MainLocalText(text: 'Дата'),
+                      rightWidget: (date != null) ?
+                      DateFormatText(dateTime: date, mode: 'Дата в строке') :
+                      SecondaryLocalText(text: 'Выбирите дату'),
+                      onTap: onDateTap
+                  ),
+                ),
+                Container(
+                  decoration: AppDecoration.boxDecoration(context),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 15.0),
+                        child: RowWithButton(
+                          leftText: 'Категория',
+                          rightText: category,
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ListOfExpensesCategories(
+                                    callback: updateCategory,
+                                    cat: category)
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: 175,
+                        child: ListView(
+                          physics: NeverScrollableScrollPhysics(),
+                          children: getLastCategories(),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 25),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        height: 60,
+                        decoration: AppDecoration.boxDecoration(context),
+                        width: MediaQuery.of(context).size.width - 100,
+                        child:  TextFormField(
+                          inputFormatters: [
+                            new LengthLimitingTextInputFormatter(10),// for mobile
+                          ],
+                          style: TextStyle(color: AppColors.textColor()),
+                          onTap: () => sumFocusNode.requestFocus(),
+                          focusNode: sumFocusNode,
+                          keyboardType: TextInputType.number,
+                          controller: calcController,
+                          decoration: InputDecoration(
+                              contentPadding: EdgeInsets.all(20.0),
+                              hintText: AppLocalizations.of(context).translate('Введите сумму'),
+                              hintStyle: TextStyle(color: AppColors.hintColor),
+                              border: sumFocusNode.hasFocus ?
+                              OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(Radius.circular(15)),
+                                  borderSide: BorderSide(color: Colors.blue)
+                              ) :
+                              InputBorder.none
+                          ),
+                          onChanged: (v) => sum = double.parse(v),
+                        ),
+                      ),
+                      Container(
+                        height: 60,
+                        width: 60,
+                        decoration: AppDecoration.boxDecoration(context),
+                        child: IconButton(
+                            icon: Icon(
+                                Icons.calculate_outlined,
+                                color: AppColors.textColor(),
+                                size: 40
+                            ),
+                            onPressed: () => goToCalculator(context)
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 25),
+                  child: Container(
+                    decoration: AppDecoration.boxDecoration(context),
+                    child: TextFormField(
+                      inputFormatters: [
+                        new LengthLimitingTextInputFormatter(20),// for mobile
+                      ],
+                      style: TextStyle(color: AppColors.textColor()),
+                      focusNode: commentFocusNode,
+                      maxLines: 1,
+                      decoration: InputDecoration(
+                        hintText: AppLocalizations.of(context).translate('Введите коментарий'),
+                        hintStyle: TextStyle(color: AppColors.hintColor),
+                        contentPadding: EdgeInsets.all(20.0),
+                        fillColor: Colors.white,
+                        border: commentFocusNode.hasFocus
+                            ? OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                            borderSide: BorderSide(color: Colors.blue)
+                        ) : InputBorder.none,
+                      ),
+                      onChanged: (v) => comment = v,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
-      child: child,
     );
   }
 

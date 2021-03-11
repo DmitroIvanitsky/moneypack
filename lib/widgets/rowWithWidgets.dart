@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../setting/MyColors.dart';
+import '../setting/AppDecoration.dart';
+import '../setting/AppColors.dart';
 
 
 class RowWithWidgets extends StatelessWidget{
@@ -12,44 +13,36 @@ class RowWithWidgets extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return
-      Container(
-        decoration: BoxDecoration(
-            color: MyColors.rowColor,
-            borderRadius: BorderRadius.circular(5),
-            boxShadow: [
-              BoxShadow(
-                  color: Colors.black,
-                  blurRadius: 5
-              )
-            ]
-        ),
-        height: 50,
-        margin: EdgeInsets.only(left: 10, right: 10),
-        child: Padding(
-          padding: EdgeInsets.only(right: 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: MyColors.mainColor,
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                height: 50,
-                width: 160,
-                child: FlatButton(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      leftWidget,
-                      Icon(Icons.arrow_drop_down, color: MyColors.textColor)
-                    ],
+      Center(
+        child: Container(
+          decoration: AppDecoration.boxDecoration(context),
+          height: 50,
+          //width: 350,
+          margin: EdgeInsets.only(left: 20, right: 20),
+          child: Padding(
+            padding: EdgeInsets.only(right: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  decoration: AppDecoration.boxDecoration(context),
+                  height: 50,
+                  width: 160,
+                  child: FlatButton(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        leftWidget,
+                        Icon(Icons.arrow_drop_down, color: AppColors.textColor())
+                      ],
+                    ),
+                    onPressed: () => onTap()
                   ),
-                  onPressed: () => onTap()
                 ),
-              ),
-              rightWidget
-            ],
+                rightWidget
+              ],
+            ),
           ),
         ),
       );

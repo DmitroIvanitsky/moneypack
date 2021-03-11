@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:money_pack/setting/SecondaryLocalText.dart';
-import 'package:money_pack/setting/SecondaryText.dart';
-import 'package:money_pack/widgets/getDataWidget.dart';
+import 'package:money_pack/setting/expansionTileTheme.dart';
+import 'package:money_pack/widgets/AppDropdownButton.dart';
+import '../widgets/DateWidget.dart';
+import '../setting/SecondaryLocalText.dart';
+import '../setting/SecondaryText.dart';
 import '../Utility/appLocalizations.dart';
 import '../widgets/customSnackBar.dart';
 import '../setting/MainLocalText.dart';
@@ -12,10 +14,11 @@ import '../pages/EditPageForExpenseCategory.dart';
 import '../Objects/ExpenseNote.dart';
 import '../Objects/ListOfExpenses.dart';
 import '../Utility/Storage.dart';
-import '../setting/MyColors.dart';
+import '../setting/AppColors.dart';
 import '../setting/MainRowText.dart';
+import '../setting/AppDecoration.dart';
 
-class Expenses extends StatefulWidget{
+class Expenses extends StatefulWidget {
   final Function updateMainPage;
 
   Expenses({this.updateMainPage});
@@ -25,34 +28,82 @@ class Expenses extends StatefulWidget{
 }
 
 class _ExpensesState extends State<Expenses> {
-  DateTime date = DateTime.now();
+  DateTime date = new DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
   String selectedMode = 'День';
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
+  List <ExpenseNote> expensesSortedByCategory = [];
 
   @override
   void initState() {
     loadExpensesList();
+    setExpSortCatList();
     super.initState();
   }
 
   void loadExpensesList() async {
     String m = await Storage.getString('ExpenseNote');
-    if(m != null) {
+    if (m != null) {
       setState(() {
         ListOfExpenses.fromJson(jsonDecode(m));
       });
     }
   }
 
-  void updateExpensesPage(){
+  void setExpSortCatList() {
+    List <ExpenseNote> expensesFilteredByDate = ListOfExpenses.filtered(selMode: selectedMode, currentDate: date);
+
+    if (selectedMode == 'Неделя(Д)'){
+      expensesSortedByCategory = expensesFilteredByDate;
+    } else {
+      expensesSortedByCategory.clear();
+
+      //Add unique ExpenseNotes to expensesSortedByCategory
+      for (int i = 0; i < expensesFilteredByDate.length; i++) {
+        ExpenseNote currentExpenseNote = expensesFilteredByDate[i];
+        double sum = expensesFilteredByDate[i].sum;
+        bool isFound = false;
+
+        for (ExpenseNote note in expensesSortedByCategory) {
+          if (currentExpenseNote.category == note.category) {
+            isFound = true;
+            break;
+          }
+        }
+        if (isFound) continue; //ExpenseNote already added, skip
+
+        //sum all same category ExpenseNotes
+        for (int j = i + 1; j < expensesFilteredByDate.length; j++) {
+          if (currentExpenseNote.category == expensesFilteredByDate[j].category)
+            sum += expensesFilteredByDate[j].sum;
+        }
+
+        expensesSortedByCategory.add(
+            ExpenseNote(
+                date: currentExpenseNote.date,
+                category: currentExpenseNote.category,
+                sum: sum,
+                comment: currentExpenseNote.comment
+            )
+        );
+      }
+    }
+    expensesSortedByCategory.sort((a, b) => b.date.compareTo(a.date));
+  }
+
+  void updateExpensesPage() {
     setState(() {
+      setExpSortCatList();
     });
   }
 
-  void updateDate(DateTime dateTime){
-    setState(() {
-      date = dateTime;
-    });
+  void updateSelectedMode(String selMode){
+    selectedMode = selMode;
+    updateExpensesPage();
+  }
+
+  void updateDate(DateTime dateTime) {
+    date = dateTime;
+    updateExpensesPage();
   }
 
   void undoDelete(ExpenseNote note, int index) async {
@@ -61,293 +112,137 @@ class _ExpensesState extends State<Expenses> {
     else
       ListOfExpenses.list.add(note);
 
-    await Storage.saveString(jsonEncode(
-        new ListOfExpenses().toJson()), 'ExpenseNote');
+    await Storage.saveString(
+        jsonEncode(new ListOfExpenses().toJson()), 'ExpenseNote');
     updateExpensesPage();
+    widget.updateMainPage();
   }
 
-  double totalSum(List list){
+  double totalSum(List list) {
     double total = 0;
-    for (int i = 0; i < list.length; i++){
+    for (int i = 0; i < list.length; i++) {
       total += list[i].sum;
     }
     return total;
   }
 
-  String averageSum(List list){
+  String getWeekAverage(List list) {
     double average;
-    average = totalSum(list) / 7;
-    return average.toStringAsFixed(1);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        key: scaffoldKey,
-        backgroundColor: MyColors.backGroundColor,
-        //bottomNavigationBar: buildBottomAppBar(),
-        appBar: buildAppBar(),
-        body: buildBody(),
-      ),
-    );
-  }
-
-  Widget buildAppBar() {
-    return AppBar(
-      iconTheme: IconThemeData(
-          color: MyColors.textColor
-      ),
-      backgroundColor: MyColors.mainColor,
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          MainLocalText(text: 'Расход'),
-          buildDropdownButton()
-        ],
-      ), // dropdown menu button
-    );
-  }
-
-  Widget buildBody() {
-    List categoriesList = filteredExpenses();
-    categoriesList.sort((a, b) => b.date.compareTo(a.date));
-
-    return Column(
-      children: [
-        _getData(),
-        //GetDataWidget(dateTime: date, selectedMode: selectedMode, updatePage: updateDate),
-        Divider(),
-        categoriesList.isEmpty ?
-        Expanded(child: Center(child: MainLocalText(text: 'Расходов нет'))) :
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
-          child: Container(
-            height: 50,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                MainLocalText(text: 'Итого'),
-                MainRowText(text: totalSum(categoriesList).toString())
-              ],
-            ),
-          ),
-        ),
-        //Divider(color: MyColors.textColor),
-        selectedMode == 'Неделя(Д)' && categoriesList.isNotEmpty?
-        Expanded(
-          child: Column(
-            //mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Expanded(
-                  child:
-                  ListView(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(left: 25, top: 25, right: 25),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            SecondaryLocalText(text: 'Mon'),
-                            SecondaryText(text: sumByDay(1, categoriesList)),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(left: 25, top: 25, right: 25),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            SecondaryLocalText(text: 'Tue'),
-                            SecondaryText(text: sumByDay(2, categoriesList)),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(left: 25, top: 25, right: 25),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            SecondaryLocalText(text: 'Wed'),
-                            SecondaryText(text: sumByDay(3, categoriesList)),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(left: 25, top: 25, right: 25),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            SecondaryLocalText(text: 'Thu'),
-                            SecondaryText(text: sumByDay(4, categoriesList)),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(left: 25, top: 25, right: 25),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            SecondaryLocalText(text: 'Fri'),
-                            SecondaryText(text: sumByDay(5, categoriesList)),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(left: 25, top: 25, right: 25),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            SecondaryLocalText(text: 'Sat'),
-                            SecondaryText(text: sumByDay(6, categoriesList)),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(left: 25, top: 25, right: 25),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            SecondaryLocalText(text: 'Sun'),
-                            SecondaryText(text: sumByDay(7, categoriesList)),
-                          ],
-                        ),
-                      )
-                    ],
-                  )
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.0),
-                child: Container(
-                  height: 50,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      MainLocalText(text: 'Среднее за день'),
-                      MainRowText(text: averageSum(categoriesList).toString())
-                    ],
-                  ),
-                ),
-              )
-            ],
-          ),
-        )
-        :
-        Expanded(
-          child: ListView.builder(
-              itemCount: categoriesList.length,
-              itemBuilder: (context, index){
-                ExpenseNote singleCategory = categoriesList[index];
-                List <ExpenseNote> childrenList = getFilteredChildrenOfCategory(singleCategory);
-                childrenList.sort((a, b) => b.date.compareTo(a.date));
-
-                return ExpansionTile(
-                  title: Padding(
-                    padding: EdgeInsets.only(left: 5),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SecondaryText(text: singleCategory.category),
-                        SecondaryText(text: '${singleCategory.sum}'),
-                      ],
-                    ),
-                  ),
-                  backgroundColor: MyColors.backGroundColor,
-                  onExpansionChanged: (e) {},
-                  children: [
-                    Container(
-                      height: _childrenListLength(childrenList),
-                      //height: 200, // how to optimize height to max needed
-                      child: getExpandedChildrenForCategory(childrenList),
-                    )
-                  ],
-                );
-              }
-          ),
-        )
-
-      ],
-    );
-  }
-
-  // function to only one view mode 'Неделя(Д)'
-  String sumByDay(int day, List list){
     double sum = 0;
-    for(int i = 0; i < list.length; i++){
-      if(list[i].date.weekday == day)
-        sum += list[i].sum;
+    for (int i = 0; i < list.length; i++) {
+      sum += list[i].sum;
     }
-    return sum.toString();
+    average = sum / 7;
+    return average.toStringAsFixed(2);
   }
 
-  Widget buildBottomAppBar() {
-    return BottomAppBar(
-      child: Container(
-        decoration: BoxDecoration(
-            color: MyColors.mainColor,
-            boxShadow: [
-              BoxShadow(
-                  color: Colors.black,
-                  blurRadius: 5
-              )
-            ]
-        ),
-        height: 60,
-        child: Padding(
-          padding: EdgeInsets.only(right: 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              IconButton(
-                  icon: Icon(Icons.arrow_back, color: Colors.black),
-                  onPressed: () => Navigator.pop(context)
-              ),
-              MainLocalText(text: 'Расход'),
-              buildDropdownButton(),
-            ],
-          ),
-        ),
-      ),
-    );
+  String sumByDayMode(int day, List list) {
+    double sum = 0;
+    for (int i = 0; i < list.length; i++) {
+      if (list[i].date.weekday == day) sum += list[i].sum;
+    }
+    return sum.toStringAsFixed(2);
   }
 
-  double _childrenListLength(List list){
+  String getSumByDayLIst(int index){
+    List <String> sumByDay = [];
+    String sum;
+
+    for (int i = 1; i <= 7; i++){
+      sumByDay.add(sumByDayMode(i, expensesSortedByCategory));
+    }
+
+    switch (index) {
+      case 1:
+        sum = Storage.langCode == 'en' ? sumByDay[6] : sumByDay[0];
+        break;
+      case 2:
+        sum = Storage.langCode == 'en' ? sumByDay[0] : sumByDay[1];
+        break;
+      case 3:
+        sum = Storage.langCode == 'en' ? sumByDay[1] : sumByDay[2];
+        break;
+      case 4:
+        sum = Storage.langCode == 'en' ? sumByDay[2] : sumByDay[3];
+        break;
+      case 5:
+        sum = Storage.langCode == 'en' ? sumByDay[3] : sumByDay[4];
+        break;
+      case 6:
+        sum = Storage.langCode == 'en' ? sumByDay[4] : sumByDay[5];
+        break;
+      case 7:
+        sum = Storage.langCode == 'en' ? sumByDay[5] : sumByDay[6];
+    }
+    return sum;
+  }
+
+  String toDateFormatDay(int index) {
+    String dateFormat;
+    switch (index) {
+      case 1:
+        dateFormat = Storage.langCode == 'en' ? 'Sun' : 'Mon';
+        break;
+      case 2:
+        dateFormat = Storage.langCode == 'en' ? 'Mon' : 'Tue';
+        break;
+      case 3:
+        dateFormat = Storage.langCode == 'en' ? 'Tue' : 'Wed';
+        break;
+      case 4:
+        dateFormat = Storage.langCode == 'en' ? 'Wed' : 'Thu';
+        break;
+      case 5:
+        dateFormat = Storage.langCode == 'en' ? 'Thu' : 'Fri';
+        break;
+      case 6:
+        dateFormat = Storage.langCode == 'en' ? 'Fri' : 'Sat';
+        break;
+      case 7:
+        dateFormat = Storage.langCode == 'en' ? 'Sat' : 'Sun';
+    }
+    return dateFormat;
+  }
+
+  double _calcHeightOnChildrenListLength(List list) {
     double height;
-    if (list.length >= 5){
+    if (list.length >= 5) {
       height = 250;
-    }
-    else{
+    } else {
       height = list.length.toDouble() * 50;
     }
     return height;
   }
 
-  // creating main list according to date filter
-  List filteredExpenses() {
-    List middleList = List();
-    for (int i = 0; i < ListOfExpenses.list.length; i++) {
-      if (_isInFilter(ListOfExpenses.list[i].date))
-        middleList.add(ListOfExpenses.list[i]);
-    }
-    List resultList = List();
-    for(int i= 0; i < middleList.length; i++){
-      bool isFound = false;
-      ExpenseNote currentExpenseNote = middleList[i];
+  List<ExpenseNote> getFilteredChildrenOfCategory(ExpenseNote expenseNote) {
+    List<ExpenseNote> childrenList = ListOfExpenses.filtered(selMode: selectedMode, currentDate: date, currentCategory: expenseNote.category);
 
-      for(ExpenseNote E in resultList){
-        if(currentExpenseNote.category == E.category){
+    childrenList.sort((a, b) => b.date.compareTo(a.date));
+    return childrenList;
+  }
+
+  List<ExpenseNote> getFilteredChildrenListByDay(int day) {
+    List<ExpenseNote> middleByDayList = ListOfExpenses.filtered(selMode: selectedMode, currentDate: date, day: day);
+    List<ExpenseNote> resultByDayList = List();
+
+    for (int i = 0; i < middleByDayList.length; i++) {
+      ExpenseNote currentExpenseNote = middleByDayList[i];
+      double sum = middleByDayList[i].sum;
+      bool isFound = false;
+
+      for (ExpenseNote E in resultByDayList) {
+        if (currentExpenseNote.category == E.category) {
           isFound = true;
           break;
         }
       }
-      if(isFound) continue;
+      if (isFound) continue;
 
-      double sum = middleList[i].sum;
-      for (int j = i + 1; j < middleList.length; j++){
-        if (currentExpenseNote.category == middleList[j].category)
-          sum += middleList[j].sum;
+      for (int j = i + 1; j < middleByDayList.length; j++) {
+        if (currentExpenseNote.category == middleByDayList[j].category)
+          sum += middleByDayList[j].sum;
       }
-      resultList.add(
+      resultByDayList.add(
         ExpenseNote(
           date: currentExpenseNote.date,
           category: currentExpenseNote.category,
@@ -356,313 +251,268 @@ class _ExpensesState extends State<Expenses> {
         )
       );
     }
-    if (selectedMode == 'Неделя(Д)')
-      return middleList;
-    else
-      return resultList;
+    return resultByDayList;
   }
 
-  List <ExpenseNote> getFilteredChildrenOfCategory (ExpenseNote expenseNote) {
-    List <ExpenseNote> childrenList = [];
-    for (int i = 0; i < ListOfExpenses.list.length; i++) {
-      if (_isInFilter(ListOfExpenses.list[i].date) && ListOfExpenses.list[i].category == expenseNote.category)
-        childrenList.add(ListOfExpenses.list[i]);
-    }
-    return childrenList;
-  }
-
-  // list which expanded category by single notes (nested list)
+  //list which extract single notes from category (nested list)
   ListView getExpandedChildrenForCategory(List<ExpenseNote> middleList) {
     // ListView.getChildren and expanded to children
     return ListView.builder(
-      itemCount: middleList.length,
-      itemBuilder: (context, index) {
-        return Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(left: 21),
+        itemCount: middleList.length,
+        itemBuilder: (context, index) {
+          return Dismissible(
+            key: new GlobalKey(),
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 26),
+              child: Container(
+                height: 50,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(child: boolComment(middleList[index])),
+                    SecondaryText(text: middleList[index].sum.toStringAsFixed(2)),
+                  ],
+                ),
+              ),
+            ),
+            direction: DismissDirection.horizontal,
+            confirmDismiss: (direction) async {
+              if (direction == DismissDirection.startToEnd)
+                return goToEditPage(context, middleList[index]);
+              else
+                return true;
+            },
+            onDismissed: (direction) async {
+              if (direction == DismissDirection.endToStart) {
+                int indexInListOfExpenses =
+                    ListOfExpenses.list.indexOf(middleList[index]);
+                CustomSnackBar.show(
+                    key: scaffoldKey,
+                    context: context,
+                    text: AppLocalizations.of(context)
+                        .translate('Заметка удалена'),
+                    callBack: () {
+                      undoDelete(middleList[index], indexInListOfExpenses);
+                    });
+                ListOfExpenses.list.remove(middleList[index]);
+                await Storage.saveString(
+                    jsonEncode(new ListOfExpenses().toJson()), 'ExpenseNote');
+                widget.updateMainPage();
+                updateExpensesPage();
+              }
+            },
+            background: Container(
+              alignment: Alignment.centerLeft,
+              color: AppColors.edit,
+              child: Padding(
+                padding: EdgeInsets.only(left: 15),
+                child: Icon(
+                  Icons.edit,
+                  color: Colors.black54,
+                ),
+              ),
+            ),
+            secondaryBackground: Container(
+              alignment: Alignment.centerRight,
+              color: Colors.redAccent,
+              child: Padding(
+                padding: EdgeInsets.only(right: 15),
+                child: Icon(
+                  Icons.delete,
+                  color: Colors.black54,
+                ),
+              ),
+            ),
+          );
+        });
+  }
+
+  ListView getExpandedChildrenForDay(List list) {
+    return ListView.builder(
+        itemCount: list.length,
+        itemBuilder: (context, index) {
+          return Container(
+            height: 50,
+            child: Padding(
+              padding: EdgeInsets.only(left: 25, right: 25),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Expanded(
-                    child: boolComment(middleList[index]),
-                  ),
-                  Row(
-                    children: [
-                      SecondaryText(text: '${middleList[index].sum}', color: Colors.black54),
-                      IconButton(
-                        icon: Icon(Icons.edit),
-                        color: Colors.black54,
-                        onPressed: () => goToEditPage(
-                          context,
-                          middleList[index],
-                        ),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.delete),
-                        color: Colors.black54,
-                        onPressed: () async {
-                          int indexInListOfExpenses = ListOfExpenses.list.indexOf(middleList[index]);
-                          CustomSnackBar.show(
-                            key: scaffoldKey,
-                            context: context,
-                            text: AppLocalizations.of(context).translate('Заметка удалена'),
-                            callBack: () {
-                              undoDelete(middleList[index], indexInListOfExpenses);
-                            }
-                          );
-                          ListOfExpenses.list.remove(middleList[index]);
-                          await Storage.saveString(jsonEncode(
-                            new ListOfExpenses().toJson()), 'ExpenseNote');
-                          widget.updateMainPage();
-                          updateExpensesPage();
-                        }
-                      ),
-                    ],
-                  ),
+                  SecondaryText(
+                      text: list[index].category,
+                      color: AppColors.textColor()),
+                  SecondaryText(
+                      text: list[index].sum.toStringAsFixed(2),
+                      color: AppColors.textColor()),
                 ],
               ),
             ),
-          ],
-        );
-      }
-    );
+          );
+        });
   }
 
   boolComment(ExpenseNote note) {
-    if (note.comment == '' || note.comment == null){
+    if (note.comment == '' || note.comment == null) {
       return DateFormatText(
           dateTime: note.date,
           mode: 'Дата в строке',
-          color: MyColors.secondTextColor
-      );
-    }
-    else{
+          color: AppColors.textColor());
+    } else {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           DateFormatText(
               dateTime: note.date,
               mode: 'Дата в строке',
-              color: MyColors.secondTextColor
-          ),
+              color: AppColors.textColor()),
           comment(note),
         ],
       );
     }
   }
 
-  goToEditPage(BuildContext context, ExpenseNote expenseNote){
-    Navigator.push(context,
-        MaterialPageRoute(builder: (BuildContext context){
-          return EditPageForExpenseCategory(
-              updateExpensePage: updateExpensesPage,
-              updateMainPage: widget.updateMainPage,
-              note: expenseNote
-          );
-        })
-    );
+  goToEditPage(BuildContext context, ExpenseNote expenseNote) {
+    Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
+      return EditPageForExpenseCategory(
+          updateExpensePage: updateExpensesPage,
+          updateMainPage: widget.updateMainPage,
+          note: expenseNote);
+    }));
   }
 
   comment(ExpenseNote note) {
-      if (note.comment == null)
-        return ThirdText('');
-      else
-        return SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: ThirdText(note.comment)
-        );
+    if (note.comment == null)
+      return ThirdText('');
+    else
+      return SingleChildScrollView(
+          scrollDirection: Axis.horizontal, child: ThirdText(note.comment));
   }
 
-  // dropdown menu button
-  Widget buildDropdownButton() {
-    return DropdownButton(
-        hint: MainLocalText(text: selectedMode),
-        items: [
-          DropdownMenuItem(value: 'День', child: MainLocalText(text: 'День')),
-          DropdownMenuItem(value: 'Неделя', child: MainLocalText(text: 'Неделя')),
-          DropdownMenuItem(value: 'Неделя(Д)', child: MainLocalText(text: 'Неделя(Д)')),
-          DropdownMenuItem(value: 'Месяц', child: MainLocalText(text: 'Месяц')),
-          DropdownMenuItem(value: 'Год', child: MainLocalText(text: 'Год')),
-        ],
-        onChanged: (String newValue) {
-          // if (selectedMode != 'Неделя' && newValue == 'Неделя') {
-          //   int weekDay = Localizations.localeOf(context).languageCode == 'ru' ||
-          //       Localizations.localeOf(context).languageCode == 'uk' ? date.weekday : date.weekday + 1;
-          //   date = date.subtract(Duration(days: weekDay)).add(Duration(days: 7));
-          // }
-          //
-          // if (selectedMode == 'Неделя' && newValue != 'Неделя') {
-          //   date = DateTime.now();
-          // }
-          selectedMode = newValue;
-          updateExpensesPage();
-        }
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+        key: scaffoldKey,
+        backgroundColor: AppColors.backGroundColor(),
+        appBar: AppBar(
+          shadowColor: AppColors.backGroundColor().withOpacity(.001),
+          iconTheme: IconThemeData(color: AppColors.textColor()),
+          backgroundColor: AppColors.backGroundColor(),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              MainLocalText(text: 'Расход'),
+              AppDropdownButton(page: 'expense', selectedMode: selectedMode, updateSelMode: updateSelectedMode,)
+            ],
+          ), // dropdown menu button
+        ),
+        body: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 15.0, bottom: 10),
+              child: Container(
+                height: 50,
+                width: 300,
+                decoration: AppDecoration.boxDecoration(context),
+                child: DateWidget.getDate(selMode: selectedMode, date: date, update: updateDate, color: AppColors.textColor()),
+              ),
+            ),
+            expensesSortedByCategory.isEmpty ?
+            Expanded(
+              child: Center(child: MainLocalText(text: 'Расходов нет'))
+            )
+            : Padding(
+                padding: EdgeInsets.only(left: 15, right: 20),
+                child: Container(
+                  height: 50,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      MainLocalText(text: 'Итого'),
+                      MainRowText(
+                          text: totalSum(expensesSortedByCategory).toStringAsFixed(2)
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            selectedMode == 'Неделя(Д)' && expensesSortedByCategory.isNotEmpty ?
+            Expanded(
+              child: Column(
+                children: [
+                  Expanded(
+                    child: ListView.builder(
+                    itemCount: 7,
+                    itemBuilder: (context, index) {
+                      return ExpansionTileTheme(
+                        child: ExpansionTile(
+                          title: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              SecondaryLocalText(text: toDateFormatDay(index + 1)),
+                              SecondaryText(text: getSumByDayLIst(index + 1)),
+                            ],
+                          ),
+                          backgroundColor: AppColors.backGroundColor(),
+                          onExpansionChanged: (e) {},
+                          children: [
+                            Container(
+                              height: _calcHeightOnChildrenListLength(getFilteredChildrenListByDay(Storage.langCode == 'en' ? index : index + 1)),
+                              child: getExpandedChildrenForDay(getFilteredChildrenListByDay(Storage.langCode == 'en' ? index : index + 1)),
+                            )
+                          ],
+                        ),
+                      );
+                    },
+                  )),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Container(
+                      height: 50,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          MainLocalText(text: 'Среднее за неделю'),
+                          MainRowText(text: getWeekAverage(expensesSortedByCategory))
+                        ],
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            )
+            : Expanded(
+                child: ListView.builder(
+                  itemCount: expensesSortedByCategory.length,
+                  itemBuilder: (context, index) {
+                    ExpenseNote singleCategoryNote = expensesSortedByCategory[index];
+                    List<ExpenseNote> childrenList = getFilteredChildrenOfCategory(singleCategoryNote);
+
+                    return ExpansionTileTheme(
+                      child: ExpansionTile(
+                        title: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            SecondaryText(text: singleCategoryNote.category),
+                            SecondaryText(text: singleCategoryNote.sum.toStringAsFixed(2)),
+                          ],
+                        ),
+                        backgroundColor: AppColors.backGroundColor(),
+                        onExpansionChanged: (e) {},
+                        children: [
+                          Container(
+                            height: _calcHeightOnChildrenListLength(childrenList),
+                            child: getExpandedChildrenForCategory(childrenList),
+                          )
+                        ],
+                      ),
+                    );
+                  }
+                ),
+            )
+          ],
+        ),
+      ),
     );
   }
-
-  // date filter function
-  _isInFilter(DateTime d){
-    if (d == null) return false;
-
-    switch (selectedMode) {
-      case 'День' :
-        return
-          d.year == date.year &&
-              d.month == date.month &&
-              d.day == date.day;
-        break;
-      case 'Неделя':
-        int weekDay = Localizations.localeOf(context).languageCode == 'ru' ||
-            Localizations.localeOf(context).languageCode == 'uk' ? date.weekday : date.weekday + 1;
-        DateTime nextWeekFirstDay = date.subtract(
-            Duration(days: weekDay)).add(Duration(days: 8));
-        return
-          d.isAfter(nextWeekFirstDay.subtract(Duration(days: 8))) &&  d.isBefore(nextWeekFirstDay);
-        break;
-      case 'Неделя(Д)':
-        int weekDay = Localizations.localeOf(context).languageCode == 'ru' ||
-            Localizations.localeOf(context).languageCode == 'uk' ? date.weekday : date.weekday + 1;
-        DateTime nextWeekFirstDay = date.subtract(
-            Duration(days: weekDay)).add(Duration(days: 8));
-        return
-          d.isAfter(nextWeekFirstDay.subtract(Duration(days: 8))) &&  d.isBefore(nextWeekFirstDay);
-        break;
-      case 'Месяц' :
-        return
-          d.year == date.year &&
-              d.month == date.month;
-        break;
-      case 'Год' :
-        return
-          d.year == date.year;
-        break;
-    }
-  }
-
-  // function return date with buttons
-  _getData(){
-    switch(selectedMode){
-      case 'День':
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            IconButton(
-              icon: Icon(Icons.arrow_left),
-              onPressed: () {
-                setState(() {
-                  date = date.subtract(Duration(days: 1));
-                });
-              },
-            ),
-            DateFormatText(dateTime: date, mode: selectedMode),
-            IconButton(
-              icon: Icon(Icons.arrow_right),
-              onPressed: () {
-                setState(() {
-                  date = date.add(Duration(days: 1));
-                });
-              },
-            ),
-          ],
-        );
-      case 'Неделя':
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            IconButton(
-              icon: Icon(Icons.arrow_left),
-              onPressed: () {
-                setState(() {
-                  date = date.subtract(Duration(days: 7));
-                });
-              },
-            ),
-            DateFormatText(dateTime: date, mode: selectedMode),
-            IconButton(
-              icon: Icon(Icons.arrow_right),
-              onPressed: () {
-                setState(() {
-                  date = date.add(Duration(days: 7));
-                });
-              },
-            ),
-          ],
-        );
-      case 'Неделя(Д)':
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            IconButton(
-              icon: Icon(Icons.arrow_left),
-              onPressed: () {
-                setState(() {
-                  date = date.subtract(Duration(days: 7));
-                });
-              },
-            ),
-            DateFormatText(dateTime: date, mode: selectedMode),
-            IconButton(
-              icon: Icon(Icons.arrow_right),
-              onPressed: () {
-                setState(() {
-                  date = date.add(Duration(days: 7));
-                });
-              },
-            ),
-          ],
-        );
-      case 'Месяц':
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            IconButton(
-              icon: Icon(Icons.arrow_left),
-              onPressed: () {
-                setState(() {
-                  date = new DateTime(date.year, date.month - 1, date.day);
-                });
-              },
-            ),
-            DateFormatText(dateTime: date, mode: selectedMode),
-            IconButton(
-              icon: Icon(Icons.arrow_right),
-              onPressed: () {
-                setState(() {
-                  date = DateTime(date.year, date.month + 1, date.day);
-                });
-              },
-            ),
-          ],
-        );
-      case 'Год':
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            IconButton(
-              icon: Icon(Icons.arrow_left),
-              onPressed: () {
-                setState(() {
-                  date = new DateTime(date.year - 1, date.month, date.day);
-                });
-              },
-            ),
-            DateFormatText(dateTime: date, mode: selectedMode),
-            IconButton(
-              icon: Icon(Icons.arrow_right),
-              onPressed: () {
-                setState(() {
-                  date = DateTime(date.year + 1, date.month, date.day);
-                });
-              },
-            ),
-          ],
-        );
-    }
-  }
-
 }
-
-
-
-
