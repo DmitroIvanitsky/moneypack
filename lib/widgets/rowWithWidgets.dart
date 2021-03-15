@@ -25,7 +25,6 @@ class RowWithWidgets extends StatelessWidget{
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
                   decoration: AppDecoration.boxDecoration(context),
                   height: 50,
                   width: 160,

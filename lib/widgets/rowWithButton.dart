@@ -1,8 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import '../setting/AppDecoration.dart';
-
 import '../setting/MainLocalText.dart';
 import '../setting/AppColors.dart';
 import '../setting/SecondaryText.dart';
@@ -30,23 +28,20 @@ class RowWithButton extends StatelessWidget{
                 decoration: AppDecoration.boxDecoration(context),
                 height: 50,
                 width: 160,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: FlatButton(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                            child: MainLocalText(
-                              text: leftText,
-                              //color: Storage.brightness == Brightness.light ? AppColors.textColor() : AppColors.mainColor,
-                            )
-                        ),
-                        Icon(Icons.arrow_drop_down, color: AppColors.textColor())
-                      ],
-                    ),
-                    onPressed: () => onTap(),
+                child: FlatButton(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: MainLocalText(
+                          text: leftText,
+                          //color: Storage.brightness == Brightness.light ? AppColors.textColor() : AppColors.mainColor,
+                        )
+                      ),
+                      Icon(Icons.arrow_drop_down, color: AppColors.textColor())
+                    ],
                   ),
+                  onPressed: () => onTap(),
                 ),
               ),
               Expanded(child: SecondaryText(text: rightText.toString(), align: TextAlign.right,))
