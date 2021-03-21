@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:money_pack/setting/expansionTileTheme.dart';
+import '../setting/expansionTileTheme.dart';
 import '../setting/AppDecoration.dart';
 import '../widgets/AppDropdownButton.dart';
 import '../widgets/DateWidget.dart';
@@ -412,7 +412,7 @@ class _IncomesState extends State<Incomes> {
                 height: 50,
                 width: 300,
                 decoration: AppDecoration.boxDecoration(context),
-                child: DateWidget.getDate(selMode: selectedMode, date: date, update: updateDate, color: AppColors.textColor()),
+                child: DateWidget(selMode: selectedMode, date: date, update: updateDate, color: AppColors.textColor()),
               ),
             ),
             incomesSortedByCategory.isEmpty ?

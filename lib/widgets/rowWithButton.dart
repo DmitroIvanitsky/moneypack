@@ -15,39 +15,37 @@ class RowWithButton extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return
-      Container(
-        decoration: AppDecoration.boxDecoration(context),
-        height: 50,
-        margin: EdgeInsets.only(left: 20, right: 20),
-        child: Padding(
-          padding: EdgeInsets.only(right: 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                decoration: AppDecoration.boxDecoration(context),
-                height: 50,
-                width: 160,
-                child: FlatButton(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: MainLocalText(
-                          text: leftText,
-                          //color: Storage.brightness == Brightness.light ? AppColors.textColor() : AppColors.mainColor,
-                        )
-                      ),
-                      Icon(Icons.arrow_drop_down, color: AppColors.textColor())
-                    ],
+      GestureDetector(
+        child: Container(
+          decoration: AppDecoration.boxDecoration(context),
+          height: 50,
+          margin: EdgeInsets.only(left: 20, right: 20),
+          child: Padding(
+            padding: EdgeInsets.only(right: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  decoration: AppDecoration.boxDecoration(context),
+                  height: 50,
+                  width: 160,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 15),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        MainLocalText(text: leftText),
+                        Icon(Icons.arrow_drop_down, color: AppColors.textColor())
+                      ],
+                    ),
                   ),
-                  onPressed: () => onTap(),
                 ),
-              ),
-              Expanded(child: SecondaryText(text: rightText.toString(), align: TextAlign.right,))
-            ],
+                Expanded(child: SecondaryText(text: rightText.toString(), align: TextAlign.right,))
+              ],
+            ),
           ),
         ),
+        onTap: onTap,
       );
   }
 

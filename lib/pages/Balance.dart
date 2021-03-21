@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:money_pack/Objects/IncomeNote.dart';
-import 'package:money_pack/setting/MainRowText.dart';
-import 'package:money_pack/widgets/AppDropdownButton.dart';
+import '../Objects/IncomeNote.dart';
+import '../setting/MainRowText.dart';
+import '../widgets/AppDropdownButton.dart';
 import '../Utility/Storage.dart';
 import '../widgets/DateWidget.dart';
 import '../Objects/ListOfIncomes.dart';
@@ -219,7 +219,7 @@ class _BalanceState extends State<Balance> {
                 height: 50,
                 width: 300,
                 decoration: AppDecoration.boxDecoration(context),
-                child: DateWidget.getDate(selMode: selectedMode, date: date, update: updateDate, color: AppColors.textColor()),
+                child: DateWidget(selMode: selectedMode, date: date, update: updateDate, color: AppColors.textColor()),
               ),
             ),
             categoriesList.isEmpty ?

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../setting/ThirdText.dart';
@@ -116,9 +118,10 @@ class _AddIncomeState extends State<AddIncome> {
         return CalendarTheme.theme(child);
       },
     );
-    setState(() {
-      date = picked;
-    });
+    if (picked != null)
+      setState(() {
+        date = picked;
+      });
   }
 
   @override
@@ -164,9 +167,7 @@ class _AddIncomeState extends State<AddIncome> {
                   padding: const EdgeInsets.only(top: 15.0, bottom: 20),
                   child: RowWithWidgets(
                       leftWidget: MainLocalText(text: 'Дата'),
-                      rightWidget: (date != null)
-                          ? DateFormatText(dateTime: date, mode: 'Дата в строке')
-                          : SecondaryLocalText(text: 'Выбирите дату'),
+                      rightWidget: DateFormatText(dateTime: date, mode: 'Дата в строке'),
                       onTap: onDateTap
                   ),
                 ),

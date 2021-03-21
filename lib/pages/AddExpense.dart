@@ -123,9 +123,10 @@ class _AddExpensesState extends State<AddExpenses> {
         return CalendarTheme.theme(child);
         },
     );
-    setState(() {
-      date = picked;
-    });
+    if (picked != null)
+      setState(() {
+        date = picked;
+      });
   }
 
   @override
@@ -175,9 +176,7 @@ class _AddExpensesState extends State<AddExpenses> {
                   padding: const EdgeInsets.only(top: 15, bottom: 20),
                   child: RowWithWidgets(
                       leftWidget: MainLocalText(text: 'Дата'),
-                      rightWidget: (date != null) ?
-                      DateFormatText(dateTime: date, mode: 'Дата в строке') :
-                      SecondaryLocalText(text: 'Выбирите дату'),
+                      rightWidget: DateFormatText(dateTime: date, mode: 'Дата в строке'),
                       onTap: onDateTap
                   ),
                 ),

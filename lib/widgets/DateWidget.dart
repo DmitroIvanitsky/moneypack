@@ -1,9 +1,41 @@
 import 'package:flutter/material.dart';
+import '../setting/calendarTheme.dart';
 import '../setting/DateFormatText.dart';
 
-class DateWidget{
+class DateWidget extends StatefulWidget {
+  String selMode;
+  DateTime date;
+  Function update;
+  Color color;
 
-  static getDate({String selMode, DateTime date, Function update, Color color}){
+  DateWidget({this.selMode, this.date, this.update, this.color});
+
+  @override
+  _DateWidgetState createState() => _DateWidgetState();
+}
+
+class _DateWidgetState extends State<DateWidget> {
+
+  @override
+  Widget build(BuildContext context) {
+    return getDate(selMode: widget.selMode, date: widget.date, update: widget.update, color: widget.color);
+  }
+
+  onDateTap() async{
+    final DateTime picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      lastDate: DateTime.now().add(Duration(days: 184)),
+      firstDate: DateTime.now().subtract(Duration(days: 184)),
+      builder:(BuildContext context, Widget child) {
+        return CalendarTheme.theme(child);
+      },
+    );
+    if (picked != null)
+      widget.update(widget.date = picked);
+  }
+
+  getDate({String selMode, DateTime date, Function update, Color color}){
     switch(selMode) {
       case 'День':
         return Row(
@@ -15,18 +47,21 @@ class DateWidget{
                 icon: Icon(Icons.arrow_left, color: color,),
                 onPressed: () {
                   date = date.subtract(Duration(days: 1));
-                  update(date);
+                  widget.update(date);
                 },
               ),
             ),
-            DateFormatText(dateTime: date, mode: selMode, color: color,),
+            TextButton(
+              child: DateFormatText(dateTime: date, mode: selMode, color: color),
+              onPressed: onDateTap,
+            ),
             Flexible(
               fit: FlexFit.tight,
               child: IconButton(
                 icon: Icon(Icons.arrow_right, color: color,),
                 onPressed: () {
                   date = date.add(Duration(days: 1));
-                  update(date);
+                  widget.update(date);
                 },
               ),
             ),
@@ -46,7 +81,7 @@ class DateWidget{
                 },
               ),
             ),
-            DateFormatText(dateTime: date, mode: selMode, color: color,),
+            DateFormatText(dateTime: date, mode: selMode, color: color),
             Flexible(
               fit: FlexFit.tight,
               child: IconButton(
@@ -73,7 +108,7 @@ class DateWidget{
                 },
               ),
             ),
-            DateFormatText(dateTime: date, mode: selMode, color: color,),
+            DateFormatText(dateTime: date, mode: selMode, color: color),
             Flexible(
               fit: FlexFit.tight,
               child: IconButton(
@@ -100,7 +135,10 @@ class DateWidget{
                 },
               ),
             ),
-            DateFormatText(dateTime: date, mode: selMode, color: color,),
+            TextButton(
+              child: DateFormatText(dateTime: date, mode: selMode, color: color),
+              onPressed: onDateTap,
+            ),
             Flexible(
               fit: FlexFit.tight,
               child: IconButton(
@@ -127,7 +165,7 @@ class DateWidget{
                 },
               ),
             ),
-            DateFormatText(dateTime: date, mode: selMode, color: color,),
+            DateFormatText(dateTime: date, mode: selMode, color: color),
             Flexible(
               fit: FlexFit.tight,
               child: IconButton(

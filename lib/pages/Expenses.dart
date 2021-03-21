@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:money_pack/setting/expansionTileTheme.dart';
-import 'package:money_pack/widgets/AppDropdownButton.dart';
+import '../setting/expansionTileTheme.dart';
+import '../widgets/AppDropdownButton.dart';
 import '../widgets/DateWidget.dart';
 import '../setting/SecondaryLocalText.dart';
 import '../setting/SecondaryText.dart';
@@ -414,7 +414,7 @@ class _ExpensesState extends State<Expenses> {
                 height: 50,
                 width: 300,
                 decoration: AppDecoration.boxDecoration(context),
-                child: DateWidget.getDate(selMode: selectedMode, date: date, update: updateDate, color: AppColors.textColor()),
+                child: DateWidget(selMode: selectedMode, date: date, update: updateDate, color: AppColors.textColor()),
               ),
             ),
             expensesSortedByCategory.isEmpty ?

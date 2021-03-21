@@ -12,6 +12,7 @@ import 'package:money_pack/pages/AddIncome.dart';
 import 'package:money_pack/pages/Balance.dart';
 import 'package:money_pack/pages/Expenses.dart';
 import 'package:money_pack/pages/Incomes.dart';
+import 'package:money_pack/pages/notes.dart';
 import 'package:money_pack/setting/AppDecoration.dart';
 import 'package:money_pack/setting/MainLocalText.dart';
 import 'package:money_pack/setting/AppColors.dart';
@@ -20,14 +21,12 @@ import 'package:money_pack/widgets/DateWidget.dart';
 import 'package:money_pack/widgets/AppDropdownButton.dart';
 import 'package:money_pack/widgets/rowWithButton.dart';
 import 'Utility/appLocalizations.dart';
-
-
 import 'package:gx_file_picker/gx_file_picker.dart';
 
 void main() => runApp(MaterialApp(
   theme: ThemeData(fontFamily: 'main',),
   themeMode: ThemeMode.system,
-  debugShowCheckedModeBanner: true,
+  debugShowCheckedModeBanner: false,
   localizationsDelegates: [
     // A class which loads the translations from JSON files
     AppLocalizationsDelegate(),
@@ -37,7 +36,7 @@ void main() => runApp(MaterialApp(
     DefaultCupertinoLocalizations.delegate
   ],
   supportedLocales: [
-    const Locale.fromSubtags(languageCode: 'en'), // English, no country code
+    const Locale.fromSubtags(languageCode: 'en'),
     const Locale.fromSubtags(languageCode: 'ru'),
     const Locale.fromSubtags(languageCode: 'uk'),
   ],
@@ -202,7 +201,7 @@ class _MoneyPackState extends State<MoneyPack> {
                       height: 50,
                       width: 300,
                       decoration: AppDecoration.boxDecoration(context),
-                      child: DateWidget.getDate(selMode: selectedMode, date: date, update: updateDate, color: AppColors.textColor()),
+                      child: DateWidget(selMode: selectedMode, date: date, update: updateDate, color: AppColors.textColor()),
                     ),
                   ),
                   RowWithButton(

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import '../setting/AppDecoration.dart';
 import '../setting/SecondaryText.dart';
@@ -34,13 +33,8 @@ class _NotesState extends State<Notes> {
   }
 
   initList() async {
-    list = await Storage.getList('Notes');
-    // if (list == null)
-    //   list = [AppLocalizations.of(context).translate('1')];
-    // else
-      await Storage.saveList(list, 'Notes');
-
-    list.sort();
+    if (await Storage.getList('Notes') != null)
+      list = await Storage.getList('Notes');
     updateList();
   }
 
@@ -76,54 +70,54 @@ class _NotesState extends State<Notes> {
           children: [
             SizedBox(height: 10),
             Expanded(
-              child: list.isEmpty ?
-              Center(child: MainLocalText(text: 'заметок нет')) :
-              ListView.builder(
-                itemCount: list.length,
-                itemBuilder: (context, index) {
-                  String category = list[index];
-                  return Dismissible(
-                    key: ValueKey(category),
-                    child: Padding(
-                    padding: EdgeInsets.only(left: 5, right: 5),
-                      child: Column(
-                        children: [
-                          SizedBox(height: 25),
-                          Container(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [Expanded(child: SecondaryText(text: category))]
-                            ),
+              child: list.isEmpty
+                ? Center(child: MainLocalText(text: 'заметок нет'))
+                : ListView.builder(
+                    itemCount: list.length,
+                    itemBuilder: (context, index) {
+                      String category = list[index];
+                      return Dismissible(
+                        key: ValueKey(category),
+                        child: Padding(
+                        padding: EdgeInsets.only(left: 5, right: 5),
+                          child: Column(
+                            children: [
+                              SizedBox(height: 25),
+                              Container(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [Expanded(child: SecondaryText(text: category))]
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    ),
-                    direction: DismissDirection.endToStart,
-                    onDismissed: (direction) async {
-                      CustomSnackBar.show(
-                          key: scaffoldKey,
-                          context: context,
-                          text: AppLocalizations.of(context).translate('Удалена заметка: ') + category,
-                          textColor: Colors.white,
-                          callBack: () {
-                            undoDelete(category, index);
-                          });
-                      list.remove(category);
-                      await Storage.saveList(list, 'Notes');
-                      updateList();
+                        ),
+                        direction: DismissDirection.endToStart,
+                        onDismissed: (direction) async {
+                          CustomSnackBar.show(
+                              key: scaffoldKey,
+                              context: context,
+                              text: AppLocalizations.of(context).translate('Удалена заметка: ') + category,
+                              textColor: Colors.white,
+                              callBack: () {
+                                undoDelete(category, index);
+                              });
+                          list.remove(category);
+                          await Storage.saveList(list, 'Notes');
+                          updateList();
+                        },
+                        background: Container(),
+                        secondaryBackground: Container(
+                          alignment: Alignment.centerRight,
+                          color: Colors.redAccent,
+                          child: Padding(
+                            padding: EdgeInsets.only(right: 15),
+                            child: Icon(Icons.clear, color: Colors.black54),
+                          ),
+                        ),
+                      );
                     },
-                    background: Container(),
-                    secondaryBackground: Container(
-                      alignment: Alignment.centerRight,
-                      color: Colors.redAccent,
-                      child: Padding(
-                        padding: EdgeInsets.only(right: 15),
-                        child: Icon(Icons.delete, color: Colors.black54,),
-                      ),
-                    ),
-                  );
-                },
-              ),
+                  ),
             ),
             Padding(
               padding: EdgeInsets.only(left: 15, right: 15, bottom: 15),
@@ -134,9 +128,6 @@ class _NotesState extends State<Notes> {
                     child: Container(
                       decoration: AppDecoration.boxDecoration(context),
                       child: TextFormField(
-                        // inputFormatters: [
-                        //   new LengthLimitingTextInputFormatter(10),// for mobile
-                        // ],
                         style: TextStyle(color: AppColors.textColor()),
                         controller: TextEditingController(),
                         decoration: InputDecoration(
@@ -161,7 +152,7 @@ class _NotesState extends State<Notes> {
                       width: 60,
                       decoration: AppDecoration.boxDecoration(context),
                       child: IconButton(
-                        icon: Icon(Icons.add, color: AppColors.textColor(),),
+                        icon: Icon(Icons.add, color: AppColors.textColor()),
                         onPressed: () async {
                           if (tempField == '') return;
                           list.add(tempField);
@@ -181,5 +172,4 @@ class _NotesState extends State<Notes> {
       ),
     );
   }
-
 }

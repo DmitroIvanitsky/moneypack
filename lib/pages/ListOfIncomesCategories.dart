@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:money_pack/setting/AppDecoration.dart';
+import '../setting/AppDecoration.dart';
 import '../setting/SecondaryText.dart';
 import '../Utility/appLocalizations.dart';
 import '../widgets/customSnackBar.dart';

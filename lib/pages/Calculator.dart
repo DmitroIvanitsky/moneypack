@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_calculator/flutter_simple_calculator.dart';
-import 'package:money_pack/setting/AppDecoration.dart';
+import '../setting/AppDecoration.dart';
 import '../Utility/appLocalizations.dart';
 import '../setting/MainRowText.dart';
 import '../setting/AppColors.dart';
